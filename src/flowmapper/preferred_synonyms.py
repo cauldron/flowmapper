@@ -35,7 +35,7 @@ def has_number_pattern_at_end(text: str) -> bool:
 
 
 def match_identical_names_in_preferred_synonyms(
-    s: Flow, t: Flow, comment: str = "Identical preferred synonyms"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment: str = "Identical preferred synonyms"
 ):
     if t.synonyms and s.name in t.synonyms and s.context == t.context:
         if s.name.normalized in t.name.normalized and (
@@ -52,7 +52,7 @@ def match_identical_names_in_preferred_synonyms(
 
 
 def match_identical_names_in_synonyms(
-    s: Flow, t: Flow, comment: str = "Identical synonyms"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment: str = "Identical synonyms"
 ):
     if (t.synonyms and s.name in t.synonyms and s.context == t.context) or (
         s.synonyms and t.name in s.synonyms and s.context == t.context

@@ -62,7 +62,7 @@ class TestMatchIdenticalIdentifier:
         target_flow = Mock()
         target_flow.identifier = "test-id-123"
 
-        result = match_identical_identifier(source_flow, target_flow)
+        result = match_identical_identifier(source_flow, target_flow, [], [])
 
         assert result == {"comment": "Identical identifier"}
 
@@ -74,7 +74,7 @@ class TestMatchIdenticalIdentifier:
         target_flow = Mock()
         target_flow.identifier = "test-id-456"
 
-        result = match_identical_identifier(source_flow, target_flow)
+        result = match_identical_identifier(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -86,7 +86,7 @@ class TestMatchIdenticalIdentifier:
         target_flow = Mock()
         target_flow.identifier = "test-id-123"
 
-        result = match_identical_identifier(source_flow, target_flow)
+        result = match_identical_identifier(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -98,7 +98,7 @@ class TestMatchIdenticalIdentifier:
         target_flow = Mock()
         target_flow.identifier = "test-id-123"
 
-        result = match_identical_identifier(source_flow, target_flow, comment="Custom comment")
+        result = match_identical_identifier(source_flow, target_flow, [], [], comment="Custom comment")
 
         assert result == {"comment": "Custom comment"}
 
@@ -116,7 +116,7 @@ class TestMatchIdenticalNames:
         target_flow.name = "Water"
         target_flow.context = ["air"]
 
-        result = match_identical_names(source_flow, target_flow)
+        result = match_identical_names(source_flow, target_flow, [], [])
 
         assert result == {"comment": "Identical names"}
 
@@ -130,7 +130,7 @@ class TestMatchIdenticalNames:
         target_flow.name = "Air"
         target_flow.context = ["air"]
 
-        result = match_identical_names(source_flow, target_flow)
+        result = match_identical_names(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -144,7 +144,7 @@ class TestMatchIdenticalNames:
         target_flow.name = "Water"
         target_flow.context = ["ground"]
 
-        result = match_identical_names(source_flow, target_flow)
+        result = match_identical_names(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -162,7 +162,7 @@ class TestMatchIdenticalNamesWithoutCommas:
         target_flow.name.normalized = "Water pure"
         target_flow.context = ["air"]
 
-        result = match_identical_names_without_commas(source_flow, target_flow)
+        result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
         assert result == {"comment": "Identical names when commas removed"}
 
@@ -176,7 +176,7 @@ class TestMatchIdenticalNamesWithoutCommas:
         target_flow.name.normalized = "Air, pure"
         target_flow.context = ["air"]
 
-        result = match_identical_names_without_commas(source_flow, target_flow)
+        result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -190,7 +190,7 @@ class TestMatchIdenticalNamesWithoutCommas:
         target_flow.name.normalized = "Water pure"
         target_flow.context = ["ground"]
 
-        result = match_identical_names_without_commas(source_flow, target_flow)
+        result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -208,7 +208,7 @@ class TestMatchResourcesWithWrongSubcontext:
         target_flow.context.normalized = ["natural resource", "in air"]
         target_flow.name = "Copper"
 
-        result = match_resources_with_wrong_subcontext(source_flow, target_flow)
+        result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
         assert result == {"comment": "Resources with identical name but wrong subcontext"}
 
@@ -222,7 +222,7 @@ class TestMatchResourcesWithWrongSubcontext:
         target_flow.context.normalized = ["natural resource", "in air"]
         target_flow.name = "Iron"
 
-        result = match_resources_with_wrong_subcontext(source_flow, target_flow)
+        result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -236,7 +236,7 @@ class TestMatchResourcesWithWrongSubcontext:
         target_flow.context.normalized = ["emission", "to air"]
         target_flow.name = "CO2"
 
-        result = match_resources_with_wrong_subcontext(source_flow, target_flow)
+        result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
         assert result is None
 
@@ -250,7 +250,7 @@ class TestMatchResourcesWithWrongSubcontext:
         target_flow.context.normalized = ["natural resource", "in air"]
         target_flow.name = "Copper"
 
-        result = match_resources_with_wrong_subcontext(source_flow, target_flow)
+        result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
         assert result == {"comment": "Resources with identical name but wrong subcontext"}
 
@@ -264,7 +264,7 @@ class TestMatchResourcesWithWrongSubcontext:
         target_flow.context.normalized = ["emission", "to air"]
         target_flow.name = "Copper"
 
-        result = match_resources_with_wrong_subcontext(source_flow, target_flow)
+        result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
         assert result is None
 

@@ -131,7 +131,7 @@ def test_match_when_target_has_source_name_in_synonyms_with_roman_numeral():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}
 
@@ -154,7 +154,7 @@ def test_match_when_target_has_source_name_in_synonyms_with_number_pattern():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}
 
@@ -177,7 +177,7 @@ def test_match_when_source_has_target_name_in_synonyms_with_roman_numeral():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}
 
@@ -200,7 +200,7 @@ def test_match_when_source_has_target_name_in_synonyms_with_number_pattern():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}
 
@@ -223,7 +223,7 @@ def test_no_match_when_different_contexts():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result is None
 
@@ -246,7 +246,7 @@ def test_no_match_when_name_not_in_synonyms():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result is None
 
@@ -269,7 +269,7 @@ def test_no_match_when_no_roman_numeral_or_number_pattern():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result is None
 
@@ -292,7 +292,7 @@ def test_no_match_when_name_not_contained_in_other_name():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result is None
 
@@ -315,7 +315,7 @@ def test_no_match_when_no_synonyms():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result is None
 
@@ -340,7 +340,7 @@ def test_custom_comment():
 
     custom_comment = "Custom match comment"
     result = match_identical_names_in_preferred_synonyms(
-        source, target, custom_comment
+        source, target, [], [], custom_comment
     )
 
     assert result == {"comment": custom_comment}
@@ -364,7 +364,7 @@ def test_match_with_roman_numeral_and_plus_minus():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}
 
@@ -387,6 +387,6 @@ def test_match_with_number_pattern_and_plus_minus():
     source = Flow(source_data)
     target = Flow(target_data)
 
-    result = match_identical_names_in_preferred_synonyms(source, target)
+    result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
     assert result == {"comment": "Identical preferred synonyms"}

@@ -36,7 +36,7 @@ def test_match_identical_cas_numbers(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    assert match_identical_cas_numbers(s, t)
+    assert match_identical_cas_numbers(s, t, [], [])
 
 
 def test_match_missing_cas_numbers(transformations):
@@ -71,4 +71,4 @@ def test_match_missing_cas_numbers(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    assert not match_identical_cas_numbers(s, t)
+    assert not match_identical_cas_numbers(s, t, [], [])

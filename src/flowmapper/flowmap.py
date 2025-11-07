@@ -4,7 +4,7 @@ from collections import Counter
 from functools import cached_property
 from numbers import Number
 from pathlib import Path
-from typing import Callable, Optional, Union
+from collections.abc import Callable
 
 import pandas as pd
 import pint
@@ -111,8 +111,8 @@ class Flowmap:
             self.target_flows_nomatch = []
 
     def get_single_match(
-        self, source: Flow, target_flows: list, rules: list
-    ) -> Union[dict, None]:
+        self, source: Flow, source_flows: list[Flow], target_flows: list[Flow], rules: list[Callable]
+    ) -> dict | None:
         """
         Try to find a single match for `source` in `target_flows` using `rules`.
 
@@ -131,7 +131,7 @@ class Flowmap:
 
         for target in target_flows:
             for rule in rules:
-                is_match = rule(source, target)
+                is_match = rule(s=source, t=target, all_source_flows=source_flows, all_target_flows=target_flows)
                 if is_match:
                     try:
                         return {
@@ -167,7 +167,7 @@ class Flowmap:
         """
         results = [
             self.get_single_match(
-                source=source, target_flows=self.target_flows, rules=self.rules
+                source=source, source_flows=self.source_flows, target_flows=self.target_flows, rules=self.rules
             )
             for source in tqdm(self.source_flows, disable=self.disable_progress)
         ]
@@ -427,10 +427,10 @@ Match rule: {other['match_rule']}
         mapping_source: dict,
         mapping_target: dict,
         version: str = "1.0.0",
-        licenses: Optional[list] = None,
-        homepage: Optional[str] = None,
-        name: Optional[str] = None,
-        path: Optional[Path] = None,
+        licenses: list | None = None,
+        homepage: str | None = None,
+        name: str | None = None,
+        path: Path | None = None,
     ) -> randonneur.Datapackage:
         """
         Export mappings using randonneur data migration file format.
@@ -476,7 +476,7 @@ Match rule: {other['match_rule']}
 
     def to_glad(
         self,
-        path: Optional[Path] = None,
+        path: Path | None = None,
         ensure_id: bool = False,
         missing_source: bool = False,
     ):

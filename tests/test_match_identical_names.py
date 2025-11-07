@@ -24,7 +24,7 @@ def test_match_identical_names(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    match = match_identical_names(s, t)
+    match = match_identical_names(s, t, [], [])
     assert match
 
 
@@ -47,5 +47,5 @@ def test_match_identical_names_jsonpath(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    match = match_identical_names(s, t)
+    match = match_identical_names(s, t, [], [])
     assert not match

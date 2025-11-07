@@ -29,4 +29,4 @@ def test_match_identical_names_in_synonyms(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    assert match_identical_names_in_synonyms(s, t)
+    assert match_identical_names_in_synonyms(s, t, [], [])

@@ -39,7 +39,7 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_names_with_roman_numerals_in_parentheses(s, t)
+        result = match_names_with_roman_numerals_in_parentheses(s, t, [], [])
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
@@ -59,7 +59,7 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_names_with_roman_numerals_in_parentheses(s, t)
+        result = match_names_with_roman_numerals_in_parentheses(s, t, [], [])
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
@@ -79,7 +79,7 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_names_with_roman_numerals_in_parentheses(s, t)
+        result = match_names_with_roman_numerals_in_parentheses(s, t, [], [])
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
@@ -99,7 +99,7 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_names_with_roman_numerals_in_parentheses(s, t)
+        result = match_names_with_roman_numerals_in_parentheses(s, t, [], [])
 
         assert result is None
 
@@ -119,7 +119,7 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_names_with_roman_numerals_in_parentheses(s, t)
+        result = match_names_with_roman_numerals_in_parentheses(s, t, [], [])
 
         assert result is None
 
@@ -143,7 +143,7 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t)
+        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
 
         assert result is not None
         assert result["comment"] == "Name matching with location code and parent context"
@@ -165,7 +165,7 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t)
+        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
 
         assert result is not None
         assert result["conversion_factor"] == 1000.0
@@ -186,7 +186,7 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t)
+        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
 
         assert result is None
 
@@ -210,7 +210,7 @@ class TestMatchResourcesWithSuffixInGround:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_ground(s, t)
+        result = match_resources_with_suffix_in_ground(s, t, [], [])
 
         assert result == {"comment": "Resources with suffix in ground"}
 
@@ -230,7 +230,7 @@ class TestMatchResourcesWithSuffixInGround:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_ground(s, t)
+        result = match_resources_with_suffix_in_ground(s, t, [], [])
 
         assert result is None
 
@@ -254,7 +254,7 @@ class TestMatchFlowsWithSuffixUnspecifiedOrigin:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_flows_with_suffix_unspecified_origin(s, t)
+        result = match_flows_with_suffix_unspecified_origin(s, t, [], [])
 
         assert result == {"comment": "Flows with suffix unspecified origin"}
 
@@ -274,7 +274,7 @@ class TestMatchFlowsWithSuffixUnspecifiedOrigin:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_flows_with_suffix_unspecified_origin(s, t)
+        result = match_flows_with_suffix_unspecified_origin(s, t, [], [])
 
         assert result is None
 
@@ -298,7 +298,7 @@ class TestMatchResourcesWithSuffixInWater:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_water(s, t)
+        result = match_resources_with_suffix_in_water(s, t, [], [])
 
         assert result == {"comment": "Resources with suffix in water"}
 
@@ -318,7 +318,7 @@ class TestMatchResourcesWithSuffixInWater:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_water(s, t)
+        result = match_resources_with_suffix_in_water(s, t, [], [])
 
         assert result is None
 
@@ -342,7 +342,7 @@ class TestMatchResourcesWithSuffixInAir:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_air(s, t)
+        result = match_resources_with_suffix_in_air(s, t, [], [])
 
         assert result == {"comment": "Resources with suffix in air"}
 
@@ -362,7 +362,7 @@ class TestMatchResourcesWithSuffixInAir:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resources_with_suffix_in_air(s, t)
+        result = match_resources_with_suffix_in_air(s, t, [], [])
 
         assert result is None
 
@@ -386,7 +386,7 @@ class TestMatchEmissionsWithSuffixIon:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_emissions_with_suffix_ion(s, t)
+        result = match_emissions_with_suffix_ion(s, t, [], [])
 
         assert result == {"comment": "Match emissions with suffix ion"}
 
@@ -406,7 +406,7 @@ class TestMatchEmissionsWithSuffixIon:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_emissions_with_suffix_ion(s, t)
+        result = match_emissions_with_suffix_ion(s, t, [], [])
 
         assert result is None
 

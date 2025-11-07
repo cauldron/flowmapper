@@ -25,25 +25,27 @@ def format_match_result(s: Flow, t: Flow, conversion_factor: float, match_info: 
     }
 
 
-def match_identical_identifier(s: Flow, t: Flow, comment: str = "Identical identifier"):
+def match_identical_identifier(
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment: str = "Identical identifier"
+):
     if s.identifier and (s.identifier == t.identifier):
         return {"comment": comment}
 
 
 def match_identical_cas_numbers(
-    s: Flow, t: Flow, comment: str = "Identical CAS numbers"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment: str = "Identical CAS numbers"
 ):
     if (s.cas == t.cas) and (s.context == t.context):
         return {"comment": comment}
 
 
-def match_identical_names(s: Flow, t: Flow, comment="Identical names"):
+def match_identical_names(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Identical names"):
     if (s.name == t.name) and (s.context == t.context):
         return {"comment": comment}
 
 
 def match_identical_names_without_commas(
-    s: Flow, t: Flow, comment="Identical names when commas removed"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Identical names when commas removed"
 ):
     if (s.name.normalized.replace(",", "") == t.name.normalized.replace(",", "")) and (
         s.context == t.context
@@ -51,7 +53,7 @@ def match_identical_names_without_commas(
         return {"comment": comment}
 
 
-def match_resources_with_wrong_subcontext(s: Flow, t: Flow):
+def match_resources_with_wrong_subcontext(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     if (
         s.context.normalized[0].lower() in RESOURCE_PARENT_CATEGORY
         and t.context.normalized[0].lower() in RESOURCE_PARENT_CATEGORY
@@ -61,7 +63,7 @@ def match_resources_with_wrong_subcontext(s: Flow, t: Flow):
 
 
 def match_identical_names_except_missing_suffix(
-    s: Flow, t: Flow, suffix: str, comment: str = "Identical names except missing suffix"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], suffix: str, comment: str = "Identical names except missing suffix"
 ) -> dict:
     if (
         (f"{s.name.normalized}, {suffix}" == t.name)
@@ -73,7 +75,7 @@ def match_identical_names_except_missing_suffix(
 
 
 def match_names_with_roman_numerals_in_parentheses(
-    s: Flow, t: Flow, comment="With/without roman numerals in parentheses"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="With/without roman numerals in parentheses"
 ):
     if (
         rm_parentheses_roman_numerals(s.name.normalized)
@@ -84,7 +86,7 @@ def match_names_with_roman_numerals_in_parentheses(
 
 
 def match_custom_names_with_location_codes(
-    s: Flow, t: Flow, comment="Custom names with location code"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Custom names with location code"
 ):
     """Matching which pulls out location codes but also allows for custom name transformations."""
     match = ends_with_location.search(s.name.normalized)
@@ -116,7 +118,7 @@ def match_custom_names_with_location_codes(
 
 
 def match_names_with_location_codes(
-    s: Flow, t: Flow, comment="Name matching with location code"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Name matching with location code"
 ):
     match = ends_with_location.search(s.name.normalized)
     if match:
@@ -140,7 +142,7 @@ def match_names_with_location_codes(
 
 
 def match_resource_names_with_location_codes_and_parent_context(
-    s: Flow, t: Flow, comment="Name matching with location code and parent context"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Name matching with location code and parent context"
 ):
     """Sometimes we have flows in a parent context,"""
     match = ends_with_location.search(s.name.normalized)
@@ -169,7 +171,7 @@ def match_resource_names_with_location_codes_and_parent_context(
 
 
 def match_non_ionic_state(
-    s: Flow, t: Flow, comment="Non-ionic state if no better match"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Non-ionic state if no better match"
 ):
     if (
         (rm_roman_numerals_ionic_state(s.name.normalized) == t.name)
@@ -179,7 +181,7 @@ def match_non_ionic_state(
 
 
 def match_biogenic_to_non_fossil(
-    s: Flow, t: Flow, comment="Biogenic to non-fossil if no better match"
+    s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Biogenic to non-fossil if no better match"
 ):
     if (
         s.name.normalized.removesuffix(", biogenic")
@@ -189,36 +191,38 @@ def match_biogenic_to_non_fossil(
         return {"comment": comment}
 
 
-def match_resources_with_suffix_in_ground(s: Flow, t: Flow):
+def match_resources_with_suffix_in_ground(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     return match_identical_names_except_missing_suffix(
-        s, t, suffix="in ground", comment="Resources with suffix in ground"
+        s, t, all_source_flows, all_target_flows, suffix="in ground", comment="Resources with suffix in ground"
     )
 
 
-def match_flows_with_suffix_unspecified_origin(s: Flow, t: Flow):
+def match_flows_with_suffix_unspecified_origin(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     return match_identical_names_except_missing_suffix(
         s,
         t,
+        all_source_flows,
+        all_target_flows,
         suffix="unspecified origin",
         comment="Flows with suffix unspecified origin",
     )
 
 
-def match_resources_with_suffix_in_water(s: Flow, t: Flow):
+def match_resources_with_suffix_in_water(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     return match_identical_names_except_missing_suffix(
-        s, t, suffix="in water", comment="Resources with suffix in water"
+        s, t, all_source_flows, all_target_flows, suffix="in water", comment="Resources with suffix in water"
     )
 
 
-def match_resources_with_suffix_in_air(s: Flow, t: Flow):
+def match_resources_with_suffix_in_air(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     return match_identical_names_except_missing_suffix(
-        s, t, suffix="in air", comment="Resources with suffix in air"
+        s, t, all_source_flows, all_target_flows, suffix="in air", comment="Resources with suffix in air"
     )
 
 
-def match_emissions_with_suffix_ion(s: Flow, t: Flow):
+def match_emissions_with_suffix_ion(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow]):
     return match_identical_names_except_missing_suffix(
-        s, t, suffix="ion", comment="Match emissions with suffix ion"
+        s, t, all_source_flows, all_target_flows, suffix="ion", comment="Match emissions with suffix ion"
     )
 
 

@@ -21,7 +21,7 @@ def test_match_identical_names_except_missing_suffix(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    assert match_identical_names_except_missing_suffix(s, t, suffix="ion")
+    assert match_identical_names_except_missing_suffix(s, t, [], [], suffix="ion")
 
 
 def test_match_identical_names_except_missing_suffix_different_order(transformations):
@@ -40,4 +40,4 @@ def test_match_identical_names_except_missing_suffix_different_order(transformat
         transformations,
     )
 
-    assert match_identical_names_except_missing_suffix(s, t, suffix="ion")
+    assert match_identical_names_except_missing_suffix(s, t, [], [], suffix="ion")
