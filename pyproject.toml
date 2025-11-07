@@ -61,6 +61,7 @@ testing = [
 dev = [
     "build",
     "pre-commit",
+    "pyinstrument",
     "pylint",
     "pytest",
     "pytest-cov",

@@ -1,15 +1,20 @@
 import importlib.metadata
-import logging
 from pathlib import Path
-from typing import Optional
 
 import typer
-from typing_extensions import Annotated
+from typing import Annotated
+import structlog
 
 from flowmapper.extraction import ecospold2_biosphere_extractor, simapro_csv_biosphere_extractor
 from flowmapper.main import OutputFormat, flowmapper
 
-logger = logging.getLogger(__name__)
+try:
+    from pyinstrument import Profiler
+except ImportError:
+    Profiler = None
+
+
+logger = structlog.get_logger("flowmapper")
 
 app = typer.Typer()
 
@@ -23,7 +28,7 @@ def version_callback(value: bool):
 @app.callback()
 def main(
     version: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option("--version", callback=version_callback, is_eager=True),
     ] = None,
 ):
@@ -34,20 +39,20 @@ def main(
 
 @app.command()
 def map(
-    source: Annotated[Path, typer.Argument(help="Path to source flowlist")],
-    target: Annotated[Path, typer.Argument(help="Path to target flowlist")],
+    source: Annotated[Path, typer.Argument(help="Path to source flow list")],
+    target: Annotated[Path, typer.Argument(help="Path to target flow list")],
     output_dir: Annotated[
         Path, typer.Option(help="Directory to save mapping and diagnostics files")
     ] = Path("."),
     format: Annotated[
         OutputFormat,
         typer.Option(help="Mapping file output format", case_sensitive=False),
-    ] = "all",
+    ] = "randonneur",
     default_transformations: Annotated[
         bool, typer.Option(help="Include default context and unit transformations?")
     ] = True,
     transformations: Annotated[
-        Optional[list[Path]],
+        list[Path] | None,
         typer.Option(
             "--transformations",
             "-t",
@@ -70,6 +75,10 @@ def map(
         bool,
         typer.Option(help="Write original target matched flows into separate file?"),
     ] = False,
+    profile: Annotated[
+        bool,
+        typer.Option(help="Profile matching code with pyinstrument"),
+    ] = False,
 ):
     # Default generic mapping for JSON flow lists
     generic_mapping = {
@@ -84,7 +93,13 @@ def map(
         },
     }
     
-    return flowmapper(
+    if profile:
+        if Profiler is None:
+            raise ImportError("`pyinstrument` not installed")
+        profiler = Profiler()
+        profiler.start()
+
+    result = flowmapper(
         source=source,
         target=target,
         mapping_source=generic_mapping,
@@ -102,17 +117,24 @@ def map(
         matched_target=matched_target,
     )
 
+    if profile:
+        profiler.stop()
+        with open(f"{source.stem}-{target.stem}.html", "w") as f:
+            f.write(profiler.output_html())
+
+    return result
+
 
 @app.command()
 def extract_simapro_csv(
     simapro_csv_filepath: Annotated[
-        Path, typer.Argument(help="Path to source SimaPro CSV file")
+        Path, typer.Argument(help="Path to SimaPro CSV input file")
     ],
-    output_dir: Annotated[
-        Path, typer.Argument(help="Directory to save mapping and diagnostics files")
+    output_filepath: Annotated[
+        Path, typer.Argument(help="File path for JSON results data")
     ],
 ) -> None:
-    simapro_csv_biosphere_extractor(simapro_csv_filepath, output_dir)
+    simapro_csv_biosphere_extractor(simapro_csv_filepath, output_filepath)
 
 
 @app.command()
@@ -120,8 +142,8 @@ def extract_ecospold2(
     elementary_exchanges_filepath: Annotated[
         Path, typer.Argument(help="Path to source `ElementaryExchanges.xml` file")
     ],
-    output_dir: Annotated[
-        Path, typer.Argument(help="Directory to save mapping and diagnostics files")
+    output_filepath: Annotated[
+        Path, typer.Argument(help="File path for JSON results data")
     ],
 ) -> None:
-    ecospold2_biosphere_extractor(elementary_exchanges_filepath, output_dir)
+    ecospold2_biosphere_extractor(elementary_exchanges_filepath, output_filepath)
