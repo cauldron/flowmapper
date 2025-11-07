@@ -20,7 +20,29 @@ def test_match_non_ionic_state():
     ]
 
     flowmap = Flowmap(s, t)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+            },
+        },
+    )
+    actual = dp.data["update"]
     expected = [
         {
             "source": {"name": "Manganese (II)", "context": "air", "unit": "kg"},

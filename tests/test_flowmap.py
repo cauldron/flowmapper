@@ -58,7 +58,32 @@ def test_flowmap_mappings(source_flows, target_flows):
 
 def test_flowmap_to_randonneur(source_flows, target_flows):
     flowmap = Flowmap(source_flows, target_flows)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
     expected = [
         {
             "comment": "Identical names",
@@ -80,12 +105,12 @@ def test_flowmap_to_randonneur(source_flows, target_flows):
         {
             "comment": "Name matching with location code",
             "conversion_factor": 1.0,
+            "location": "FR",
             "source": {"context": "air/low. pop.", "name": "Ammonia, FR", "unit": "kg"},
             "target": {
                 "CAS number": "7664-41-7",
                 "context": ["air", "non-urban air or from high stacks"],
                 "identifier": "0f440cc0-0f74-446d-99d6-8ff0e97a2444",
-                "location": "FR",
                 "name": "Ammonia",
                 "unit": "kg",
             },
@@ -96,9 +121,35 @@ def test_flowmap_to_randonneur(source_flows, target_flows):
 
 def test_flowmap_to_randonneur_export(source_flows, target_flows, tmp_path):
     flowmap = Flowmap(source_flows, target_flows)
-    flowmap.to_randonneur(tmp_path / "randonneur.json")
+    flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+        path=tmp_path / "randonneur.json",
+    )
     with open(tmp_path / "randonneur.json", "r") as fs:
-        actual = json.load(fs)
+        data = json.load(fs)
+        actual = data["update"]
     expected = [
         {
             "comment": "Identical names",
@@ -120,12 +171,12 @@ def test_flowmap_to_randonneur_export(source_flows, target_flows, tmp_path):
         {
             "comment": "Name matching with location code",
             "conversion_factor": 1.0,
+            "location": "FR",
             "source": {"context": "air/low. pop.", "name": "Ammonia, FR", "unit": "kg"},
             "target": {
                 "CAS number": "7664-41-7",
                 "context": ["air", "non-urban air or from high stacks"],
                 "identifier": "0f440cc0-0f74-446d-99d6-8ff0e97a2444",
-                "location": "FR",
                 "name": "Ammonia",
                 "unit": "kg",
             },
@@ -146,7 +197,32 @@ def test_flowmap_with_custom_rules_no_match(source_flows, target_flows):
 
 def test_flowmap_with_custom_rules_match(source_flows, target_flows):
     flowmap = Flowmap(source_flows, target_flows, rules=[match_identical_names])
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
     expected = [
         {
             "comment": "Identical names",
@@ -254,7 +330,33 @@ def test_flowmap_nomatch_multiple_rules(source_flows, target_flows):
 
 def test_flowmap_mappings_ei_ei(target_flows):
     flowmap = Flowmap(target_flows, target_flows)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
     expected = [
         {
             "source": {
@@ -298,7 +400,33 @@ def test_flowmap_mappings_ei_ei(target_flows):
 
 def test_flowmap_mappings_ei39_ei310(ei39, ei310):
     flowmap = Flowmap(ei39, ei310)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
     expected = [
         {
             "source": {

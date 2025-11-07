@@ -20,7 +20,7 @@ def test_format_match_result_missing_id(transformations):
     }
     t = Flow(target)
 
-    actual = format_match_result(s, t, 1.0, {"is_match": True, "comment": "foo"})
+    actual = format_match_result(s, t, 1.0, {"comment": "foo"})
     expected = {
         "source": {
             "name": "Carbon dioxide, in air",

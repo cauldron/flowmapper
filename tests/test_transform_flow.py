@@ -18,7 +18,32 @@ def test_transform_flow_without_default_transformations():
     target_flows = [Flow(flow, transformations) for flow in target_flows]
 
     flowmap = Flowmap(source_flows, target_flows)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
 
     expected = [
         {
@@ -69,7 +94,32 @@ def test_transform_flow_with_default_transformations(transformations):
     target_flows = [Flow(flow, all_transformations) for flow in target_flows]
 
     flowmap = Flowmap(source_flows, target_flows)
-    actual = flowmap.to_randonneur()
+    dp = flowmap.to_randonneur(
+        source_id="test-source",
+        target_id="test-target",
+        contributors=[{"title": "Test", "roles": ["author"], "path": "test"}],
+        mapping_source={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "CAS number": "CAS number",
+            },
+        },
+        mapping_target={
+            "expression language": "test",
+            "labels": {
+                "name": "name",
+                "context": "context",
+                "unit": "unit",
+                "identifier": "identifier",
+                "CAS number": "CAS number",
+                "location": "location",
+            },
+        },
+    )
+    actual = dp.data["update"]
 
     expected = [
         {
@@ -108,12 +158,12 @@ def test_transform_flow_with_default_transformations(transformations):
         {
             "comment": "Name matching with location code",
             "conversion_factor": 1.0,
+            "location": "FR",
             "source": {"context": "air/low. pop.", "name": "Ammonia, FR", "unit": "kg"},
             "target": {
                 "CAS number": "7664-41-7",
                 "context": ["air", "non-urban air or from high stacks"],
                 "identifier": "0f440cc0-0f74-446d-99d6-8ff0e97a2444",
-                "location": "FR",
                 "name": "Ammonia",
                 "unit": "kg",
             },
