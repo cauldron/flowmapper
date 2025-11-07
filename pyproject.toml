@@ -37,6 +37,7 @@ dependencies = [
     "pyecospold",
     "randonneur>=0.6",
     "randonneur_data",
+    "structlog",
     "tqdm",
     "typer",
     "xmltodict",

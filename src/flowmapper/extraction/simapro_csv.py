@@ -2,7 +2,9 @@ import json
 from pathlib import Path
 
 import bw_simapro_csv
-from loguru import logger
+import structlog
+
+logger = structlog.get_logger("filemapper")
 
 
 def is_simapro_csv_file(fp: Path) -> bool:
@@ -14,7 +16,7 @@ def is_simapro_csv_file(fp: Path) -> bool:
         ].project
         return True
     except:
-        logger.critical("Skipping {a} as we can't read it as a SimaPro file", a=fp.name)
+        logger.critical("Skipping file %s as we can't read it as a SimaPro file", fp.name)
         return False
 
 
