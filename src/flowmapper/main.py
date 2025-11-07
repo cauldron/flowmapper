@@ -2,7 +2,6 @@ import json
 import logging
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 from flowmapper.flow import Flow
 from flowmapper.flowmap import Flowmap
@@ -38,14 +37,14 @@ def flowmapper(
     format: OutputFormat,
     version: str = "1.0.0",
     default_transformations: bool = True,
-    transformations: Optional[list[Path | str]] = None,
+    transformations: list[Path | str] | None = None,
     unmatched_source: bool = True,
     unmatched_target: bool = True,
     matched_source: bool = False,
     matched_target: bool = False,
-    licenses: Optional[list] = None,
-    homepage: Optional[str] = None,
-    name: Optional[str] = None,
+    licenses: list | None = None,
+    homepage: str | None = None,
+    name: str | None = None,
 ) -> Flowmap:
     """
     Generate mappings between elementary flows lists

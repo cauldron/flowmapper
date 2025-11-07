@@ -23,7 +23,8 @@ def test_match_names_with_country_codes_extra_whitespace():
 def test_match_names_with_country_codes_no_match():
     s = Flow({"name": "Ammonia-NL", "context": "air", "unit": "kg"})
     t = Flow({"name": "Ammonia", "context": "air", "unit": "kg"})
-    assert match_names_with_location_codes(s, t, [], []) is None, f"Expected match_names_with_location_codes to return None, but got {match_names_with_location_codes(s, t, [], [])}"
+    result = match_names_with_location_codes(s, t, [], [])
+    assert result is None, f"Expected match_names_with_location_codes to return None, but got {result}"
 
 
 def test_match_names_with_country_codes_complicated_location():

@@ -58,7 +58,8 @@ def test_match_custom_names_with_location_codes_no_match():
     t = Flow(
         {"name": "water, unspecified natural origin", "context": "air", "unit": "kg"}
     )
-    assert match_custom_names_with_location_codes(s, t, [], []) is None, f"Expected match_custom_names_with_location_codes to return None, but got {match_custom_names_with_location_codes(s, t, [], [])}"
+    result = match_custom_names_with_location_codes(s, t, [], [])
+    assert result is None, f"Expected match_custom_names_with_location_codes to return None, but got {result}"
 
 
 def test_match_custom_names_with_location_codes_conversion():
