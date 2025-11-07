@@ -72,7 +72,9 @@ flowmapper = "flowmapper.cli:app"
 [tool.setuptools]
 license-files = ["LICENSE"]
 include-package-data = true
-packages = ["flowmapper", "flowmapper.extraction", "flowmapper.manual_matching"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "flowmapper.__version__"}
