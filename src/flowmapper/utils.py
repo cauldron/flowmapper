@@ -158,7 +158,12 @@ def apply_transformations(obj: dict, transformations: List[dict] | None) -> dict
                 obj["__missing__"] = True
                 break
         for transformation_obj in dataset.get("update", []):
-            if transformation_obj["source"] == obj:
+            source_to_match = lower if dataset.get("case-insensitive") else obj
+            if dataset.get("case-insensitive"):
+                source_transformation = rowercase(transformation_obj["source"]) if isinstance(transformation_obj["source"], dict) else transformation_obj["source"]
+            else:
+                source_transformation = transformation_obj["source"]
+            if matcher(source_transformation, source_to_match):
                 obj.update(transformation_obj["target"])
                 if "conversion_factor" in transformation_obj:
                     obj["conversion_factor"] = transformation_obj["conversion_factor"]

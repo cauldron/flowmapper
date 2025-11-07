@@ -37,7 +37,7 @@ from flowmapper.preferred_synonyms import (
 )
 def test_roman_numerals_should_match(text):
     """Test that valid roman numerals at the end of strings are detected."""
-    assert has_roman_numeral_at_end(text)
+    assert has_roman_numeral_at_end(text), f"Expected has_roman_numeral_at_end('{text}') to return True, but it returned False"
 
 
 @pytest.mark.parametrize(
@@ -61,7 +61,7 @@ def test_roman_numerals_should_match(text):
 )
 def test_non_roman_numerals_should_not_match(text):
     """Test that invalid or non-roman numerals are not detected."""
-    assert not has_roman_numeral_at_end(text)
+    assert not has_roman_numeral_at_end(text), f"Expected has_roman_numeral_at_end('{text}') to return False, but it returned True"
 
 
 @pytest.mark.parametrize(
@@ -82,7 +82,7 @@ def test_non_roman_numerals_should_not_match(text):
 )
 def test_number_patterns_should_match(text):
     """Test that valid number patterns at the end of strings are detected."""
-    assert has_number_pattern_at_end(text)
+    assert has_number_pattern_at_end(text), f"Expected has_number_pattern_at_end('{text}') to return True, but it returned False"
 
 
 @pytest.mark.parametrize(
@@ -110,7 +110,7 @@ def test_number_patterns_should_match(text):
 )
 def test_invalid_patterns_should_not_match(text):
     """Test that invalid patterns are not detected."""
-    assert not has_number_pattern_at_end(text)
+    assert not has_number_pattern_at_end(text), f"Expected has_number_pattern_at_end('{text}') to return False, but it returned True"
 
 
 def test_match_when_target_has_source_name_in_synonyms_with_roman_numeral():
@@ -133,7 +133,7 @@ def test_match_when_target_has_source_name_in_synonyms_with_roman_numeral():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_target_has_source_name_in_synonyms_with_number_pattern():
@@ -156,7 +156,7 @@ def test_match_when_target_has_source_name_in_synonyms_with_number_pattern():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_source_has_target_name_in_synonyms_with_roman_numeral():
@@ -179,7 +179,7 @@ def test_match_when_source_has_target_name_in_synonyms_with_roman_numeral():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_source_has_target_name_in_synonyms_with_number_pattern():
@@ -202,7 +202,7 @@ def test_match_when_source_has_target_name_in_synonyms_with_number_pattern():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_no_match_when_different_contexts():
@@ -225,7 +225,7 @@ def test_no_match_when_different_contexts():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result is None
+    assert result is None, f"Expected result to be None, but got {result}"
 
 
 def test_no_match_when_name_not_in_synonyms():
@@ -248,7 +248,7 @@ def test_no_match_when_name_not_in_synonyms():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result is None
+    assert result is None, f"Expected result to be None, but got {result}"
 
 
 def test_no_match_when_no_roman_numeral_or_number_pattern():
@@ -271,7 +271,7 @@ def test_no_match_when_no_roman_numeral_or_number_pattern():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result is None
+    assert result is None, f"Expected result to be None, but got {result}"
 
 
 def test_no_match_when_name_not_contained_in_other_name():
@@ -294,7 +294,7 @@ def test_no_match_when_name_not_contained_in_other_name():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result is None
+    assert result is None, f"Expected result to be None, but got {result}"
 
 
 def test_no_match_when_no_synonyms():
@@ -317,7 +317,7 @@ def test_no_match_when_no_synonyms():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result is None
+    assert result is None, f"Expected result to be None, but got {result}"
 
 
 def test_custom_comment():
@@ -343,7 +343,7 @@ def test_custom_comment():
         source, target, [], [], custom_comment
     )
 
-    assert result == {"comment": custom_comment}
+    assert result == {"comment": custom_comment}, f"Expected result to be {{'comment': '{custom_comment}'}}, but got {result}"
 
 
 def test_match_with_roman_numeral_and_plus_minus():
@@ -366,7 +366,7 @@ def test_match_with_roman_numeral_and_plus_minus():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_with_number_pattern_and_plus_minus():
@@ -388,5 +388,165 @@ def test_match_with_number_pattern_and_plus_minus():
     target = Flow(target_data)
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
+
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+
+
+def test_no_match_when_another_target_shares_same_synonym_different_name():
+    """Test that no match occurs when another target flow with a different name shares the same synonym."""
+    source_data = {
+        "name": "water",
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["h2o"],
+    }
+    target_data = {
+        "name": "water I",  # Ends with roman numeral
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["water", "aqua"],
+    }
+    other_target_data = {
+        "name": "water II",  # Different name, but also has "water" in synonyms
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["water", "h2o"],
+    }
+
+    source = Flow(source_data)
+    target = Flow(target_data)
+    other_target = Flow(other_target_data)
+
+    result = match_identical_names_in_preferred_synonyms(
+        source, target, [], [other_target]
+    )
+
+    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+
+
+def test_no_match_when_another_target_shares_same_synonym_number_pattern():
+    """Test that no match occurs when another target flow with a different name shares the same synonym (number pattern case)."""
+    source_data = {
+        "name": "carbon",
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["co2"],
+    }
+    target_data = {
+        "name": "carbon (2+)",  # Ends with number pattern
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["carbon", "c"],
+    }
+    other_target_data = {
+        "name": "carbon (3+)",  # Different name, but also has "carbon" in synonyms
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["carbon", "co2"],
+    }
+
+    source = Flow(source_data)
+    target = Flow(target_data)
+    other_target = Flow(other_target_data)
+
+    result = match_identical_names_in_preferred_synonyms(
+        source, target, [], [other_target]
+    )
+
+    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+
+
+def test_no_match_when_another_target_shares_same_synonym_reverse_case():
+    """Test that no match occurs when another target flow shares the same synonym in reverse case (source has target name in synonyms)."""
+    source_data = {
+        "name": "nitrogen II",  # Ends with roman numeral
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["nitrogen", "n2"],
+    }
+    target_data = {
+        "name": "nitrogen",
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["n2"],
+    }
+    other_target_data = {
+        "name": "nitrogen III",  # Different name, but also has "nitrogen" in synonyms
+        "context": ["air"],
+        "unit": "kg",
+        "synonyms": ["nitrogen", "n2"],
+    }
+
+    source = Flow(source_data)
+    target = Flow(target_data)
+    other_target = Flow(other_target_data)
+
+    result = match_identical_names_in_preferred_synonyms(
+        source, target, [], [other_target]
+    )
+
+    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+
+
+def test_match_when_another_target_shares_synonym_but_different_context():
+    """Test that match occurs when another target flow shares the same synonym but has a different context."""
+    source_data = {
+        "name": "water",
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["h2o"],
+    }
+    target_data = {
+        "name": "water I",  # Ends with roman numeral
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["water", "aqua"],
+    }
+    other_target_data = {
+        "name": "water II",  # Different name, has "water" in synonyms, but different context
+        "context": ["air"],  # Different context
+        "unit": "kg",
+        "synonyms": ["water", "h2o"],
+    }
+
+    source = Flow(source_data)
+    target = Flow(target_data)
+    other_target = Flow(other_target_data)
+
+    result = match_identical_names_in_preferred_synonyms(
+        source, target, [], [other_target]
+    )
+
+    assert result == {"comment": "Identical preferred synonyms"}
+
+
+def test_match_when_another_target_same_name_different_synonym():
+    """Test that match occurs when another target flow has the same name but doesn't share the same synonym."""
+    source_data = {
+        "name": "water",
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["h2o"],
+    }
+    target_data = {
+        "name": "water I",  # Ends with roman numeral
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["water", "aqua"],
+    }
+    other_target_data = {
+        "name": "water II",  # Different name, but doesn't have "water" in synonyms
+        "context": ["ground"],
+        "unit": "kg",
+        "synonyms": ["h2o", "liquid"],  # "water" not in synonyms
+    }
+
+    source = Flow(source_data)
+    target = Flow(target_data)
+    other_target = Flow(other_target_data)
+
+    result = match_identical_names_in_preferred_synonyms(
+        source, target, [], [other_target]
+    )
 
     assert result == {"comment": "Identical preferred synonyms"}

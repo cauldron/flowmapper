@@ -67,4 +67,4 @@ def test_match_non_ionic_state():
             "comment": "Non-ionic state if no better match",
         },
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"

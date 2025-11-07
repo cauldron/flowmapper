@@ -20,7 +20,7 @@ def test_match_custom_names_with_location_codes_extra():
         "location": "HU",
         "irrigation": True,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_custom_names_with_location_codes_no_extra():
@@ -29,7 +29,7 @@ def test_match_custom_names_with_location_codes_no_extra():
 
     actual = match_custom_names_with_location_codes(s, t, [], [])
     expected = {"comment": "Custom names with location code", "location": "HU"}
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_custom_names_with_location_codes_extra_whitespace_complicated():
@@ -50,7 +50,7 @@ def test_match_custom_names_with_location_codes_extra_whitespace_complicated():
         "location": "RER w/o DE+NL+NO",
         "irrigation": True,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_custom_names_with_location_codes_no_match():
@@ -58,7 +58,7 @@ def test_match_custom_names_with_location_codes_no_match():
     t = Flow(
         {"name": "water, unspecified natural origin", "context": "air", "unit": "kg"}
     )
-    assert match_custom_names_with_location_codes(s, t, [], []) is None
+    assert match_custom_names_with_location_codes(s, t, [], []) is None, f"Expected match_custom_names_with_location_codes to return None, but got {match_custom_names_with_location_codes(s, t, [], [])}"
 
 
 def test_match_custom_names_with_location_codes_conversion():
@@ -73,7 +73,7 @@ def test_match_custom_names_with_location_codes_conversion():
         "location": "HU",
         "conversion_factor": 0.001,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
     s = Flow({"name": "Water, well, HU", "context": "air", "unit": "cubic_meter"})
     t = Flow({"name": "Water, well, in ground", "context": "air", "unit": "kilogram"})
@@ -84,4 +84,4 @@ def test_match_custom_names_with_location_codes_conversion():
         "location": "HU",
         "conversion_factor": 1000.0,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"

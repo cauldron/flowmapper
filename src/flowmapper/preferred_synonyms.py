@@ -42,12 +42,32 @@ def match_identical_names_in_preferred_synonyms(
             has_roman_numeral_at_end(t.name.normalized)
             or has_number_pattern_at_end(t.name.normalized)
         ):
+            # Check if there's another target flow with a different name that shares the same synonym
+            for other_target in all_target_flows:
+                if (
+                    other_target is not t
+                    and other_target.name.normalized != t.name.normalized
+                    and other_target.synonyms
+                    and s.name in other_target.synonyms
+                    and other_target.context == s.context
+                ):
+                    return None
             return {"comment": comment}
     elif s.synonyms and t.name in s.synonyms and s.context == t.context:
         if t.name.normalized in s.name.normalized and (
             has_roman_numeral_at_end(s.name.normalized)
             or has_number_pattern_at_end(s.name.normalized)
         ):
+            # Check if there's another target flow with a different name that shares the same synonym
+            for other_target in all_target_flows:
+                if (
+                    other_target is not t
+                    and other_target.name.normalized != t.name.normalized
+                    and other_target.synonyms
+                    and t.name in other_target.synonyms
+                    and other_target.context == s.context
+                ):
+                    return None
             return {"comment": comment}
 
 

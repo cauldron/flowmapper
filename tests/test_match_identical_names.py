@@ -25,7 +25,7 @@ def test_match_identical_names(transformations):
     t = Flow(target, transformations)
 
     match = match_identical_names(s, t, [], [])
-    assert match
+    assert match, f"Expected match_identical_names to return a truthy value, but got {match}"
 
 
 def test_match_identical_names_jsonpath(transformations):
@@ -48,4 +48,4 @@ def test_match_identical_names_jsonpath(transformations):
     t = Flow(target, transformations)
 
     match = match_identical_names(s, t, [], [])
-    assert not match
+    assert not match, f"Expected match_identical_names to return a falsy value, but got {match}"

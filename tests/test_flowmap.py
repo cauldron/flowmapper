@@ -39,13 +39,13 @@ def test_flowmap_remove_duplicates(source_flows, target_flows):
     flowmap = Flowmap(source_flows, target_flows)
     actual = flowmap.source_flows
     # Added one duplicate on purpose
-    assert len(flowmap.source_flows) == 7
+    assert len(flowmap.source_flows) == 7, f"Expected len(flowmap.source_flows) to be 7, but got {len(flowmap.source_flows)}"
 
 
 def test_flowmap_mappings(source_flows, target_flows):
     flowmap = Flowmap(source_flows, target_flows)
     actual = flowmap.mappings[0]
-    assert list(actual.keys()) == [
+    expected_keys = [
         "from",
         "to",
         "conversion_factor",
@@ -53,7 +53,8 @@ def test_flowmap_mappings(source_flows, target_flows):
         "match_rule_priority",
         "info",
     ]
-    assert actual["match_rule"] == "match_identical_names"
+    assert list(actual.keys()) == expected_keys, f"Expected actual.keys() to be {expected_keys}, but got {list(actual.keys())}"
+    assert actual["match_rule"] == "match_identical_names", f"Expected actual['match_rule'] to be 'match_identical_names', but got {actual['match_rule']!r}"
 
 
 def test_flowmap_to_randonneur(source_flows, target_flows):
@@ -116,7 +117,7 @@ def test_flowmap_to_randonneur(source_flows, target_flows):
             },
         },
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_flowmap_to_randonneur_export(source_flows, target_flows, tmp_path):
@@ -182,7 +183,7 @@ def test_flowmap_to_randonneur_export(source_flows, target_flows, tmp_path):
             },
         },
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_flowmap_with_custom_rules_no_match(source_flows, target_flows):
@@ -192,7 +193,7 @@ def test_flowmap_with_custom_rules_no_match(source_flows, target_flows):
         rules=[match_emissions_with_suffix_ion],
     )
     actual = flowmap.mappings
-    assert actual == []
+    assert actual == [], f"Expected actual to be an empty list, but got {actual}"
 
 
 def test_flowmap_with_custom_rules_match(source_flows, target_flows):
@@ -245,7 +246,7 @@ def test_flowmap_with_custom_rules_match(source_flows, target_flows):
             },
         }
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_flowmap_to_glad(source_flows, target_flows):
@@ -304,17 +305,17 @@ def test_flowmap_nomatch_rule(source_flows, target_flows):
     nomatch = lambda flow: flow.context == "air/urban air close to ground"
     flowmap = Flowmap(source_flows, target_flows, nomatch_rules=[nomatch])
 
-    assert len(flowmap.source_flows_nomatch) == 1
-    assert flowmap.source_flows_nomatch[0].name == "1,4-Butanediol"
-    assert flowmap.source_flows_nomatch[0].context == "air/urban air close to ground"
-    assert flowmap.source_flows[0].name == "1,4-Butanediol"
-    assert flowmap.source_flows[0].context == "air"
+    assert len(flowmap.source_flows_nomatch) == 1, f"Expected len(flowmap.source_flows_nomatch) to be 1, but got {len(flowmap.source_flows_nomatch)}"
+    assert flowmap.source_flows_nomatch[0].name == "1,4-Butanediol", f"Expected flowmap.source_flows_nomatch[0].name to be '1,4-Butanediol', but got {flowmap.source_flows_nomatch[0].name!r}"
+    assert flowmap.source_flows_nomatch[0].context == "air/urban air close to ground", f"Expected flowmap.source_flows_nomatch[0].context to be 'air/urban air close to ground', but got {flowmap.source_flows_nomatch[0].context!r}"
+    assert flowmap.source_flows[0].name == "1,4-Butanediol", f"Expected flowmap.source_flows[0].name to be '1,4-Butanediol', but got {flowmap.source_flows[0].name!r}"
+    assert flowmap.source_flows[0].context == "air", f"Expected flowmap.source_flows[0].context to be 'air', but got {flowmap.source_flows[0].context!r}"
 
 
 def test_flowmap_nomatch_rule_false(source_flows, target_flows):
     nomatch = lambda flow: flow.context == "water"
     flowmap = Flowmap(source_flows, target_flows, nomatch_rules=[nomatch])
-    assert not flowmap.source_flows_nomatch
+    assert not flowmap.source_flows_nomatch, f"Expected flowmap.source_flows_nomatch to be falsy, but got {flowmap.source_flows_nomatch}"
 
 
 def test_flowmap_nomatch_multiple_rules(source_flows, target_flows):
@@ -322,10 +323,10 @@ def test_flowmap_nomatch_multiple_rules(source_flows, target_flows):
     nomatch2 = lambda flow: flow.context == "air"
     flowmap = Flowmap(source_flows, target_flows, nomatch_rules=[nomatch1, nomatch2])
 
-    assert len(flowmap.source_flows_nomatch) == 2
-    assert flowmap.source_flows_nomatch[0].name == "1,4-Butanediol"
-    assert flowmap.source_flows_nomatch[1].name == "1,4-Butanediol"
-    assert flowmap.source_flows[0].name == "Cesium-134"
+    assert len(flowmap.source_flows_nomatch) == 2, f"Expected len(flowmap.source_flows_nomatch) to be 2, but got {len(flowmap.source_flows_nomatch)}"
+    assert flowmap.source_flows_nomatch[0].name == "1,4-Butanediol", f"Expected flowmap.source_flows_nomatch[0].name to be '1,4-Butanediol', but got {flowmap.source_flows_nomatch[0].name!r}"
+    assert flowmap.source_flows_nomatch[1].name == "1,4-Butanediol", f"Expected flowmap.source_flows_nomatch[1].name to be '1,4-Butanediol', but got {flowmap.source_flows_nomatch[1].name!r}"
+    assert flowmap.source_flows[0].name == "Cesium-134", f"Expected flowmap.source_flows[0].name to be 'Cesium-134', but got {flowmap.source_flows[0].name!r}"
 
 
 def test_flowmap_mappings_ei_ei(target_flows):
@@ -395,7 +396,7 @@ def test_flowmap_mappings_ei_ei(target_flows):
             "comment": "Identical identifier",
         },
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_flowmap_mappings_ei39_ei310(ei39, ei310):
@@ -447,4 +448,4 @@ def test_flowmap_mappings_ei39_ei310(ei39, ei310):
             "comment": "Identical CAS numbers",
         }
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"

@@ -71,9 +71,27 @@ def map(
         typer.Option(help="Write original target matched flows into separate file?"),
     ] = False,
 ):
+    # Default generic mapping for JSON flow lists
+    generic_mapping = {
+        "expression language": "JSONPath",
+        "labels": {
+            "name": "name",
+            "context": "context",
+            "unit": "unit",
+            "identifier": "identifier",
+            "CAS number": "CAS number",
+            "location": "location",
+        },
+    }
+    
     return flowmapper(
         source=source,
         target=target,
+        mapping_source=generic_mapping,
+        mapping_target=generic_mapping,
+        source_id=source.stem,
+        target_id=target.stem,
+        contributors=[{"title": "flowmapper", "roles": ["author"], "path": "https://github.com/cmutel/flowmapper"}],
         output_dir=output_dir,
         format=format,
         default_transformations=default_transformations,

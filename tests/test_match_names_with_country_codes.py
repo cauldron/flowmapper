@@ -8,7 +8,7 @@ def test_match_names_with_country_codes():
 
     actual = match_names_with_location_codes(s, t, [], [])
     expected = {"comment": "Name matching with location code", "location": "NL"}
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_names_with_country_codes_extra_whitespace():
@@ -17,13 +17,13 @@ def test_match_names_with_country_codes_extra_whitespace():
 
     actual = match_names_with_location_codes(s, t, [], [])
     expected = {"comment": "Name matching with location code", "location": "NL"}
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_names_with_country_codes_no_match():
     s = Flow({"name": "Ammonia-NL", "context": "air", "unit": "kg"})
     t = Flow({"name": "Ammonia", "context": "air", "unit": "kg"})
-    assert match_names_with_location_codes(s, t, [], []) is None
+    assert match_names_with_location_codes(s, t, [], []) is None, f"Expected match_names_with_location_codes to return None, but got {match_names_with_location_codes(s, t, [], [])}"
 
 
 def test_match_names_with_country_codes_complicated_location():
@@ -35,7 +35,7 @@ def test_match_names_with_country_codes_complicated_location():
         "comment": "Name matching with location code",
         "location": "RER w/o DE+NL+NO",
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_names_with_country_codes_water_source_conversion():
@@ -48,7 +48,7 @@ def test_match_names_with_country_codes_water_source_conversion():
         "location": "NL",
         "conversion_factor": 0.001,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_match_names_with_country_codes_water_target_conversion():
@@ -61,4 +61,4 @@ def test_match_names_with_country_codes_water_target_conversion():
         "location": "NL",
         "conversion_factor": 1000.0,
     }
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"

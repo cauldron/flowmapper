@@ -25,7 +25,7 @@ def test_get_conversion_factor(transformations):
 
     actual = s.unit.conversion_factor(t.unit)
     expected = 1e-3
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_get_conversion_factor_water(transformations):
@@ -46,7 +46,7 @@ def test_get_conversion_factor_water(transformations):
     )
 
     actual = s.unit.conversion_factor(t.unit)
-    assert math.isnan(actual)
+    assert math.isnan(actual), f"Expected actual to be NaN, but got {actual}"
 
 
 def test_get_conversion_factor_m3y(transformations):
@@ -71,7 +71,7 @@ def test_get_conversion_factor_m3y(transformations):
 
     actual = s.unit.conversion_factor(t.unit)
     expected = 1
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_get_conversion_factor_m2a(transformations):
@@ -96,7 +96,7 @@ def test_get_conversion_factor_m2a(transformations):
 
     actual = s.unit.conversion_factor(t.unit)
     expected = 1
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"
 
 
 def test_get_conversion_factor_nan(transformations):
@@ -121,4 +121,4 @@ def test_get_conversion_factor_nan(transformations):
     )
 
     actual = s.unit.conversion_factor(t.unit)
-    assert math.isnan(actual)
+    assert math.isnan(actual), f"Expected actual to be NaN, but got {actual}"

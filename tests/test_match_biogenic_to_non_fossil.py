@@ -8,4 +8,4 @@ def test_match_biogenic_to_non_fossil():
 
     actual = match_biogenic_to_non_fossil(s, t, [], [])
     expected = {"comment": "Biogenic to non-fossil if no better match"}
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"

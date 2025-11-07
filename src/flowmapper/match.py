@@ -36,7 +36,15 @@ def match_identical_cas_numbers(
     s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment: str = "Identical CAS numbers"
 ):
     if (s.cas == t.cas) and (s.context == t.context):
-        return {"comment": comment}
+        # Only return a match if there is exactly one flow in all_target_flows
+        # that matches the same CAS and context (which should be t)
+        if not any(
+            flow
+            for flow in all_target_flows
+            if (s.cas == flow.cas) and (s.context == flow.context)
+            and flow is not t
+        ):
+            return {"comment": comment}
 
 
 def match_identical_names(s: Flow, t: Flow, all_source_flows: list[Flow], all_target_flows: list[Flow], comment="Identical names"):
