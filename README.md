@@ -33,7 +33,7 @@ ontology that `flowmapper` uses:
 * context: tuple[str], a hierarchical organization into environmental compartments, e.g. `("air", "urban air close to ground")`
 * unit: str, or complex type with a string representation, e.g. "kg"
 * sector-specific labels: str, or complex type with a string representation, a set of additional fields which can help identify or further specify a flow, e.g. CAS number 000110-63-4
-* synonyms: list[str], a list of alternative unique names for a substance, e.g. `["Butylene glycol", "butane-1,4-diol"]`
+* synonyms: list[str], a list of alternative unique names for a substance, e.g. `["Butylene glycol", "butane-1,4-diol"]`. Synonyms should not overlap.
 
 Flowmapper **assumes that the source and target lists are given in this format**; it comes with or plays well with conversion software for data formats like ecospold, FEDEFL, and SimaPro CSV.
 
