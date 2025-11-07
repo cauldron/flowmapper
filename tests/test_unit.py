@@ -8,7 +8,7 @@ from flowmapper.utils import apply_transformations, load_standard_transformation
 def test_equals_with_loaded_transformation():
     transformations = prepare_transformations(load_standard_transformations())
 
-    a = {"unit": "M2A"}
+    a = {"unit": "m2a"}
     a_t = apply_transformations(a, transformations)
     b = {"unit": "m2*year"}
     b_t = apply_transformations(b, transformations)

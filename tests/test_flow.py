@@ -62,7 +62,7 @@ def test_flow_from_sp_missing(transformations):
     Identifier: StringField with missing original value
     Name: StringField: 'Chrysotile' -> 'chrysotile'
     Context: ContextField: 'Raw/in ground' -> '('natural resource', 'in ground')'
-    Unit: UnitField: 'kg' -> 'kilogram'"""
+    Unit: UnitField: 'kg' -> 'kg'"""
     assert repr(flow) == expected, f"Expected repr(flow) to equal expected string, but got {repr(flow)!r} instead of {expected!r}"
     assert flow.context.original == "Raw/in ground", f"Expected flow.context.original to be 'Raw/in ground', but got {flow.context.original!r}"
     assert flow.context.normalized == ("natural resource", "in ground"), f"Expected flow.context.normalized to be ('natural resource', 'in ground'), but got {flow.context.normalized!r}"
