@@ -95,8 +95,8 @@ def read_migration_files(*filepaths: Union[str, Path]) -> List[dict]:
 
 
 def rm_parentheses_roman_numerals(s: str):
-    pattern = r"\(\s*([ivxlcdm]+)\s*\)"
-    return re.sub(pattern, r"\1", s)
+    pattern = r"\(\s*([ivxlcdmIVXLCDM]+)\s*\)"
+    return re.sub(pattern, r"\1", s, flags=re.IGNORECASE)
 
 
 def rm_roman_numerals_ionic_state(s: str):
