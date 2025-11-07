@@ -70,7 +70,9 @@ class UnitField(Generic[U]):
             return math.isfinite(self.conversion_factor(other))
 
     def conversion_factor(self, to: U | Any) -> float:
-        if self.normalized == to.normalized:
+        if not isinstance(to, UnitField):
+            result = float("nan")
+        elif isinstance(to, UnitField) and self.normalized == to.normalized:
             result = 1.0
         else:
             try:

@@ -30,11 +30,11 @@ class TestFormatMatchResult:
 
         result = format_match_result(source_flow, target_flow, conversion_factor, match_info)
 
-        assert result["source"] == source_flow.export
-        assert result["target"] == target_flow.export
-        assert result["conversion_factor"] == conversion_factor
-        assert result["comment"] == "Test match"
-        assert result["confidence"] == 0.95
+        assert result["source"] == source_flow.export, f"Expected result['source'] to equal source_flow.export, but got {result['source']}"
+        assert result["target"] == target_flow.export, f"Expected result['target'] to equal target_flow.export, but got {result['target']}"
+        assert result["conversion_factor"] == conversion_factor, f"Expected result['conversion_factor'] to equal {conversion_factor}, but got {result['conversion_factor']}"
+        assert result["comment"] == "Test match", f"Expected result['comment'] to equal 'Test match', but got {result['comment']!r}"
+        assert result["confidence"] == 0.95, f"Expected result['confidence'] to equal 0.95, but got {result['confidence']}"
 
     def test_format_match_result_merges_match_info(self):
         """Test that format_match_result properly merges match_info."""
@@ -47,8 +47,8 @@ class TestFormatMatchResult:
         match_info = {"comment": "Match", "extra_field": "value"}
         result = format_match_result(source_flow, target_flow, 2.5, match_info)
 
-        assert result["extra_field"] == "value"
-        assert result["conversion_factor"] == 2.5
+        assert result["extra_field"] == "value", f"Expected result['extra_field'] to equal 'value', but got {result['extra_field']!r}"
+        assert result["conversion_factor"] == 2.5, f"Expected result['conversion_factor'] to equal 2.5, but got {result['conversion_factor']}"
 
 
 class TestMatchIdenticalIdentifier:
@@ -64,7 +64,7 @@ class TestMatchIdenticalIdentifier:
 
         result = match_identical_identifier(source_flow, target_flow, [], [])
 
-        assert result == {"comment": "Identical identifier"}
+        assert result == {"comment": "Identical identifier"}, f"Expected result to be {{'comment': 'Identical identifier'}}, but got {result}"
 
     def test_match_identical_identifier_when_different(self):
         """Test match when identifiers are different."""
@@ -76,7 +76,7 @@ class TestMatchIdenticalIdentifier:
 
         result = match_identical_identifier(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_identical_identifier_when_source_missing(self):
         """Test match when source identifier is missing."""
@@ -88,7 +88,7 @@ class TestMatchIdenticalIdentifier:
 
         result = match_identical_identifier(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_identical_identifier_with_custom_comment(self):
         """Test match with custom comment."""
@@ -100,7 +100,7 @@ class TestMatchIdenticalIdentifier:
 
         result = match_identical_identifier(source_flow, target_flow, [], [], comment="Custom comment")
 
-        assert result == {"comment": "Custom comment"}
+        assert result == {"comment": "Custom comment"}, f"Expected result to be {{'comment': 'Custom comment'}}, but got {result}"
 
 
 class TestMatchIdenticalNames:
@@ -118,7 +118,7 @@ class TestMatchIdenticalNames:
 
         result = match_identical_names(source_flow, target_flow, [], [])
 
-        assert result == {"comment": "Identical names"}
+        assert result == {"comment": "Identical names"}, f"Expected result to be {{'comment': 'Identical names'}}, but got {result}"
 
     def test_match_identical_names_when_names_different(self):
         """Test match when names are different."""
@@ -132,7 +132,7 @@ class TestMatchIdenticalNames:
 
         result = match_identical_names(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_identical_names_when_contexts_different(self):
         """Test match when contexts are different."""
@@ -146,7 +146,7 @@ class TestMatchIdenticalNames:
 
         result = match_identical_names(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
 
 class TestMatchIdenticalNamesWithoutCommas:
@@ -164,7 +164,7 @@ class TestMatchIdenticalNamesWithoutCommas:
 
         result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
-        assert result == {"comment": "Identical names when commas removed"}
+        assert result == {"comment": "Identical names when commas removed"}, f"Expected result to be {{'comment': 'Identical names when commas removed'}}, but got {result}"
 
     def test_match_identical_names_without_commas_when_different(self):
         """Test match when names are different even after removing commas."""
@@ -178,7 +178,7 @@ class TestMatchIdenticalNamesWithoutCommas:
 
         result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_identical_names_without_commas_when_contexts_different(self):
         """Test match when contexts are different."""
@@ -192,7 +192,7 @@ class TestMatchIdenticalNamesWithoutCommas:
 
         result = match_identical_names_without_commas(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
 
 class TestMatchResourcesWithWrongSubcontext:
@@ -210,7 +210,7 @@ class TestMatchResourcesWithWrongSubcontext:
 
         result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
-        assert result == {"comment": "Resources with identical name but wrong subcontext"}
+        assert result == {"comment": "Resources with identical name but wrong subcontext"}, f"Expected result to be {{'comment': 'Resources with identical name but wrong subcontext'}}, but got {result}"
 
     def test_match_resources_with_wrong_subcontext_when_names_different(self):
         """Test match when names are different."""
@@ -224,7 +224,7 @@ class TestMatchResourcesWithWrongSubcontext:
 
         result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_resources_with_wrong_subcontext_when_not_resources(self):
         """Test match when flows are not resources."""
@@ -238,7 +238,7 @@ class TestMatchResourcesWithWrongSubcontext:
 
         result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
     def test_match_resources_with_wrong_subcontext_case_insensitive(self):
         """Test match with case-insensitive resource category matching."""
@@ -252,7 +252,7 @@ class TestMatchResourcesWithWrongSubcontext:
 
         result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
-        assert result == {"comment": "Resources with identical name but wrong subcontext"}
+        assert result == {"comment": "Resources with identical name but wrong subcontext"}, f"Expected result to be {{'comment': 'Resources with identical name but wrong subcontext'}}, but got {result}"
 
     def test_match_resources_with_wrong_subcontext_one_not_resource(self):
         """Test match when only one flow is a resource."""
@@ -266,5 +266,5 @@ class TestMatchResourcesWithWrongSubcontext:
 
         result = match_resources_with_wrong_subcontext(source_flow, target_flow, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 

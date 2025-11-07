@@ -517,7 +517,7 @@ def test_match_when_another_target_shares_synonym_but_different_context():
         source, target, [], [other_target]
     )
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_another_target_same_name_different_synonym():
@@ -549,4 +549,4 @@ def test_match_when_another_target_same_name_different_synonym():
         source, target, [], [other_target]
     )
 
-    assert result == {"comment": "Identical preferred synonyms"}
+    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"

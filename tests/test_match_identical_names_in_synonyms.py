@@ -29,4 +29,5 @@ def test_match_identical_names_in_synonyms(transformations):
     s = Flow(source, transformations)
     t = Flow(target, transformations)
 
-    assert match_identical_names_in_synonyms(s, t, [], [])
+    result = match_identical_names_in_synonyms(s, t, [], [])
+    assert result, f"Expected match_identical_names_in_synonyms to return a truthy value, but got {result}"

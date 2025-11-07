@@ -408,7 +408,7 @@ class TestMatchEmissionsWithSuffixIon:
 
         result = match_emissions_with_suffix_ion(s, t, [], [])
 
-        assert result is None
+        assert result is None, f"Expected result to be None, but got {result}"
 
 
 class TestMatchRules:
@@ -474,12 +474,12 @@ class TestMatchRules:
         rule_names = [rule.__name__ for rule in rules]
 
         # match_identical_identifier should be first
-        assert rule_names[0] == "match_identical_identifier"
+        assert rule_names[0] == "match_identical_identifier", f"Expected rule_names[0] to be 'match_identical_identifier', but got {rule_names[0]!r}"
 
         # match_identical_names should be early
-        assert "match_identical_names" in rule_names[:5]
+        assert "match_identical_names" in rule_names[:5], f"Expected 'match_identical_names' to be in rule_names[:5], but got {rule_names[:5]}"
 
         # More complex matches should be later
-        assert "match_custom_names_with_location_codes" in rule_names
-        assert "match_biogenic_to_non_fossil" in rule_names[-5:]
+        assert "match_custom_names_with_location_codes" in rule_names, f"Expected 'match_custom_names_with_location_codes' to be in rule_names, but it was not"
+        assert "match_biogenic_to_non_fossil" in rule_names[-5:], f"Expected 'match_biogenic_to_non_fossil' to be in rule_names[-5:], but got {rule_names[-5:]}"
 

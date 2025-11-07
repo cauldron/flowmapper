@@ -81,7 +81,7 @@ def test_transform_flow_without_default_transformations():
             "comment": "Identical names",
         },
     ]
-    assert actual == expected
+    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_transform_flow_with_default_transformations(transformations):
