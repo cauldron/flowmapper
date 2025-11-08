@@ -1,6 +1,5 @@
 """Unit tests for StringField class."""
 
-import pytest
 
 from flowmapper.string_field import StringField
 
@@ -11,24 +10,33 @@ class TestStringFieldInitialization:
     def test_init_with_value(self):
         """Test initialization with a value."""
         sf = StringField("test")
-        assert sf.value == "test", f"Expected sf.value to be 'test', but got {sf.value!r}"
-        assert sf.use_lowercase is True, f"Expected sf.use_lowercase to be True, but got {sf.use_lowercase}"
-
-    def test_init_with_value_and_use_lowercase_false(self):
-        """Test initialization with use_lowercase=False."""
-        sf = StringField("TEST", use_lowercase=False)
-        assert sf.value == "TEST", f"Expected sf.value to be 'TEST', but got {sf.value!r}"
-        assert sf.use_lowercase is False, f"Expected sf.use_lowercase to be False, but got {sf.use_lowercase}"
+        assert sf == "test", f"Expected sf to equal 'test', but got {sf!r}"
+        from collections import UserString
+        assert isinstance(sf, UserString), f"Expected sf to be an instance of UserString, but got {type(sf)}"
+        assert not isinstance(sf, str), f"Expected sf to not be an instance of str (UserString is not a subclass), but got {type(sf)}"
 
     def test_init_with_empty_string(self):
         """Test initialization with empty string."""
         sf = StringField("")
-        assert sf.value == "", f"Expected sf.value to be '', but got {sf.value!r}"
+        # Empty StringField doesn't equal empty string due to __eq__ implementation
+        assert sf != "", f"Expected sf to not equal '', but they are equal (sf={sf!r})"
+        assert sf.data == "", f"Expected sf.data to be '', but got {sf.data!r}"
 
     def test_init_with_whitespace(self):
         """Test initialization with whitespace."""
         sf = StringField("  test  ")
-        assert sf.value == "  test  ", f"Expected sf.value to be '  test  ', but got {sf.value!r}"
+        # Equality normalizes the other string, so "  test  " becomes "test"
+        assert sf == "  test  ", f"Expected sf to equal '  test  ', but got {sf!r}"
+        assert sf.data == "  test  ", f"Expected sf.data to be '  test  ', but got {sf.data!r}"
+
+    def test_inherits_from_userstring(self):
+        """Test that StringField inherits from UserString."""
+        sf = StringField("test")
+        from collections import UserString
+        assert isinstance(sf, UserString), f"Expected sf to be an instance of UserString, but got {type(sf)}"
+        assert issubclass(StringField, UserString), "Expected StringField to be a subclass of UserString, but it is not"
+        # UserString is not a subclass of str
+        assert not isinstance(sf, str), f"Expected sf to not be an instance of str (UserString is not a subclass), but got {type(sf)}"
 
 
 class TestStringFieldNormalize:
@@ -38,28 +46,27 @@ class TestStringFieldNormalize:
         """Test normalize with default lowercase=True."""
         sf = StringField("TEST")
         normalized = sf.normalize()
-        assert normalized.value == "test", f"Expected normalized.value to be 'test', but got {normalized.value!r}"
-        assert normalized.use_lowercase is True, f"Expected normalized.use_lowercase to be True, but got {normalized.use_lowercase}"
+        assert normalized == "test", f"Expected normalized to equal 'test', but got {normalized!r}"
+        assert isinstance(normalized, StringField), f"Expected normalized to be a StringField instance, but got {type(normalized)}"
 
     def test_normalize_with_lowercase_false(self):
-        """Test normalize with use_lowercase=False."""
-        sf = StringField("TEST", use_lowercase=False)
-        normalized = sf.normalize()
-        assert normalized.value == "TEST", f"Expected normalized.value to be 'TEST', but got {normalized.value!r}"
-        assert normalized.use_lowercase is False, f"Expected normalized.use_lowercase to be False, but got {normalized.use_lowercase}"
+        """Test normalize with lowercase=False."""
+        sf = StringField("TEST")
+        normalized = sf.normalize(lowercase=False)
+        assert normalized == "TEST", f"Expected normalized to equal 'TEST', but got {normalized!r}"
 
     def test_normalize_with_whitespace(self):
         """Test normalize with whitespace."""
         sf = StringField("  test  ")
         normalized = sf.normalize()
-        assert normalized.value == "test", f"Expected normalized.value to be 'test', but got {normalized.value!r}"
+        assert normalized == "test", f"Expected normalized to equal 'test', but got {normalized!r}"
 
     def test_normalize_returns_new_instance(self):
         """Test that normalize returns a new instance."""
         sf = StringField("TEST")
         normalized = sf.normalize()
         assert normalized is not sf, "Expected normalize() to return a new instance, but it returned the same instance"
-        assert sf.value == "TEST", f"Expected original sf.value to remain 'TEST', but got {sf.value!r}"
+        assert sf == "TEST", f"Expected original sf to remain 'TEST', but got {sf!r}"
 
 
 class TestStringFieldEq:
@@ -77,17 +84,11 @@ class TestStringFieldEq:
         sf2 = StringField("other")
         assert sf1 != sf2, f"Expected sf1 to not equal sf2, but they are equal (sf1={sf1!r}, sf2={sf2!r})"
 
-    def test_eq_with_string_lowercase(self):
-        """Test equality with string when use_lowercase=True."""
-        sf = StringField("TEST", use_lowercase=True)
+    def test_eq_with_string(self):
+        """Test equality with string."""
+        sf = StringField("test")
         assert sf == "test", f"Expected sf to equal 'test', but they are not equal (sf={sf!r})"
-        assert sf == "TEST", f"Expected sf to equal 'TEST', but they are not equal (sf={sf!r})"
-
-    def test_eq_with_string_no_lowercase(self):
-        """Test equality with string when use_lowercase=False."""
-        sf = StringField("TEST", use_lowercase=False)
-        assert sf == "TEST", f"Expected sf to equal 'TEST', but they are not equal (sf={sf!r})"
-        assert sf != "test", f"Expected sf to not equal 'test', but they are equal (sf={sf!r})"
+        assert sf != "other", f"Expected sf to not equal 'other', but they are equal (sf={sf!r})"
 
     def test_eq_with_empty_stringfield(self):
         """Test equality with empty StringField."""
@@ -102,59 +103,32 @@ class TestStringFieldEq:
         assert sf != None, f"Expected sf to not equal None, but they are equal (sf={sf!r})"
         assert sf != [], f"Expected sf to not equal [], but they are equal (sf={sf!r})"
 
-    def test_eq_with_stringfield_different_lowercase_setting(self):
-        """Test equality between StringFields with different use_lowercase settings."""
-        sf1 = StringField("TEST", use_lowercase=True)
-        sf2 = StringField("TEST", use_lowercase=False)
-        # They should be equal because they have the same value
-        assert sf1 == sf2, f"Expected sf1 to equal sf2, but they are not equal (sf1={sf1!r}, sf2={sf2!r})"
 
+class TestStringFieldStrBehavior:
+    """Test StringField string behavior (inherited from str)."""
 
-class TestStringFieldBool:
-    """Test StringField __bool__ method."""
+    def test_str_operations(self):
+        """Test that StringField behaves like a string."""
+        sf = StringField("test")
+        assert len(sf) == 4, f"Expected len(sf) to be 4, but got {len(sf)}"
+        assert sf.upper() == "TEST", f"Expected sf.upper() to be 'TEST', but got {sf.upper()!r}"
+        assert sf.lower() == "test", f"Expected sf.lower() to be 'test', but got {sf.lower()!r}"
+        assert sf.startswith("te"), f"Expected sf.startswith('te') to be True, but got {sf.startswith('te')}"
 
     def test_bool_with_non_empty_string(self):
-        """Test __bool__ with non-empty string."""
+        """Test __bool__ with non-empty string (inherited from str)."""
         sf = StringField("test")
         assert bool(sf) is True, f"Expected bool(sf) to be True, but got {bool(sf)}"
 
     def test_bool_with_empty_string(self):
-        """Test __bool__ with empty string."""
+        """Test __bool__ with empty string (inherited from str)."""
         sf = StringField("")
         assert bool(sf) is False, f"Expected bool(sf) to be False, but got {bool(sf)}"
 
     def test_bool_with_whitespace(self):
-        """Test __bool__ with whitespace-only string."""
+        """Test __bool__ with whitespace-only string (inherited from str)."""
         sf = StringField("   ")
         assert bool(sf) is True, f"Expected bool(sf) to be True for whitespace, but got {bool(sf)}"
-
-
-class TestStringFieldRepr:
-    """Test StringField __repr__ method."""
-
-    def test_repr_with_value(self):
-        """Test __repr__ with a value."""
-        sf = StringField("test")
-        expected = "StringField: 'test'"
-        assert repr(sf) == expected, f"Expected repr(sf) to be {expected!r}, but got {repr(sf)!r}"
-
-    def test_repr_with_empty_string(self):
-        """Test __repr__ with empty string."""
-        sf = StringField("")
-        expected = "StringField with missing value"
-        assert repr(sf) == expected, f"Expected repr(sf) to be {expected!r}, but got {repr(sf)!r}"
-
-    def test_repr_with_special_characters(self):
-        """Test __repr__ with special characters."""
-        sf = StringField("test 'value'")
-        expected = "StringField: 'test 'value''"
-        assert repr(sf) == expected, f"Expected repr(sf) to be {expected!r}, but got {repr(sf)!r}"
-
-    def test_repr_with_unicode(self):
-        """Test __repr__ with unicode characters."""
-        sf = StringField("café")
-        expected = "StringField: 'café'"
-        assert repr(sf) == expected, f"Expected repr(sf) to be {expected!r}, but got {repr(sf)!r}"
 
 
 class TestStringFieldEdgeCases:
@@ -164,16 +138,16 @@ class TestStringFieldEdgeCases:
         """Test that original value is preserved after normalize."""
         sf = StringField("ORIGINAL")
         normalized = sf.normalize()
-        assert sf.value == "ORIGINAL", f"Expected original sf.value to remain 'ORIGINAL', but got {sf.value!r}"
-        assert normalized.value == "original", f"Expected normalized.value to be 'original', but got {normalized.value!r}"
+        assert sf == "ORIGINAL", f"Expected original sf to remain 'ORIGINAL', but got {sf!r}"
+        assert normalized == "original", f"Expected normalized to be 'original', but got {normalized!r}"
 
     def test_multiple_normalize_calls(self):
         """Test multiple normalize calls."""
         sf = StringField("  TEST  ")
         norm1 = sf.normalize()
         norm2 = norm1.normalize()
-        assert norm1.value == "test", f"Expected norm1.value to be 'test', but got {norm1.value!r}"
-        assert norm2.value == "test", f"Expected norm2.value to be 'test', but got {norm2.value!r}"
+        assert norm1 == "test", f"Expected norm1 to be 'test', but got {norm1!r}"
+        assert norm2 == "test", f"Expected norm2 to be 'test', but got {norm2!r}"
 
     def test_equality_chain(self):
         """Test equality chain with multiple StringFields."""
@@ -182,10 +156,21 @@ class TestStringFieldEdgeCases:
         sf3 = StringField("test")
         assert sf1 == sf2 == sf3, f"Expected all StringFields to be equal, but they are not (sf1={sf1!r}, sf2={sf2!r}, sf3={sf3!r})"
 
-    def test_equality_with_normalized(self):
-        """Test equality between original and normalized StringField."""
-        sf1 = StringField("TEST")
-        sf2 = sf1.normalize()
-        # They should be equal because they have the same value after normalization
-        assert sf1 == sf2, f"Expected sf1 to equal normalized sf2, but they are not equal (sf1={sf1!r}, sf2={sf2!r})"
+    def test_normalize_with_different_lowercase_settings(self):
+        """Test normalize with different lowercase settings."""
+        sf = StringField("TEST")
+        norm1 = sf.normalize(lowercase=True)
+        norm2 = sf.normalize(lowercase=False)
+        assert norm1 == "test", f"Expected norm1 to be 'test', but got {norm1!r}"
+        assert norm2 == "TEST", f"Expected norm2 to be 'TEST', but got {norm2!r}"
+
+    def test_string_concatenation(self):
+        """Test that StringField can be concatenated like a string."""
+        sf1 = StringField("hello")
+        sf2 = StringField("world")
+        result = sf1 + " " + sf2
+        assert result == "hello world", f"Expected result to be 'hello world', but got {result!r}"
+        # UserString concatenation returns a new instance of the same class
+        assert isinstance(result, StringField), f"Expected result to be a StringField instance, but got {type(result)}"
+        assert result.data == "hello world", f"Expected result.data to be 'hello world', but got {result.data!r}"
 
