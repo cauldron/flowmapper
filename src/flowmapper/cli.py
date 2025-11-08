@@ -96,7 +96,7 @@ def map(
     if profile:
         if Profiler is None:
             raise ImportError("`pyinstrument` not installed")
-        profiler = Profiler()
+        profiler = Profiler(interval=0.01)
         profiler.start()
 
     result = flowmapper(
