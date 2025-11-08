@@ -1,4 +1,5 @@
-from typing import List
+from dataclasses import dataclass, field
+from typing import Self
 
 from flowmapper.cas import CASField
 from flowmapper.context import ContextField
@@ -8,11 +9,36 @@ from flowmapper.unit import UnitField
 from flowmapper.utils import apply_transformations, generate_flow_id
 
 
+@dataclass
+class Flow:
+    name: StringField
+    unit: UnitField
+    content: ContextField
+    identifier: StringField | None = None
+    location: StringField | None = None
+    oxidation_state: OxidationState | None = None
+    cas: CASField | None = None
+    synonyms: StringList = field(default_factory=lambda: StringList([]))
+
+
+    @classmethod
+    def from_dict(cls, data: dict) -> Self:
+        return cls(
+            name=StringField(data["name"]),
+        )
+
+
+@dataclass
+class VersionedFlow:
+    original: Flow
+    normalized: Flow
+
+
 class Flow:
     def __init__(
         self,
         data: dict,
-        transformations: List[dict] | None = None,
+        transformations: list[dict] | None = None,
     ):
         # Hash of sorted dict keys and values
         self.id = generate_flow_id(data)
