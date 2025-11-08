@@ -12,7 +12,7 @@ def test_match_identical_names_in_synonyms(transformations):
     target = {
         "identifier": "8570c45a-8c78-4709-9b8f-fb88314d9e9d",
         "chemical formula": "H8N2O4S",
-        "CAS number": "007783-20-2",
+        "cas_number": "007783-20-2",
         "name": "Ammonium sulfate",
         "unit": "kg",
         "context": ["water", "unspecified"],

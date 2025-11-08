@@ -1,7 +1,7 @@
 [
   {
     "identifier": "09db39be-d9a6-4fc3-8d25-1f80b23e9131",
-    "CAS number": "000110-63-4",
+    "cas_number": "000110-63-4",
     "name": "1,4-Butanediol",
     "unit": "kg",
     "context": ["air", "unspecified"],
@@ -9,7 +9,7 @@
   },
   {
     "identifier": "0f440cc0-0f74-446d-99d6-8ff0e97a2444",
-    "CAS number": "007664-41-7",
+    "cas_number": "007664-41-7",
     "name": "Ammonia",
     "unit": "kg",
     "context": ["air", "non-urban air or from high stacks"]

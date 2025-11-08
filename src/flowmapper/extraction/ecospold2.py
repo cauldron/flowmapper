@@ -20,7 +20,7 @@ def reformat(obj: dict) -> dict:
     elif obj.get("synonym") and "#text" in obj["synonym"]:
         data["synonyms"] = [obj["synonym"]["#text"]]
     if "@casNumber" in obj:
-        data["CAS number"] = obj["@casNumber"]
+        data["cas_number"] = obj["@casNumber"]
     return data
 
 

@@ -6,7 +6,7 @@ from flowmapper.match import match_identical_cas_numbers
 def test_match_identical_cas_numbers(transformations):
     source = {
         "name": "1-Propanol",
-        "CAS number": "000071-23-8",
+        "cas_number": "000071-23-8",
         "checmical formula": "",
         "Synonyms": "1-Propanol",
         "unit": "kg",
@@ -18,7 +18,7 @@ def test_match_identical_cas_numbers(transformations):
 
     target = {
         "name": "Propanol",
-        "CAS number": "000071-23-8",
+        "cas_number": "000071-23-8",
         "checmical formula": "",
         "Synonyms": "propan-1-ol, 1-propanol, propyl alcohol, n-propanol, n-propyl alcohol",
         "unit": "kg",
@@ -42,7 +42,7 @@ def test_match_identical_cas_numbers(transformations):
 def test_match_missing_cas_numbers(transformations):
     source = {
         "name": "1-Propanol",
-        "CAS number": "",
+        "cas_number": "",
         "checmical formula": "",
         "synonyms": "1-Propanol",
         "unit": "kg",
@@ -54,7 +54,7 @@ def test_match_missing_cas_numbers(transformations):
 
     target = {
         "name": "Propanol",
-        "CAS number": "",
+        "cas_number": "",
         "checmical formula": "",
         "synonyms": "propan-1-ol, 1-propanol, propyl alcohol, n-propanol, n-propyl alcohol",
         "unit": "kg",
@@ -78,7 +78,7 @@ def test_match_identical_cas_numbers_multiple_matches(transformations):
     """Test that match doesn't occur when multiple flows have same CAS and context."""
     source = {
         "name": "1-Propanol",
-        "CAS number": "000071-23-8",
+        "cas_number": "000071-23-8",
         "checmical formula": "",
         "Synonyms": "1-Propanol",
         "unit": "kg",
@@ -90,7 +90,7 @@ def test_match_identical_cas_numbers_multiple_matches(transformations):
 
     target1 = {
         "name": "Propanol",
-        "CAS number": "000071-23-8",
+        "cas_number": "000071-23-8",
         "checmical formula": "",
         "Synonyms": "propan-1-ol, 1-propanol, propyl alcohol, n-propanol, n-propyl alcohol",
         "unit": "kg",
@@ -106,7 +106,7 @@ def test_match_identical_cas_numbers_multiple_matches(transformations):
 
     target2 = {
         "name": "1-Propanol, alternative",
-        "CAS number": "000071-23-8",
+        "cas_number": "000071-23-8",
         "checmical formula": "",
         "Synonyms": "propanol",
         "unit": "kg",

@@ -1,4 +1,3 @@
-from deepdiff import DeepDiff
 
 from flowmapper.flow import Flow
 from flowmapper.match import match_identical_names
@@ -15,7 +14,7 @@ def test_match_identical_names(transformations):
 
     target = {
         "name": "Carbon dioxide, in air",
-        "CAS number": "000124-38-9",
+        "cas_number": "000124-38-9",
         "unit": "kg",
         "context": "natural resource/in air",
         "identifier": "cc6a1abb-b123-4ca6-8f16-38209df609be",
@@ -38,7 +37,7 @@ def test_match_identical_names_jsonpath(transformations):
 
     target = {
         "identifier": "cc6a1abb-b123-4ca6-8f16-38209df609be",
-        "CAS number": "000124-38-9",
+        "cas_number": "000124-38-9",
         "name": "Carbon dioxide, in air",
         "unit": "kg",
         "context": ["natural resource", "in air"],

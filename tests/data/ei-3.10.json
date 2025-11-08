@@ -1,7 +1,7 @@
 [
   {
     "identifier": "b6b4201e-0561-5992-912f-e729fbf04e41",
-    "CAS number": "002008-39-1",
+    "cas_number": "002008-39-1",
     "name": "2,4-D dimethylamine salt",
     "unit": "kg",
     "context": ["air", "non-urban air or from high stacks"]

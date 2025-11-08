@@ -42,7 +42,7 @@ def test_flow_from_sp_categories(transformations):
         "name": "Carbon dioxide, in air",
         "context": "resources/in air",
         "unit": "kg",
-        "CAS number": "000124-38-9",
+        "cas_number": "000124-38-9",
     }
 
     flow = Flow(data, transformations)
@@ -71,7 +71,7 @@ def test_flow_from_sp_missing(transformations):
 def test_flow_cas():
     data = {
         "name": "Actinium",
-        "CAS number": "007440-34-8",
+        "cas_number": "007440-34-8",
         "chemical formula": "Ac\u007f",
         "synonyms": "Actinium",
         "unit": "kg",
@@ -85,7 +85,7 @@ def test_flow_cas():
         "name": "name",
         "context": "context",
         "unit": "unit",
-        "CAS number": "CAS No",
+        "cas_number": "CAS No",
     }
 
     flow = Flow(data)
@@ -96,7 +96,7 @@ def test_flow_cas():
 def test_flow_from_ei():
     data = {
         "name": "1,3-Dioxolan-2-one",
-        "CAS number": "000096-49-1",
+        "cas_number": "000096-49-1",
         "chemical formula": "",
         "synonyms": "",
         "unit": "kg",
@@ -116,7 +116,7 @@ def test_flow_from_ei():
 def test_flow_with_synonyms(transformations):
     data = {
         "identifier": "f0cc0453-32c0-48f5-b8d4-fc87d100b8d9",
-        "CAS number": "000078-79-5",
+        "cas_number": "000078-79-5",
         "name": "Isoprene",
         "unit": "kg",
         "context": ["air", "low population density, long-term"],

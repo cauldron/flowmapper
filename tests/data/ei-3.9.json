@@ -2,7 +2,7 @@
   {
     "identifier": "4f777e05-70f9-4a18-a406-d8232325073f",
     "formula": "C10H13Cl2NO3",
-    "CAS number": "002008-39-1",
+    "cas_number": "002008-39-1",
     "name": "2,4-D amines",
     "unit": "kg",
     "context": ["air", "non-urban air or from high stacks"],

@@ -37,7 +37,7 @@ def test_get_conversion_factor_water(transformations):
     t = Flow(
         {
             "identifier": "2404b41a-2eed-4e9d-8ab6-783946fdf5d6",
-            "CAS number": "007732-18-5",
+            "cas_number": "007732-18-5",
             "name": "Water",
             "unit": "m3",
             "context": ["water", "unspecified"],
@@ -112,7 +112,7 @@ def test_get_conversion_factor_nan(transformations):
     t = Flow(
         {
             "identifier": "74a0aabb-e11b-4f3b-8921-45e447b33393",
-            "CAS number": "013982-63-3",
+            "cas_number": "013982-63-3",
             "name": "Radium-226",
             "unit": "kBq",
             "context": ["water", "ocean"],

@@ -88,7 +88,7 @@ def map(
             "context": "context",
             "unit": "unit",
             "identifier": "identifier",
-            "CAS number": "CAS number",
+            "cas_number": "cas_number",
             "location": "location",
         },
     }

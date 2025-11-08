@@ -1,7 +1,5 @@
 import json
 
-import pandas as pd
-import pytest
 from typer.testing import CliRunner
 
 from flowmapper.cli import app
@@ -87,7 +85,7 @@ def test_matched_flows(tmp_path):
 
     expected = [
         {
-            "CAS number": "110-63-4",
+            "cas_number": "110-63-4",
             "context": "air",
             "name": "1,4-Butanediol",
             "unit": "kg",
@@ -118,13 +116,13 @@ def test_matched_flows_with_randonneur_transformations(tmp_path):
 
     expected = [
         {
-            "CAS number": "110-63-4",
+            "cas_number": "110-63-4",
             "context": "air",
             "name": "1,4-Butanediol",
             "unit": "kg",
         },
         {
-            "CAS number": "110-63-4",
+            "cas_number": "110-63-4",
             "context": "air/high. pop.",
             "name": "1,4-Butanediol",
             "unit": "kg",
@@ -161,13 +159,13 @@ def test_matched_flows_with_multiple_randonneur_transformations(tmp_path):
             "name": "1,4-Butanediol",
             "unit": "kg",
             "context": "air",
-            "CAS number": "110-63-4",
+            "cas_number": "110-63-4",
         },
         {
             "name": "1,4-Butanediol",
             "unit": "kg",
             "context": "air/high. pop.",
-            "CAS number": "110-63-4",
+            "cas_number": "110-63-4",
         },
         {"name": "Ammonia, FR", "unit": "kg", "context": "air/low. pop."},
         {"name": "Ammonia, as N", "unit": "kg", "context": "air/low. pop."},
