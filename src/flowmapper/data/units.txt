@@ -9,9 +9,15 @@ square_meter_year = m2 * year = m2y = m2a
 cubic_meter_year = m3 * year = m3y = m3a
 
 # Gas volume at given conditions
-[gas_volume] = [pressure] * [volume]
-standard_cubic_meter = atmosphere * (meter ** 3) = sm3
-normal_cubic_meter = 1.0732 * standard_cubic_meter = nm3
+# https://en.wikipedia.org/wiki/Standard_temperature_and_pressure
+# 273.15 K (0 °C) and an absolute pressure of exactly 1 bar (100 kPa)
+standard_cubic_meter = 44.095 * mole = sm3
+# https://www.sciencedirect.com/topics/engineering/cubic-metre
+# There are multiple definitions for this but as we only care about natural gas, using the
+# Gas Industry Standards Board seems reasonable.
+# 288.15 K (15 °C) and an absolute pressure of exactly 1 atm (101.325 kPa)
+# See also https://github.com/qudt/qudt-public-repo/issues/1227
+normal_cubic_meter = 41.739 * mole = nm3
 
 # Livestock
 livestock_unit = [livestock] = LU

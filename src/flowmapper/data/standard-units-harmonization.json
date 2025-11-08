@@ -53,6 +53,14 @@
     },
     {
       "source": {
+        "unit": "GJ"
+      },
+      "target": {
+        "unit": "gigajoule"
+      }
+    },
+    {
+      "source": {
         "unit": "h"
       },
       "target": {
@@ -78,6 +86,30 @@
     {
       "source": {
         "unit": "kbq"
+      },
+      "target": {
+        "unit": "kilobecquerel"
+      }
+    },
+    {
+      "source": {
+        "unit": "livestock unit"
+      },
+      "target": {
+        "unit": "livestock_unit"
+      }
+    },
+    {
+      "source": {
+        "unit": "kilowatt hour"
+      },
+      "target": {
+        "unit": "kilowatt_hour"
+      }
+    },
+    {
+      "source": {
+        "unit": "kBq"
       },
       "target": {
         "unit": "kilobecquerel"
@@ -118,6 +150,14 @@
     {
       "source": {
         "unit": "kj"
+      },
+      "target": {
+        "unit": "kilojoule"
+      }
+    },
+    {
+      "source": {
+        "unit": "kJ"
       },
       "target": {
         "unit": "kilojoule"
@@ -277,6 +317,14 @@
     },
     {
       "source": {
+        "unit": "MJ"
+      },
+      "target": {
+        "unit": "megajoule"
+      }
+    },
+    {
+      "source": {
         "unit": "my"
       },
       "target": {
@@ -294,6 +342,22 @@
     {
       "source": {
         "unit": "nm3"
+      },
+      "target": {
+        "unit": "normal_cubic_meter"
+      }
+    },
+    {
+      "source": {
+        "unit": "sM3"
+      },
+      "target": {
+        "unit": "standard_cubic_meter"
+      }
+    },
+    {
+      "source": {
+        "unit": "nM3"
       },
       "target": {
         "unit": "normal_cubic_meter"

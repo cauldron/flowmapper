@@ -1,10 +1,12 @@
 import importlib.resources as resource
 import math
-from typing import Any, Generic, TypeVar
+from typing import Any, Self
+from collections import UserString
+from pathlib import Path
+import json
 
 from pint import UnitRegistry, errors
 
-from flowmapper.constants import PINT_MAPPING
 from flowmapper.utils import normalize_str
 
 ureg = UnitRegistry()
@@ -12,29 +14,22 @@ ureg = UnitRegistry()
 with resource.as_file(resource.files("flowmapper") / "data" / "units.txt") as filepath:
     ureg.load_definitions(filepath)
 
-U = TypeVar("U")
+with open(Path(__file__).parent / "data" / "standard-units-harmonization.json") as f:
+    UNIT_MAPPING = {line["source"]["unit"]: line["target"]["unit"] for line in json.load(f)["update"]}
 
 
-class UnitField(Generic[U]):
-    def __init__(
-        self, original: str, transformed: str | None = None, use_lowercase: bool = False
-    ):
-        if transformed is None:
-            transformed = original
-        self.original = original
-        if self.is_uri(transformed):
-            # Private attribute, could change in future
-            self._glossary_entry = self.resolve_uri(transformed)
-            self.normalized = normalize_str(self._glossary_entry["label"])
-        else:
-            self.normalized = normalize_str(transformed)
-
-        self.use_lowercase = use_lowercase
-        if self.use_lowercase:
-            self.normalized = self.normalized.lower()
-
-        # Private attribute, could change in future
-        self._pint_compatible = PINT_MAPPING.get(self.normalized, self.normalized)
+class UnitField(UserString):
+    def normalize(self) -> Self:
+        """Normalize string to fit into our `pint` definitions"""
+        label = normalize_str(self.data)
+        if label in UNIT_MAPPING:
+            label = UNIT_MAPPING[label]
+        try:
+            ureg(label)
+        except errors.UndefinedUnitError:
+            raise ValueError(f"Unit {label} is unknown; add to flowmapper `units.txt` or define a mapping in `unit-mapping.json`")
+        # Makes type checkers happy, if inelegant...
+        return type(self)(label)
 
     def is_uri(self, value: str) -> bool:
         # Placeholder for when we support glossary entries
@@ -44,40 +39,27 @@ class UnitField(Generic[U]):
         # Placeholder
         pass
 
-    def __repr__(self) -> str:
-        return f"UnitField: '{self.original}' -> '{self.normalized}'"
-
-    def __bool__(self) -> bool:
-        return bool(self.original)
-
-    def __eq__(self, other: Any):
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, UnitField):
             return (
-                self.normalized == other.normalized
+                self.data == other.data
                 or self.conversion_factor(other) == 1
             )
-        elif isinstance(other, str) and self.use_lowercase:
-            return self.normalized == other.lower()
-        elif isinstance(other, str):
-            return self.normalized == other
         else:
-            return False
+            return self.data == other
 
     def compatible(self, other: Any):
-        if not isinstance(other, UnitField):
-            return False
-        else:
-            return math.isfinite(self.conversion_factor(other))
+        return math.isfinite(self.conversion_factor(other))
 
-    def conversion_factor(self, to: U | Any) -> float:
+    def conversion_factor(self, to: Any) -> float:
         if not isinstance(to, UnitField):
             result = float("nan")
-        elif isinstance(to, UnitField) and self.normalized == to.normalized:
+        elif isinstance(to, UnitField) and self.data == to.data:
             result = 1.0
         else:
             try:
                 result = (
-                    ureg(self._pint_compatible).to(ureg(to._pint_compatible)).magnitude
+                    ureg(self.data).to(ureg(to.data)).magnitude
                 )
             except (errors.DimensionalityError, errors.UndefinedUnitError):
                 result = float("nan")
