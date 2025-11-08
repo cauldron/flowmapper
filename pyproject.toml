@@ -32,6 +32,7 @@ requires-python = ">=3.11"
 dependencies = [
     "bw_simapro_csv",
     "pandas[excel]",
+    "roman",
     "pint",
     "pydantic",
     "pyecospold",
