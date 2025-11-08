@@ -6,38 +6,13 @@ import re
 import unicodedata
 from collections.abc import Collection, Mapping
 from pathlib import Path
-from typing import Any, List, Union
+from typing import Any
+import structlog
+
+logger = structlog.get_logger("flowmapper")
 
 RESULTS_DIR = Path(__file__).parent / "manual_matching" / "results"
 
-with resource.as_file(
-    resource.files("flowmapper") / "data" / "places.json"
-) as filepath:
-    places = json.load(open(filepath))
-
-ends_with_location = re.compile(
-    ",[ \t\r\f]+(?P<code>{})$".format(
-        "|".join([re.escape(string) for string in places])
-    ),
-    re.IGNORECASE,
-)
-# All solutions I found for returning original string instead of
-# lower case one were very ugly
-location_reverser = {obj.lower(): obj for obj in places}
-if len(location_reverser) != len(places):
-    raise ValueError("Multiple possible locations after lower case conversion")
-
-us_lci_ends_with_location = re.compile(
-    "/(?P<location>{})$".format(
-        "|".join(
-            [
-                re.escape(string)
-                for string in places
-                if 2 <= len(string) <= 3 and string.upper() == string
-            ]
-        )
-    ),
-)
 
 with resource.as_file(
     resource.files("flowmapper") / "data" / "names_and_locations.json"
@@ -45,7 +20,7 @@ with resource.as_file(
     names_and_locations = {o["source"]: o for o in json.load(open(filepath))}
 
 
-def load_standard_transformations() -> List:
+def load_standard_transformations() -> list:
     # with resource.as_file(
     #     resource.files("flowmapper") / "data" / "standard-units-harmonization.json"
     # ) as filepath:
@@ -64,7 +39,7 @@ def generate_flow_id(flow: dict):
     return result
 
 
-def read_migration_files(*filepaths: Union[str, Path]) -> List[dict]:
+def read_migration_files(*filepaths: str | Path) -> list[dict]:
     """
     Read and aggregate migration data from multiple JSON files.
 
@@ -88,23 +63,13 @@ def read_migration_files(*filepaths: Union[str, Path]) -> List[dict]:
     for filepath in filepaths:
         if (RESULTS_DIR / filepath).is_file():
             filepath = RESULTS_DIR / filepath
-        with open(Path(filepath), "r") as fs:
+        with open(Path(filepath)) as fs:
             migration_data.append(json.load(fs))
 
     return migration_data
 
 
-def rm_parentheses_roman_numerals(s: str):
-    pattern = r"\(\s*([ivxlcdmIVXLCDM]+)\s*\)"
-    return re.sub(pattern, r"\1", s, flags=re.IGNORECASE)
-
-
-def rm_roman_numerals_ionic_state(s: str):
-    pattern = r"\s*\(\s*[ivxlcdm]+\s*\)$"
-    return re.sub(pattern, "", s)
-
-
-def normalize_str(s):
+def normalize_str(s: Any) -> str:
     if s is not None:
         return unicodedata.normalize("NFC", s).strip()
     else:
@@ -142,7 +107,7 @@ def match_sort_order(obj: dict) -> tuple:
     )
 
 
-def apply_transformations(obj: dict, transformations: List[dict] | None) -> dict:
+def apply_transformations(obj: dict, transformations: list[dict] | None) -> dict:
     if not transformations:
         return obj
     obj = copy.deepcopy(obj)
@@ -170,3 +135,19 @@ def apply_transformations(obj: dict, transformations: List[dict] | None) -> dict
                 break
 
     return obj
+
+
+unit_slash = re.compile(r"/(?P<unit>m3|kg)(\,?\s+)|(\s+)|$")
+
+
+def remove_unit_slash(obj: Any) -> str:
+    name = obj.name
+    if match := unit_slash.search(name):
+        obj_dict = match.groupdict()
+        if match.end() == len(name):
+            name = name[:match.start()]
+        else:
+            name = name[:match.start()] + ", " + name[match.end():]
+        if not obj.unit.compatible(obj_dict["unit"]):
+            logger.warning(f"Flow {obj} has unit {obj.unit} but name refers to incompatible unit {obj_dict['unit']}")
+    return name
