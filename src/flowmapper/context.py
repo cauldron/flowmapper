@@ -1,5 +1,5 @@
-from collections.abc import Iterable
-from typing import Any
+from typing import Self, Any
+
 
 MISSING_VALUES = {
     "",
@@ -11,13 +11,12 @@ MISSING_VALUES = {
 }
 
 
-class ContextField(Iterable):
-    def __init__(self, original: Any, transformed: Any = None):
-        self.original = original
-        self.transformed = transformed or original
-        self.normalized = self.normalize(self.transformed)
+class ContextField:
+    def __init__(self, value: str | list[str] | tuple[str]):
+        self.value = value
 
-    def normalize(self, value: Any) -> tuple[str, ...]:
+    def normalize(self, obj: Any | None = None, mapping: dict | None = None) -> Self:
+        value = obj or self.value
         if isinstance(value, (tuple, list)):
             intermediate = list(value)
         elif isinstance(value, str) and "/" in value:
@@ -25,57 +24,52 @@ class ContextField(Iterable):
         elif isinstance(value, str):
             intermediate = [value]
         else:
-            raise ValueError(f"Can't understand input context {value}")
+            raise ValueError(f"Can't understand input context {self.value}")
 
         intermediate = [elem.lower().strip() for elem in intermediate]
 
-        if intermediate[-1] in MISSING_VALUES:
+        while intermediate[-1] in MISSING_VALUES:
             intermediate = intermediate[:-1]
 
-        return tuple(intermediate)
+        # TODO: Apply mapping
 
-    def export_as_string(self):
-        if isinstance(self.original, str):
-            return self.original
-        elif isinstance(self.original, (list, tuple)):
-            return "✂️".join(self.original)
-        else:
-            # Only reachable by manually changing `self.original`
-            raise ValueError("Invalid context data")
+        return type(self)(value=tuple(intermediate))
+
+    def export_as_string(self, join_character: str = "✂️"):
+        if isinstance(self.value, (list, tuple)):
+            return join_character.join(self.value)
+        return self.value
 
     def __iter__(self):
-        return iter(self.normalized)
+        return iter(self.value)
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
         if self and other and isinstance(other, ContextField):
-            return self.original and self.normalized == other.normalized
+            return self.value == other.value
         else:
             try:
-                normalized_other = self.normalize(other)
-                return (self.normalized == normalized_other) or (
-                    self.original == normalized_other
-                )
+                return self.value == self.normalize(other).value
             except ValueError:
                 return False
 
     def __repr__(self):
-        return f"ContextField: '{self.original}' -> '{self.normalized}'"
+        return f"ContextField: {self.value}"
 
     def __bool__(self):
-        return bool(self.normalized)
+        return bool(self.value)
 
     def __hash__(self):
-        return hash(self.normalized)
+        return hash(self.value)
 
-    def __contains__(self, other):
-        """This context is more generic than the `other` context.
+    def __contains__(self, other: Any) -> bool:
+        """`self` context is more generic than the `other` context.
 
         ```python
-        Context("a/b/c") in Context("a/b")
+        Context("a/b") in Context("a/b/c")
         >>> True
         ```
 
         """
         if not isinstance(other, ContextField):
             return False
-        return self.normalized == other.normalized[: len(self.normalized)]
+        return self.value == other.value[: len(self.value)]
