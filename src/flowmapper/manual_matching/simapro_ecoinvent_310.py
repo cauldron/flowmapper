@@ -1,8 +1,8 @@
+import json
+from pathlib import Path
+
 import randonneur as rn
 import randonneur_data as rd
-from pathlib import Path
-import json
-
 
 data_dir = Path(__file__).parent / "data" / "simapro_ecoinvent_310"
 results_dir = Path(__file__).parent / "results"
@@ -24,25 +24,21 @@ def generate_simapro_ecoinvent_310_manual_matches(
         "ores.json",
     ]
     non_resources = {
-        'Caesium': 'Caesium I',
-        'Calcium': 'Calcium II',
-        'Sodium': 'Sodium I',
-        'Strontium': 'Strontium II',
+        "Caesium": "Caesium I",
+        "Calcium": "Calcium II",
+        "Sodium": "Sodium I",
+        "Strontium": "Strontium II",
     }
     non_resource_categories = [
-        obj['source']['context']
-        for obj in json.load(open(base_data_dir / "simapro-2023-ecoinvent-3-contexts.json"))["update"]
-        if obj['target']['context'][0] != "natural resource"
+        obj["source"]["context"]
+        for obj in json.load(
+            open(base_data_dir / "simapro-2023-ecoinvent-3-contexts.json")
+        )["update"]
+        if obj["target"]["context"][0] != "natural resource"
     ]
 
     data = [
-        {
-            'source': {
-                'name': key,
-                'context': context
-            },
-            'target': {'name': value}
-        }
+        {"source": {"name": key, "context": context}, "target": {"name": value}}
         for key, value in non_resources.items()
         for context in non_resource_categories
     ]
@@ -52,18 +48,17 @@ def generate_simapro_ecoinvent_310_manual_matches(
     registry = rd.Registry()
     migration = registry.get_file("ecoinvent-3.9.1-biosphere-ecoinvent-3.10-biosphere")
     name_change = {
-        (pair['source']['name'], pair['target']['name'])
-        for pair in migration['replace']
-        if 'name' in pair['target']
-        and 'name' in pair['source']
-        and pair['source']['name'] != pair['target']['name']
-        and pair['source']['name'] not in non_resources
+        (pair["source"]["name"], pair["target"]["name"])
+        for pair in migration["replace"]
+        if "name" in pair["target"]
+        and "name" in pair["source"]
+        and pair["source"]["name"] != pair["target"]["name"]
+        and pair["source"]["name"] not in non_resources
     }
     assert len(name_change) == len({a for a, b in name_change})
-    data.extend([
-        {'source': {'name': a}, 'target': {'name': b}}
-        for a, b in name_change
-    ])
+    data.extend(
+        [{"source": {"name": a}, "target": {"name": b}} for a, b in name_change]
+    )
 
     dp = rn.Datapackage(
         name="SimaPro-2024-to-ecoinvent-3.10-elementary-flows",

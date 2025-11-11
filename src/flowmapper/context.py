@@ -1,5 +1,4 @@
-from typing import Self, Any
-
+from typing import Any, Self
 
 MISSING_VALUES = {
     "",
@@ -28,12 +27,17 @@ class ContextField:
 
         intermediate = [elem.lower().strip() for elem in intermediate]
 
-        while intermediate[-1] in MISSING_VALUES:
+        while intermediate and intermediate[-1] in MISSING_VALUES:
+            if len(intermediate) == 1:
+                break
             intermediate = intermediate[:-1]
 
-        # TODO: Apply mapping
-
         return type(self)(value=tuple(intermediate))
+
+    def as_tuple(self) -> tuple | str:
+        if isinstance(self.value, str):
+            return self.value
+        return tuple(self.value)
 
     def export_as_string(self, join_character: str = "✂️"):
         if isinstance(self.value, (list, tuple)):
@@ -53,7 +57,7 @@ class ContextField:
                 return False
 
     def __repr__(self):
-        return f"ContextField: {self.value}"
+        return str(self.value)
 
     def __bool__(self):
         return bool(self.value)

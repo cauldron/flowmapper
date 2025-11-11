@@ -1,23 +1,24 @@
+import re
 from collections import UserString
 from functools import cached_property
-import re
 
-
-valid_cas = re.compile(r"^\s*[0-9]{3,7}-[0-9]{2}-[0-9]{1}\s*$")
+valid_cas = re.compile(r"^\s*[0-9]{2,7}-[0-9]{2}-[0-9]{1}\s*$")
 
 
 class CASField(UserString):
     def __init__(self, string: str):
         if not isinstance(string, (str, UserString)):
-            raise TypeError(f"CASField takes only `str`, but got {type(string)} for {string}")
-        if not valid_cas.search(string):
-            raise ValueError(f"Given input is not valid CAS formatting: {string}")
-        super().__init__(string)
+            raise TypeError(
+                f"CASField takes only `str`, but got {type(string)} for {string}"
+            )
+        if not valid_cas.search(str(string)):
+            raise ValueError(f"Given input is not valid CAS formatting: '{string}'")
+        super().__init__(str(string))
 
     @staticmethod
     def from_string(string: str | None) -> "CASField | None":
         """Returns `None` if CAS number is invalid"""
-        if string is None:
+        if string is None or not isinstance(string, (str, UserString)):
             return None
         new_cas = CASField(string.strip().lstrip("0").strip())
         if not new_cas.valid():
@@ -52,5 +53,6 @@ class CASField(UserString):
         return result
 
     def valid(self):
-        return self.digits[-1] == self.check_digit_expected
-
+        return (self.digits[-1] == self.check_digit_expected) and bool(
+            valid_cas.search(self.data)
+        )

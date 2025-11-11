@@ -1,12 +1,15 @@
 import importlib.metadata
 from pathlib import Path
-
-import typer
 from typing import Annotated
-import structlog
 
-from flowmapper.extraction import ecospold2_biosphere_extractor, simapro_csv_biosphere_extractor
-from flowmapper.main import OutputFormat, flowmapper
+import structlog
+import typer
+
+from flowmapper.extraction import (
+    ecospold2_biosphere_extractor,
+    simapro_csv_biosphere_extractor,
+)
+from flowmapper.main import flowmapper
 
 try:
     from pyinstrument import Profiler
@@ -44,10 +47,6 @@ def map(
     output_dir: Annotated[
         Path, typer.Option(help="Directory to save mapping and diagnostics files")
     ] = Path("."),
-    format: Annotated[
-        OutputFormat,
-        typer.Option(help="Mapping file output format", case_sensitive=False),
-    ] = "randonneur",
     default_transformations: Annotated[
         bool, typer.Option(help="Include default context and unit transformations?")
     ] = True,
@@ -92,7 +91,7 @@ def map(
             "location": "location",
         },
     }
-    
+
     if profile:
         if Profiler is None:
             raise ImportError("`pyinstrument` not installed")
@@ -106,9 +105,14 @@ def map(
         mapping_target=generic_mapping,
         source_id=source.stem,
         target_id=target.stem,
-        contributors=[{"title": "flowmapper", "roles": ["author"], "path": "https://github.com/cmutel/flowmapper"}],
+        contributors=[
+            {
+                "title": "flowmapper",
+                "roles": ["author"],
+                "path": "https://github.com/cmutel/flowmapper",
+            }
+        ],
         output_dir=output_dir,
-        format=format,
         default_transformations=default_transformations,
         transformations=transformations,
         unmatched_source=unmatched_source,

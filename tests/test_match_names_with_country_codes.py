@@ -1,4 +1,4 @@
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.match import match_names_with_location_codes
 
 
@@ -24,7 +24,9 @@ def test_match_names_with_country_codes_no_match():
     s = Flow({"name": "Ammonia-NL", "context": "air", "unit": "kg"})
     t = Flow({"name": "Ammonia", "context": "air", "unit": "kg"})
     result = match_names_with_location_codes(s, t, [], [])
-    assert result is None, f"Expected match_names_with_location_codes to return None, but got {result}"
+    assert (
+        result is None
+    ), f"Expected match_names_with_location_codes to return None, but got {result}"
 
 
 def test_match_names_with_country_codes_complicated_location():

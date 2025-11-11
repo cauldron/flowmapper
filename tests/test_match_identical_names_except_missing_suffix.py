@@ -1,4 +1,4 @@
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.match import match_identical_names_except_missing_suffix
 
 
@@ -22,7 +22,9 @@ def test_match_identical_names_except_missing_suffix(transformations):
     t = Flow(target, transformations)
 
     result = match_identical_names_except_missing_suffix(s, t, [], [], suffix="ion")
-    assert result, f"Expected match_identical_names_except_missing_suffix to return a truthy value, but got {result}"
+    assert (
+        result
+    ), f"Expected match_identical_names_except_missing_suffix to return a truthy value, but got {result}"
 
 
 def test_match_identical_names_except_missing_suffix_different_order(transformations):
@@ -42,4 +44,6 @@ def test_match_identical_names_except_missing_suffix_different_order(transformat
     )
 
     result = match_identical_names_except_missing_suffix(s, t, [], [], suffix="ion")
-    assert result, f"Expected match_identical_names_except_missing_suffix to return a truthy value, but got {result}"
+    assert (
+        result
+    ), f"Expected match_identical_names_except_missing_suffix to return a truthy value, but got {result}"

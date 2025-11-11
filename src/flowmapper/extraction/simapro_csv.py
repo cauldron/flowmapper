@@ -16,7 +16,9 @@ def is_simapro_csv_file(fp: Path) -> bool:
         ].project
         return True
     except:
-        logger.critical("Skipping file %s as we can't read it as a SimaPro file", fp.name)
+        logger.critical(
+            "Skipping file %s as we can't read it as a SimaPro file", fp.name
+        )
         return False
 
 
@@ -48,7 +50,8 @@ def simapro_csv_biosphere_extractor(input_path: Path, output_path: Path) -> None
                 process.blocks.values(),
             ):
                 for line in block.parsed:
-                    flows.add((line["context"], line["name"], line["unit"]))
+                    # Restore context to single string as this is expected in our mapping
+                    flows.add(("/".join(line["context"]), line["name"], line["unit"]))
 
     with open(output_path, "w") as f:
         json.dump(

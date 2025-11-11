@@ -9,7 +9,9 @@ runner = CliRunner()
 
 def test_version():
     result = runner.invoke(app, ["--version"])
-    assert result.output.startswith("flowmapper, version"), f"Expected result.output to start with 'flowmapper, version', but got {result.output[:50]!r}"
+    assert result.output.startswith(
+        "flowmapper, version"
+    ), f"Expected result.output to start with 'flowmapper, version', but got {result.output[:50]!r}"
 
 
 def test_format_glad(tmp_path):
@@ -35,8 +37,12 @@ def test_format_glad(tmp_path):
 
     files = sorted(tmp_path.glob("**/*"))
 
-    assert result.exit_code == 0, f"Expected exit_code to be 0, but got {result.exit_code}"
-    assert expected_files == files, f"Expected files to be {expected_files}, but got {files}"
+    assert (
+        result.exit_code == 0
+    ), f"Expected exit_code to be 0, but got {result.exit_code}"
+    assert (
+        expected_files == files
+    ), f"Expected files to be {expected_files}, but got {files}"
 
 
 def test_format_randonneur(tmp_path):
@@ -62,8 +68,12 @@ def test_format_randonneur(tmp_path):
 
     files = sorted(tmp_path.glob("**/*"))
 
-    assert result.exit_code == 0, f"Expected exit_code to be 0, but got {result.exit_code}"
-    assert expected_files == files, f"Expected files to be {expected_files}, but got {files}"
+    assert (
+        result.exit_code == 0
+    ), f"Expected exit_code to be 0, but got {result.exit_code}"
+    assert (
+        expected_files == files
+    ), f"Expected files to be {expected_files}, but got {files}"
 
 
 def test_matched_flows(tmp_path):
@@ -92,7 +102,9 @@ def test_matched_flows(tmp_path):
         },
         {"context": "air/low. pop.", "name": "Ammonia, FR", "unit": "kg"},
     ]
-    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
+    assert (
+        actual == expected
+    ), f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_matched_flows_with_randonneur_transformations(tmp_path):
@@ -130,7 +142,9 @@ def test_matched_flows_with_randonneur_transformations(tmp_path):
         {"context": "air/low. pop.", "name": "Ammonia, FR", "unit": "kg"},
         {"context": "air/low. pop.", "name": "Ammonia, as N", "unit": "kg"},
     ]
-    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
+    assert (
+        actual == expected
+    ), f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_matched_flows_with_multiple_randonneur_transformations(tmp_path):
@@ -170,4 +184,6 @@ def test_matched_flows_with_multiple_randonneur_transformations(tmp_path):
         {"name": "Ammonia, FR", "unit": "kg", "context": "air/low. pop."},
         {"name": "Ammonia, as N", "unit": "kg", "context": "air/low. pop."},
     ]
-    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
+    assert (
+        actual == expected
+    ), f"Expected actual to equal expected, but got {actual} instead of {expected}"

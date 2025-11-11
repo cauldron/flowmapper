@@ -1,4 +1,4 @@
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.match import match_biogenic_to_non_fossil
 
 

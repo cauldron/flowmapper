@@ -2,6 +2,7 @@ import importlib.resources as resource
 import json
 import re
 from pathlib import Path
+
 import structlog
 
 logger = structlog.get_logger("flowmapper")
@@ -45,5 +46,5 @@ with resource.as_file(
 
 def split_location_suffix(string: str) -> tuple[str, str | None]:
     if match := ends_with_location.search(string):
-        return string[:match.start()], match.group("location")
+        return string[: match.start()], match.group("location")
     return string, None

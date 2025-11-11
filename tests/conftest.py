@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.transformation_mapping import prepare_transformations
 from flowmapper.utils import (
     apply_transformations,

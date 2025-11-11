@@ -37,3 +37,7 @@ vehicle_kilometer = vehicle * kilometer = vkm
 # Personal travel
 person = [personal_travel]
 person_kilometer = person * kilometer = pkm
+
+# Currency
+eur = [currency]
+eur_2005 = 1 * eur

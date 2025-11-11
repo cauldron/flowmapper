@@ -1,13 +1,18 @@
+from __future__ import annotations
+
 import copy
-import hashlib
 import importlib.resources as resource
 import json
 import re
 import unicodedata
 from collections.abc import Collection, Mapping
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
 import structlog
+
+if TYPE_CHECKING:
+    from flowmapper.domain import Flow
 
 logger = structlog.get_logger("flowmapper")
 
@@ -18,6 +23,23 @@ with resource.as_file(
     resource.files("flowmapper") / "data" / "names_and_locations.json"
 ) as filepath:
     names_and_locations = {o["source"]: o for o in json.load(open(filepath))}
+
+try:
+    import cytoolz as toolz
+except ImportError:
+    logger.info("Install `cytoolz` to get a speed up in matching functions")
+    import toolz
+
+assert toolz  # Do not delete the import call stupid linter
+
+
+def tupleize_context(obj: dict) -> dict:
+    """Convert `context` value to `tuple` if possible"""
+    if "context" not in obj:
+        return obj
+    elif not isinstance(obj["context"], str):
+        obj["context"] = tuple(obj["context"])
+    return obj
 
 
 def load_standard_transformations() -> list:
@@ -31,12 +53,6 @@ def load_standard_transformations() -> list:
         contexts = json.load(open(filepath))
     # return [units, contexts]
     return [contexts]
-
-
-def generate_flow_id(flow: dict):
-    flow_str = json.dumps(flow, sort_keys=True)
-    result = hashlib.md5(flow_str.encode("utf-8")).hexdigest()
-    return result
 
 
 def read_migration_files(*filepaths: str | Path) -> list[dict]:
@@ -98,15 +114,6 @@ def rowercase(obj: Any) -> Any:
         return obj
 
 
-def match_sort_order(obj: dict) -> tuple:
-    return (
-        not obj["from"].name,
-        obj["from"].name.normalized,
-        not obj["from"].context,
-        obj["from"].context.export_as_string(),
-    )
-
-
 def apply_transformations(obj: dict, transformations: list[dict] | None) -> dict:
     if not transformations:
         return obj
@@ -125,7 +132,11 @@ def apply_transformations(obj: dict, transformations: list[dict] | None) -> dict
         for transformation_obj in dataset.get("update", []):
             source_to_match = lower if dataset.get("case-insensitive") else obj
             if dataset.get("case-insensitive"):
-                source_transformation = rowercase(transformation_obj["source"]) if isinstance(transformation_obj["source"], dict) else transformation_obj["source"]
+                source_transformation = (
+                    rowercase(transformation_obj["source"])
+                    if isinstance(transformation_obj["source"], dict)
+                    else transformation_obj["source"]
+                )
             else:
                 source_transformation = transformation_obj["source"]
             if matcher(source_transformation, source_to_match):
@@ -137,17 +148,19 @@ def apply_transformations(obj: dict, transformations: list[dict] | None) -> dict
     return obj
 
 
-unit_slash = re.compile(r"/(?P<unit>m3|kg)(\,?\s+)|(\s+)|$")
+unit_slash = re.compile(r"/(?P<unit>m3|kg)(\,?\s+|\s+|$)")
 
 
-def remove_unit_slash(obj: Any) -> str:
-    name = obj.name
+def remove_unit_slash(obj: Flow) -> str:
+    name = obj.name.data
     if match := unit_slash.search(name):
         obj_dict = match.groupdict()
         if match.end() == len(name):
-            name = name[:match.start()]
+            name = name[: match.start()]
         else:
-            name = name[:match.start()] + ", " + name[match.end():]
+            name = name[: match.start()] + ", " + name[match.end() :]
         if not obj.unit.compatible(obj_dict["unit"]):
-            logger.warning(f"Flow {obj} has unit {obj.unit} but name refers to incompatible unit {obj_dict['unit']}")
+            logger.warning(
+                f"Flow {obj} has unit '{obj.unit}' but name refers to incompatible unit '{obj_dict['unit']}'"
+            )
     return name

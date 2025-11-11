@@ -1,5 +1,5 @@
 {
-  "name": "Standard-units-harmonization",
+  "name": "Flowmapper-standard-units-harmonization",
   "licenses": [
     {
       "name": "CC BY 4.0",
@@ -8,16 +8,33 @@
     }
   ],
   "version": "1.0.0",
-  "description": "Standard Brightway unit mapping",
-  "created": "2024-04-12T09:29:02.823409",
+  "description": "Standard flowmapper unit harmonization linked with Pint customization",
+  "created": "2025-11-10T12:34:56Z",
   "case-insensitive": true,
   "contributors": [
     {
       "title": "Chris Mutel",
       "path": "https://chris.mutel.org/",
-      "role": "author"
+      "roles": ["author"]
     }
   ],
+  "graph_context": [
+    "nodes"
+  ],
+  "mapping": {
+    "source": {
+      "expression language": "JSONPath",
+      "labels": {
+          "unit": "$.unit"
+      }
+    },
+    "target": {
+      "expression language": "JSONPath",
+      "labels": {
+          "unit": "$.unit"
+      }
+    }
+  },
   "update": [
     {
       "source": {
@@ -229,6 +246,14 @@
     },
     {
       "source": {
+        "unit": "cubic meter-year"
+      },
+      "target": {
+        "unit": "cubic_meter_year"
+      }
+    },
+    {
+      "source": {
         "unit": "m2a"
       },
       "target": {
@@ -333,10 +358,26 @@
     },
     {
       "source": {
+        "unit": "standard cubic meter"
+      },
+      "target": {
+        "unit": "standard_cubic_meter"
+      }
+    },
+    {
+      "source": {
         "unit": "sm3"
       },
       "target": {
         "unit": "standard_cubic_meter"
+      }
+    },
+    {
+      "source": {
+        "unit": "normal cubic meter"
+      },
+      "target": {
+        "unit": "normal_cubic_meter"
       }
     },
     {
@@ -433,6 +474,14 @@
       },
       "target": {
         "unit": "watt_hour"
+      }
+    },
+    {
+      "source": {
+        "unit": "eur2005"
+      },
+      "target": {
+        "unit": "eur_2005"
       }
     }
   ]

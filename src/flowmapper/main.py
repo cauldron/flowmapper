@@ -1,12 +1,15 @@
 import json
 import logging
-from enum import Enum
+from copy import copy
+from functools import partial
 from pathlib import Path
 
-from flowmapper.flow import Flow
+from randonneur import Datapackage, MigrationConfig, migrate_nodes
+from randonneur_data import Registry
+
+from flowmapper.domain import Flow, NormalizedFlow
 from flowmapper.flowmap import Flowmap
-from flowmapper.transformation_mapping import prepare_transformations
-from flowmapper.utils import load_standard_transformations, read_migration_files
+from flowmapper.utils import tupleize_context
 
 logger = logging.getLogger(__name__)
 
@@ -19,131 +22,107 @@ def sorting_function(obj: dict) -> tuple:
     )
 
 
-class OutputFormat(str, Enum):
-    all = "all"
-    glad = "glad"
-    randonneur = "randonneur"
-
-
 def flowmapper(
     source: Path,
     target: Path,
-    mapping_source: dict,
-    mapping_target: dict,
     source_id: str,
     target_id: str,
     contributors: list,
     output_dir: Path,
-    format: OutputFormat,
     version: str = "1.0.0",
-    default_transformations: bool = True,
-    transformations: list[Path | str] | None = None,
-    unmatched_source: bool = True,
-    unmatched_target: bool = True,
-    matched_source: bool = False,
-    matched_target: bool = False,
+    transformations: list[Datapackage | str] | None = None,
+    unit_normalization: bool = True,
     licenses: list | None = None,
     homepage: str | None = None,
     name: str | None = None,
+    registry: Registry | None = None,
 ) -> Flowmap:
     """
     Generate mappings between elementary flows lists
     """
     output_dir.mkdir(parents=True, exist_ok=True)
+    transformation_functions = []
 
-    loaded_transformations = []
-    if default_transformations:
-        loaded_transformations.extend(load_standard_transformations())
-    if transformations:
-        loaded_transformations.extend(read_migration_files(*transformations))
+    if transformations is None:
+        transformations = []
+    if registry is None:
+        registry = Registry()
 
-    prepared_transformations = prepare_transformations(loaded_transformations)
+    if unit_normalization:
+        transformations.append("Flowmapper-standard-units-harmonization")
+
+    for obj in transformations:
+        if isinstance(obj, Datapackage):
+            obj = obj.data
+        elif isinstance(obj, str):
+            obj = registry.get_file(obj)
+        elif "update" not in obj:
+            raise KeyError
+        transformation_functions.append(
+            partial(
+                migrate_nodes,
+                migrations=tupleize_context(obj),
+                config=MigrationConfig(
+                    verbs=["update"],
+                    case_sensitive=not obj.get("case-insensitive"),
+                ),
+            )
+        )
+
+    original_source_flows = [Flow.from_dict(obj) for obj in json.load(open(source))]
+    processed_source_flows = [obj.to_dict() for obj in original_source_flows]
+    original_target_flows = [Flow.from_dict(obj) for obj in json.load(open(target))]
+    processed_target_flows = [obj.to_dict() for obj in original_target_flows]
+
+    for function in transformation_functions:
+        processed_source_flows = function(graph=processed_source_flows)
+    for function in transformation_functions:
+        processed_target_flows = function(graph=processed_target_flows)
+
+    normalized_source_flows = [
+        Flow.from_dict(obj).normalize() for obj in processed_source_flows
+    ]
+    normalized_target_flows = [
+        Flow.from_dict(obj).normalize() for obj in processed_target_flows
+    ]
 
     source_flows = [
-        Flow(flow, prepared_transformations) for flow in json.load(open(source))
+        NormalizedFlow(original=o, normalized=n, current=copy(n))
+        for o, n in zip(original_source_flows, normalized_source_flows)
     ]
-    source_flows = [flow for flow in source_flows if not flow.missing]
     target_flows = [
-        Flow(flow, prepared_transformations) for flow in json.load(open(target))
+        NormalizedFlow(original=o, normalized=n, current=copy(n))
+        for o, n in zip(original_target_flows, normalized_target_flows)
     ]
 
     flowmap = Flowmap(source_flows, target_flows)
-    flowmap.statistics()
+    flowmap.generate_matches()
+    flowmap.print_statistics()
 
     stem = f"{source.stem}-{target.stem}"
 
-    if matched_source:
-        with open(output_dir / f"{stem}-matched-source.json", "w") as fs:
-            json.dump(
-                sorted(
-                    [flow.export for flow in flowmap.matched_source],
-                    key=sorting_function,
-                ),
-                fs,
-                indent=True,
-            )
-
-    if unmatched_source:
-        with open(output_dir / f"{stem}-unmatched-source.json", "w") as fs:
-            json.dump(
-                sorted(
-                    [flow.export for flow in flowmap.unmatched_source],
-                    key=sorting_function,
-                ),
-                fs,
-                indent=True,
-            )
-
-    if matched_target:
-        with open(output_dir / f"{stem}-matched-target.json", "w") as fs:
-            json.dump(
-                sorted(
-                    [flow.export for flow in flowmap.matched_target],
-                    key=sorting_function,
-                ),
-                fs,
-                indent=True,
-            )
-
-    if unmatched_target:
-        with open(output_dir / f"{stem}-unmatched-target.json", "w") as fs:
-            json.dump(
-                sorted(
-                    [flow.export for flow in flowmap.unmatched_target],
-                    key=sorting_function,
-                ),
-                fs,
-                indent=True,
-            )
-
-    if format.value == "randonneur":
-        flowmap.to_randonneur(
-            source_id=source_id,
-            target_id=target_id,
-            contributors=contributors,
-            mapping_source=mapping_source,
-            mapping_target=mapping_target,
-            version=version,
-            licenses=licenses,
-            homepage=homepage,
-            name=name,
-            path=output_dir / f"{stem}.json",
+    with open(output_dir / f"{stem}-unmatched-source.json", "w") as fs:
+        json.dump(
+            sorted(
+                [flow.export() for flow in source_flows if not flow.matched],
+                key=sorting_function,
+            ),
+            fs,
+            indent=True,
         )
-    elif format.value == "glad":
-        flowmap.to_glad(output_dir / f"{stem}.xlsx", missing_source=True)
-    else:
-        flowmap.to_randonneur(
-            source_id=source_id,
-            target_id=target_id,
-            contributors=contributors,
-            mapping_source=mapping_source,
-            mapping_target=mapping_target,
-            version=version,
-            licenses=licenses,
-            homepage=homepage,
-            name=name,
-            path=output_dir / f"{stem}.json",
-        )
-        flowmap.to_glad(output_dir / f"{stem}.xlsx", missing_source=True)
+
+    # flowmap.to_randonneur(
+    #     source_id=source_id,
+    #     target_id=target_id,
+    #     contributors=contributors,
+    #     mapping_source=Flow.randonneur_mapping(),
+    #     mapping_target=Flow.randonneur_mapping(),
+    #     version=version,
+    #     licenses=licenses,
+    #     homepage=homepage,
+    #     name=name,
+    #     path=output_dir / f"{stem}.json",
+    # )
+    # flowmap.to_glad(output_dir / f"{stem}.xlsx", missing_source=True)
 
     return flowmap

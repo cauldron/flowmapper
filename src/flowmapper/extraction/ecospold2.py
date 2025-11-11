@@ -43,7 +43,9 @@ def remove_conflicting_synonyms(data: list[dict]) -> list[dict]:
         if not (obj.get("synonyms") and obj.get("context")):
             continue
         obj["synonyms"] = [
-            syn for syn in obj["synonyms"] if syn.lower() not in base_names[obj["context"][0]]
+            syn
+            for syn in obj["synonyms"]
+            if syn.lower() not in base_names[obj["context"][0]]
         ]
 
     return data

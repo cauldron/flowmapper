@@ -1,6 +1,6 @@
 import pytest
 
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.preferred_synonyms import (
     has_number_pattern_at_end,
     has_roman_numeral_at_end,
@@ -37,7 +37,9 @@ from flowmapper.preferred_synonyms import (
 )
 def test_roman_numerals_should_match(text):
     """Test that valid roman numerals at the end of strings are detected."""
-    assert has_roman_numeral_at_end(text), f"Expected has_roman_numeral_at_end('{text}') to return True, but it returned False"
+    assert has_roman_numeral_at_end(
+        text
+    ), f"Expected has_roman_numeral_at_end('{text}') to return True, but it returned False"
 
 
 @pytest.mark.parametrize(
@@ -61,7 +63,9 @@ def test_roman_numerals_should_match(text):
 )
 def test_non_roman_numerals_should_not_match(text):
     """Test that invalid or non-roman numerals are not detected."""
-    assert not has_roman_numeral_at_end(text), f"Expected has_roman_numeral_at_end('{text}') to return False, but it returned True"
+    assert not has_roman_numeral_at_end(
+        text
+    ), f"Expected has_roman_numeral_at_end('{text}') to return False, but it returned True"
 
 
 @pytest.mark.parametrize(
@@ -82,7 +86,9 @@ def test_non_roman_numerals_should_not_match(text):
 )
 def test_number_patterns_should_match(text):
     """Test that valid number patterns at the end of strings are detected."""
-    assert has_number_pattern_at_end(text), f"Expected has_number_pattern_at_end('{text}') to return True, but it returned False"
+    assert has_number_pattern_at_end(
+        text
+    ), f"Expected has_number_pattern_at_end('{text}') to return True, but it returned False"
 
 
 @pytest.mark.parametrize(
@@ -110,7 +116,9 @@ def test_number_patterns_should_match(text):
 )
 def test_invalid_patterns_should_not_match(text):
     """Test that invalid patterns are not detected."""
-    assert not has_number_pattern_at_end(text), f"Expected has_number_pattern_at_end('{text}') to return False, but it returned True"
+    assert not has_number_pattern_at_end(
+        text
+    ), f"Expected has_number_pattern_at_end('{text}') to return False, but it returned True"
 
 
 def test_match_when_target_has_source_name_in_synonyms_with_roman_numeral():
@@ -133,7 +141,9 @@ def test_match_when_target_has_source_name_in_synonyms_with_roman_numeral():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_target_has_source_name_in_synonyms_with_number_pattern():
@@ -156,7 +166,9 @@ def test_match_when_target_has_source_name_in_synonyms_with_number_pattern():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_source_has_target_name_in_synonyms_with_roman_numeral():
@@ -179,7 +191,9 @@ def test_match_when_source_has_target_name_in_synonyms_with_roman_numeral():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_source_has_target_name_in_synonyms_with_number_pattern():
@@ -202,7 +216,9 @@ def test_match_when_source_has_target_name_in_synonyms_with_number_pattern():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_no_match_when_different_contexts():
@@ -343,7 +359,9 @@ def test_custom_comment():
         source, target, [], [], custom_comment
     )
 
-    assert result == {"comment": custom_comment}, f"Expected result to be {{'comment': '{custom_comment}'}}, but got {result}"
+    assert result == {
+        "comment": custom_comment
+    }, f"Expected result to be {{'comment': '{custom_comment}'}}, but got {result}"
 
 
 def test_match_with_roman_numeral_and_plus_minus():
@@ -366,7 +384,9 @@ def test_match_with_roman_numeral_and_plus_minus():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_with_number_pattern_and_plus_minus():
@@ -389,7 +409,9 @@ def test_match_with_number_pattern_and_plus_minus():
 
     result = match_identical_names_in_preferred_synonyms(source, target, [], [])
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_no_match_when_another_target_shares_same_synonym_different_name():
@@ -421,7 +443,9 @@ def test_no_match_when_another_target_shares_same_synonym_different_name():
         source, target, [], [other_target]
     )
 
-    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+    assert (
+        result is None
+    ), f"Expected result to be None when another target shares the same synonym, but got {result}"
 
 
 def test_no_match_when_another_target_shares_same_synonym_number_pattern():
@@ -453,7 +477,9 @@ def test_no_match_when_another_target_shares_same_synonym_number_pattern():
         source, target, [], [other_target]
     )
 
-    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+    assert (
+        result is None
+    ), f"Expected result to be None when another target shares the same synonym, but got {result}"
 
 
 def test_no_match_when_another_target_shares_same_synonym_reverse_case():
@@ -485,7 +511,9 @@ def test_no_match_when_another_target_shares_same_synonym_reverse_case():
         source, target, [], [other_target]
     )
 
-    assert result is None, f"Expected result to be None when another target shares the same synonym, but got {result}"
+    assert (
+        result is None
+    ), f"Expected result to be None when another target shares the same synonym, but got {result}"
 
 
 def test_match_when_another_target_shares_synonym_but_different_context():
@@ -517,7 +545,9 @@ def test_match_when_another_target_shares_synonym_but_different_context():
         source, target, [], [other_target]
     )
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
 
 
 def test_match_when_another_target_same_name_different_synonym():
@@ -549,4 +579,6 @@ def test_match_when_another_target_same_name_different_synonym():
         source, target, [], [other_target]
     )
 
-    assert result == {"comment": "Identical preferred synonyms"}, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"
+    assert result == {
+        "comment": "Identical preferred synonyms"
+    }, f"Expected result to be {{'comment': 'Identical preferred synonyms'}}, but got {result}"

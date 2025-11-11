@@ -1,4 +1,4 @@
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.flowmap import Flowmap
 
 
@@ -67,4 +67,6 @@ def test_match_non_ionic_state():
             "comment": "Non-ionic state if no better match",
         },
     ]
-    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
+    assert (
+        actual == expected
+    ), f"Expected actual to equal expected, but got {actual} instead of {expected}"

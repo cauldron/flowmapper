@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.match import (
     match_biogenic_to_non_fossil,
     match_custom_names_with_location_codes,
@@ -23,7 +23,9 @@ from flowmapper.match import (
 class TestMatchNamesWithRomanNumeralsInParentheses:
     """Integration tests for match_names_with_roman_numerals_in_parentheses."""
 
-    def test_match_names_with_roman_numerals_in_parentheses_matching(self, transformations):
+    def test_match_names_with_roman_numerals_in_parentheses_matching(
+        self, transformations
+    ):
         """Test matching names with roman numerals in parentheses."""
         source = {
             "name": "Iron (ii)",
@@ -43,7 +45,9 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
-    def test_match_names_with_roman_numerals_in_parentheses_uppercase(self, transformations):
+    def test_match_names_with_roman_numerals_in_parentheses_uppercase(
+        self, transformations
+    ):
         """Test matching names with uppercase roman numerals in parentheses."""
         source = {
             "name": "Iron (II)",
@@ -63,7 +67,9 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
-    def test_match_names_with_roman_numerals_in_parentheses_mixed_case(self, transformations):
+    def test_match_names_with_roman_numerals_in_parentheses_mixed_case(
+        self, transformations
+    ):
         """Test matching names with mixed case roman numerals in parentheses."""
         source = {
             "name": "Iron (II)",
@@ -83,7 +89,9 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
 
         assert result == {"comment": "With/without roman numerals in parentheses"}
 
-    def test_match_names_with_roman_numerals_in_parentheses_no_match(self, transformations):
+    def test_match_names_with_roman_numerals_in_parentheses_no_match(
+        self, transformations
+    ):
         """Test when names don't match even after removing roman numerals."""
         source = {
             "name": "Iron (II)",
@@ -103,7 +111,9 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
 
         assert result is None
 
-    def test_match_names_with_roman_numerals_in_parentheses_different_context(self, transformations):
+    def test_match_names_with_roman_numerals_in_parentheses_different_context(
+        self, transformations
+    ):
         """Test when contexts are different."""
         source = {
             "name": "Iron (II)",
@@ -127,7 +137,9 @@ class TestMatchNamesWithRomanNumeralsInParentheses:
 class TestMatchResourceNamesWithLocationCodesAndParentContext:
     """Integration tests for match_resource_names_with_location_codes_and_parent_context."""
 
-    def test_match_resource_names_with_location_codes_and_parent_context_matching(self, transformations):
+    def test_match_resource_names_with_location_codes_and_parent_context_matching(
+        self, transformations
+    ):
         """Test matching resource names with location codes and parent context."""
         source = {
             "name": "Water, NL",
@@ -143,13 +155,19 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
+        result = match_resource_names_with_location_codes_and_parent_context(
+            s, t, [], []
+        )
 
         assert result is not None
-        assert result["comment"] == "Name matching with location code and parent context"
+        assert (
+            result["comment"] == "Name matching with location code and parent context"
+        )
         assert result["location"] == "NL"
 
-    def test_match_resource_names_with_location_codes_water_conversion(self, transformations):
+    def test_match_resource_names_with_location_codes_water_conversion(
+        self, transformations
+    ):
         """Test water conversion factor for resource names with location codes."""
         source = {
             "name": "Water, NL",
@@ -165,7 +183,9 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
+        result = match_resource_names_with_location_codes_and_parent_context(
+            s, t, [], []
+        )
 
         assert result is not None
         assert result["conversion_factor"] == 1000.0
@@ -186,7 +206,9 @@ class TestMatchResourceNamesWithLocationCodesAndParentContext:
         s = Flow(source, transformations)
         t = Flow(target, transformations)
 
-        result = match_resource_names_with_location_codes_and_parent_context(s, t, [], [])
+        result = match_resource_names_with_location_codes_and_parent_context(
+            s, t, [], []
+        )
 
         assert result is None
 
@@ -474,12 +496,19 @@ class TestMatchRules:
         rule_names = [rule.__name__ for rule in rules]
 
         # match_identical_identifier should be first
-        assert rule_names[0] == "match_identical_identifier", f"Expected rule_names[0] to be 'match_identical_identifier', but got {rule_names[0]!r}"
+        assert (
+            rule_names[0] == "match_identical_identifier"
+        ), f"Expected rule_names[0] to be 'match_identical_identifier', but got {rule_names[0]!r}"
 
         # match_identical_names should be early
-        assert "match_identical_names" in rule_names[:5], f"Expected 'match_identical_names' to be in rule_names[:5], but got {rule_names[:5]}"
+        assert (
+            "match_identical_names" in rule_names[:5]
+        ), f"Expected 'match_identical_names' to be in rule_names[:5], but got {rule_names[:5]}"
 
         # More complex matches should be later
-        assert "match_custom_names_with_location_codes" in rule_names, f"Expected 'match_custom_names_with_location_codes' to be in rule_names, but it was not"
-        assert "match_biogenic_to_non_fossil" in rule_names[-5:], f"Expected 'match_biogenic_to_non_fossil' to be in rule_names[-5:], but got {rule_names[-5:]}"
-
+        assert (
+            "match_custom_names_with_location_codes" in rule_names
+        ), f"Expected 'match_custom_names_with_location_codes' to be in rule_names, but it was not"
+        assert (
+            "match_biogenic_to_non_fossil" in rule_names[-5:]
+        ), f"Expected 'match_biogenic_to_non_fossil' to be in rule_names[-5:], but got {rule_names[-5:]}"

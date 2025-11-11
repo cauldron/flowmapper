@@ -1,5 +1,5 @@
-from typing import Any, Self
 from collections import UserString
+from typing import Any, Self
 
 from flowmapper.utils import normalize_str
 

@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.flowmap import Flowmap
 from flowmapper.transformation_mapping import prepare_transformations
 
@@ -81,7 +81,9 @@ def test_transform_flow_without_default_transformations():
             "comment": "Identical names",
         },
     ]
-    assert actual == expected, f"Expected actual to equal expected, but got {actual} instead of {expected}"
+    assert (
+        actual == expected
+    ), f"Expected actual to equal expected, but got {actual} instead of {expected}"
 
 
 def test_transform_flow_with_default_transformations(transformations):

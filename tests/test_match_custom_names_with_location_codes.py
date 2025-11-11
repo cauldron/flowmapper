@@ -1,4 +1,4 @@
-from flowmapper.flow import Flow
+from flowmapper.domain import Flow
 from flowmapper.match import match_custom_names_with_location_codes
 
 
@@ -59,7 +59,9 @@ def test_match_custom_names_with_location_codes_no_match():
         {"name": "water, unspecified natural origin", "context": "air", "unit": "kg"}
     )
     result = match_custom_names_with_location_codes(s, t, [], [])
-    assert result is None, f"Expected match_custom_names_with_location_codes to return None, but got {result}"
+    assert (
+        result is None
+    ), f"Expected match_custom_names_with_location_codes to return None, but got {result}"
 
 
 def test_match_custom_names_with_location_codes_conversion():

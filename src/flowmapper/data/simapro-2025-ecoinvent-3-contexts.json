@@ -1,5 +1,5 @@
 {
-  "name": "SimaPro-ecoinvent-3-context",
+  "name": "SimaPro-2025-ecoinvent-3.12-context",
   "licenses": [
     {
       "name": "CC BY 4.0",
@@ -8,17 +8,45 @@
     }
   ],
   "version": "1.0.0",
-  "description": "Context mapping from 2023 SimaPro to ecoinvent 3",
-  "created": "2024-04-12T09:29:02.823409",
+  "description": "Context mapping from 2025 SimaPro to ecoinvent 3.12",
   "case-insensitive": true,
+  "created": "2025-11-10T12:34:56Z",
   "contributors": [
     {
       "title": "Chris Mutel",
       "path": "https://chris.mutel.org/",
-      "role": "author"
+      "roles": ["author"]
     }
   ],
+  "graph_context": [
+    "nodes"
+  ],
+  "mapping": {
+    "source": {
+      "expression language": "JSONPath",
+      "labels": {
+          "context": "$.context"
+      }
+    },
+    "target": {
+      "expression language": "JSONPath",
+      "labels": {
+          "context": "$.context"
+      }
+    }
+  },
   "update": [
+    {
+      "source": {
+        "context": "air/unspecified"
+      },
+      "target": {
+        "context": [
+          "air",
+          "unspecified"
+        ]
+      }
+    },
     {
       "source": {
         "context": "air/high. pop."
@@ -76,17 +104,51 @@
     },
     {
       "source": {
-        "context": "emissions to air"
+        "context": "Emissions to air"
       },
       "target": {
         "context": [
-          "air"
+          "air",
+          "unspecified"
         ]
       }
     },
     {
       "source": {
-        "context": "emissions to air/high. pop."
+        "context": "Emissions to air/"
+      },
+      "target": {
+        "context": [
+          "air",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/unspecified"
+      },
+      "target": {
+        "context": [
+          "air",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Airborne emissions/(unspecified)"
+      },
+      "target": {
+        "context": [
+          "air",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/high. pop."
       },
       "target": {
         "context": [
@@ -97,7 +159,18 @@
     },
     {
       "source": {
-        "context": "emissions to air/low. pop."
+        "context": "Airborne emissions/high. pop."
+      },
+      "target": {
+        "context": [
+          "air",
+          "urban air close to ground"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/low. pop."
       },
       "target": {
         "context": [
@@ -108,7 +181,40 @@
     },
     {
       "source": {
-        "context": "emissions to air/low. pop., long-term"
+        "context": "Airborne emissions/low. pop."
+      },
+      "target": {
+        "context": [
+          "air",
+          "non-urban air or from high stacks"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/indoor"
+      },
+      "target": {
+        "context": [
+          "air",
+          "non-urban air or from high stacks"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Airborne emissions/indoor"
+      },
+      "target": {
+        "context": [
+          "air",
+          "non-urban air or from high stacks"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/low. pop., long-term"
       },
       "target": {
         "context": [
@@ -119,7 +225,18 @@
     },
     {
       "source": {
-        "context": "emissions to air/stratosphere + troposphere"
+        "context": "Airborne emissions/low. pop., long-term"
+      },
+      "target": {
+        "context": [
+          "air",
+          "low population density, long-term"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to air/stratosphere + troposphere"
       },
       "target": {
         "context": [
@@ -130,17 +247,62 @@
     },
     {
       "source": {
-        "context": "emissions to soil"
+        "context": "Airborne emissions/stratosphere + troposphere"
       },
       "target": {
         "context": [
-          "soil"
+          "air",
+          "lower stratosphere + upper troposphere"
         ]
       }
     },
     {
       "source": {
-        "context": "emissions to soil/agricultural"
+        "context": "Emissions to soil/unspecified"
+      },
+      "target": {
+        "context": [
+          "soil",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to soil/(unspecified)"
+      },
+      "target": {
+        "context": [
+          "soil",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to soil"
+      },
+      "target": {
+        "context": [
+          "soil",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to soil/"
+      },
+      "target": {
+        "context": [
+          "soil",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Emissions to soil/agricultural"
       },
       "target": {
         "context": [
@@ -151,7 +313,7 @@
     },
     {
       "source": {
-        "context": "emissions to soil/forestry"
+        "context": "Emissions to soil/forestry"
       },
       "target": {
         "context": [
@@ -162,12 +324,45 @@
     },
     {
       "source": {
-        "context": "emissions to soil/industrial"
+        "context": "Emissions to soil/industrial"
       },
       "target": {
         "context": [
           "soil",
           "industrial"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Final waste flows/(unspecified)"
+      },
+      "target": {
+        "context": [
+          "inventory indicator",
+          "waste"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Final waste flows/"
+      },
+      "target": {
+        "context": [
+          "inventory indicator",
+          "waste"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "water/unspecified"
+      },
+      "target": {
+        "context": [
+          "water",
+          "unspecified"
         ]
       }
     },
@@ -221,7 +416,41 @@
       },
       "target": {
         "context": [
-          "water"
+          "water",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "emissions to water/"
+      },
+      "target": {
+        "context": [
+          "water",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "emissions to water/unspecified"
+      },
+      "target": {
+        "context": [
+          "water",
+          "unspecified"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Waterborne emissions/(unspecified)"
+      },
+      "target": {
+        "context": [
+          "water",
+          "unspecified"
         ]
       }
     },
@@ -239,6 +468,17 @@
     {
       "source": {
         "context": "emissions to water/groundwater, long-term"
+      },
+      "target": {
+        "context": [
+          "water",
+          "ground-, long-term"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Waterborne emissions/groundwater, long-term"
       },
       "target": {
         "context": [
@@ -271,7 +511,29 @@
     },
     {
       "source": {
+        "context": "Waterborne emissions/ocean"
+      },
+      "target": {
+        "context": [
+          "water",
+          "ocean"
+        ]
+      }
+    },
+    {
+      "source": {
         "context": "emissions to water/river"
+      },
+      "target": {
+        "context": [
+          "water",
+          "surface water"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Waterborne emissions/river"
       },
       "target": {
         "context": [
@@ -288,16 +550,6 @@
         "context": [
           "water",
           "surface water"
-        ]
-      }
-    },
-    {
-      "source": {
-        "context": "resources"
-      },
-      "target": {
-        "context": [
-          "natural resource"
         ]
       }
     },
@@ -358,17 +610,40 @@
     },
     {
       "source": {
-        "context": "raw"
+        "context": "Raw"
       },
       "target": {
         "context": [
           "natural resource"
         ]
-      }
+      },
+      "comment": "Dummy value used for matching; not a real ecoinvent context"
     },
     {
       "source": {
-        "context": "raw/biotic"
+        "context": "Raw/"
+      },
+      "target": {
+        "context": [
+          "natural resource"
+        ]
+      },
+      "comment": "Dummy value used for matching; not a real ecoinvent context"
+    },
+    {
+      "source": {
+        "context": "Raw materials/"
+      },
+      "target": {
+        "context": [
+          "natural resource"
+        ]
+      },
+      "comment": "Dummy value used for matching; not a real ecoinvent context"
+    },
+    {
+      "source": {
+        "context": "Raw/biotic"
       },
       "target": {
         "context": [
@@ -379,7 +654,7 @@
     },
     {
       "source": {
-        "context": "raw/in air"
+        "context": "Raw/in air"
       },
       "target": {
         "context": [
@@ -390,7 +665,7 @@
     },
     {
       "source": {
-        "context": "raw/in ground"
+        "context": "Raw/in ground"
       },
       "target": {
         "context": [
@@ -401,7 +676,7 @@
     },
     {
       "source": {
-        "context": "raw/land"
+        "context": "Raw/land"
       },
       "target": {
         "context": [
@@ -409,9 +684,21 @@
           "land"
         ]
       }
-    },    {
+    },
+    {
       "source": {
-        "context": "raw/in water"
+        "context": "Raw materials/land"
+      },
+      "target": {
+        "context": [
+          "natural resource",
+          "land"
+        ]
+      }
+    },
+    {
+      "source": {
+        "context": "Raw/in water"
       },
       "target": {
         "context": [
