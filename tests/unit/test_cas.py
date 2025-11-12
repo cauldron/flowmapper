@@ -257,53 +257,134 @@ class TestCASFieldEquality:
     """Test CASField equality comparison."""
 
     def test_eq_with_same_casfield(self):
-        """Test equality with same CASField instance."""
+        """Test equality with same CASField instance (exact data match)."""
         cas1 = CASField("7440-05-3")
         cas2 = CASField("7440-05-3")
-        # CASField inherits from UserString, so equality is based on string comparison
+        # CASField to CASField comparison uses exact data comparison
         assert (
             cas1 == cas2
         ), f"Expected cas1 to equal cas2, but they are not equal (cas1={cas1!r}, cas2={cas2!r})"
 
-    def test_eq_with_different_casfield(self):
-        """Test equality with different CASField."""
+    def test_eq_with_different_casfield_data(self):
+        """Test equality with CASField having different data."""
         cas1 = CASField("7440-05-3")
         cas2 = CASField("7782-40-3")
         assert (
             cas1 != cas2
         ), f"Expected cas1 to not equal cas2, but they are equal (cas1={cas1!r}, cas2={cas2!r})"
 
-    def test_eq_with_string(self):
-        """Test equality with string."""
+    def test_eq_with_casfield_different_formatting(self):
+        """Test equality with CASField having same CAS but different formatting."""
+        cas1 = CASField("7440-05-3")
+        cas2 = CASField("0007440-05-3")
+        # CASField to CASField uses exact data comparison, so formatting matters
+        assert (
+            cas1 != cas2
+        ), f"Expected cas1 to not equal cas2 (different formatting), but they are equal (cas1={cas1!r}, cas2={cas2!r})"
+
+    def test_eq_with_string_exact_match(self):
+        """Test equality with string that exactly matches."""
         cas = CASField("7440-05-3")
         assert (
             cas == "7440-05-3"
         ), f"Expected cas to equal '7440-05-3', but they are not equal (cas={cas!r})"
+
+    def test_eq_with_string_different_cas(self):
+        """Test equality with string containing different CAS number."""
+        cas = CASField("7440-05-3")
         assert (
             cas != "7782-40-3"
         ), f"Expected cas to not equal '7782-40-3', but they are equal (cas={cas!r})"
 
-    def test_eq_with_leading_zeros_string(self):
-        """Test equality with string containing leading zeros."""
+    def test_eq_with_string_leading_zeros(self):
+        """Test equality with string containing leading zeros (should normalize)."""
         cas = CASField("7440-05-3")
-        # UserString equality is based on exact string comparison, so leading zeros matter
+        # String comparison uses from_string which normalizes (strips leading zeros)
         assert (
-            cas != "0007440-05-3"
-        ), f"Expected cas to not equal '0007440-05-3', but they are equal (cas={cas!r})"
+            cas == "0007440-05-3"
+        ), f"Expected cas to equal '0007440-05-3' (normalized), but they are not equal (cas={cas!r})"
 
-    def test_eq_with_whitespace(self):
-        """Test equality with whitespace."""
-        cas1 = CASField("\t\n\n007440-05-3")
-        cas2 = CASField("7440-05-3")
-        # UserString equality is based on exact string comparison, so whitespace matters
+    def test_eq_with_string_whitespace(self):
+        """Test equality with string containing whitespace (should normalize)."""
+        cas = CASField("7440-05-3")
+        # String comparison uses from_string which normalizes (strips whitespace)
+        assert (
+            cas == "  7440-05-3  "
+        ), f"Expected cas to equal '  7440-05-3  ' (normalized), but they are not equal (cas={cas!r})"
+
+    def test_eq_with_string_leading_zeros_and_whitespace(self):
+        """Test equality with string containing both leading zeros and whitespace."""
+        cas = CASField("7440-05-3")
+        # String comparison normalizes both whitespace and leading zeros
+        assert (
+            cas == "  0007440-05-3  "
+        ), f"Expected cas to equal '  0007440-05-3  ' (normalized), but they are not equal (cas={cas!r})"
+
+    def test_eq_with_string_invalid_cas(self):
+        """Test equality with string containing invalid CAS number."""
+        cas = CASField("7440-05-3")
+        # Invalid CAS strings return None from from_string, so equality is False
+        assert (
+            cas != "7440-05-2"
+        ), f"Expected cas to not equal '7440-05-2' (invalid check digit), but they are equal (cas={cas!r})"
+
+    def test_eq_with_string_empty_string(self):
+        """Test equality with empty string raises ValueError."""
+        cas = CASField("7440-05-3")
+        # Empty string is invalid CAS, so from_string raises ValueError when creating CASField
+        with pytest.raises(ValueError, match="Given input is not valid CAS formatting"):
+            _ = cas == ""
+
+    def test_eq_with_userstring(self):
+        """Test equality with UserString."""
+        from collections import UserString
+
+        cas = CASField("7440-05-3")
+        us = UserString("7440-05-3")
+        # UserString is handled like str in __eq__, so it should normalize
+        assert (
+            cas == us
+        ), f"Expected cas to equal UserString('7440-05-3'), but they are not equal (cas={cas!r})"
+
+    def test_eq_with_userstring_leading_zeros(self):
+        """Test equality with UserString containing leading zeros."""
+        from collections import UserString
+
+        cas = CASField("7440-05-3")
+        us = UserString("0007440-05-3")
+        # UserString should normalize like str
+        assert (
+            cas == us
+        ), f"Expected cas to equal UserString('0007440-05-3') (normalized), but they are not equal (cas={cas!r})"
+
+    def test_eq_with_other_types(self):
+        """Test equality with other types returns False."""
+        cas = CASField("7440-05-3")
+        # Non-string, non-CASField types should return False
+        assert (
+            cas != 744053
+        ), f"Expected cas to not equal integer, but they are equal (cas={cas!r})"
+        assert (
+            cas != None
+        ), f"Expected cas to not equal None, but they are equal (cas={cas!r})"
+        assert (
+            cas != []
+        ), f"Expected cas to not equal list, but they are equal (cas={cas!r})"
+
+    def test_ne_with_different_casfield(self):
+        """Test inequality with different CASField."""
+        cas1 = CASField("7440-05-3")
+        cas2 = CASField("7782-40-3")
         assert (
             cas1 != cas2
         ), f"Expected cas1 to not equal cas2, but they are equal (cas1={cas1!r}, cas2={cas2!r})"
 
-    def test_eq_with_empty_string_raises_error(self):
-        """Test equality with empty string raises ValueError."""
-        with pytest.raises(ValueError, match="Given input is not valid CAS formatting"):
-            CASField("")
+    def test_ne_with_string(self):
+        """Test inequality with different string."""
+        cas = CASField("7440-05-3")
+        assert (
+            cas != "7782-40-3"
+        ), f"Expected cas to not equal '7782-40-3', but they are equal (cas={cas!r})"
 
 
 class TestCASFieldStringBehavior:

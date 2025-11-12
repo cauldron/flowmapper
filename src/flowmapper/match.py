@@ -82,19 +82,31 @@ def match_identical_identifier(
     return matches
 
 
-# def match_identical_cas_numbers(
-#     source_flows: list[Flow], target_flows: list[Flow], comment: str = "Identical CAS numbers"
-# ):
-#     if (s.cas == t.cas) and (s.context == t.context):
-#         # Only return a match if there is exactly one flow in all_target_flows
-#         # that matches the same CAS and context (which should be t)
-#         if not any(
-#             flow
-#             for flow in all_target_flows
-#             if (s.cas == flow.cas) and (s.context == flow.context)
-#             and flow is not t
-#         ):
-#             return {"comment": comment}
+def match_identical_cas_numbers(
+    source_flows: list[NormalizedFlow], target_flows: list[NormalizedFlow]
+) -> list[Match]:
+    matches = []
+
+    for (cas_number, context, location), sources in toolz.itertoolz.groupby(
+        lambda x: (x.cas_number, x.context, x.location), source_flows
+    ).items():
+        matches.extend(
+            get_matches(
+                source_flows=sources,
+                target_flows=[
+                    flow
+                    for flow in target_flows
+                    if flow.cas_number == cas_number
+                    and flow.context == context
+                    and flow.location == location
+                ],
+                comment=f"Shared CAS code with identical context and location: {cas_number}",
+                function_name="match_identical_cas_numbers",
+                match_condition=MatchCondition.exact,
+            )
+        )
+
+    return matches
 
 
 def match_identical_names(

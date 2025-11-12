@@ -1,3 +1,4 @@
+from typing import Any
 import re
 from collections import UserString
 from functools import cached_property
@@ -14,6 +15,16 @@ class CASField(UserString):
         if not valid_cas.search(str(string)):
             raise ValueError(f"Given input is not valid CAS formatting: '{string}'")
         super().__init__(str(string))
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, CASField):
+            return self.data == other.data
+        elif isinstance(other, (str, UserString)):
+            other_cas = CASField.from_string(str(other))
+            if other_cas is None:
+                return False
+            return self.data == other_cas.data
+        return False
 
     @staticmethod
     def from_string(string: str | None) -> "CASField | None":
