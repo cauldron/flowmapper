@@ -555,3 +555,89 @@ class TestContextFieldEdgeCases:
             "a",
             "b",
         ), f"Expected normalized.value to be ('a', 'b'), but got {normalized.value!r}"
+
+
+class TestContextFieldIsResource:
+    """Test ContextField is_resource method."""
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            # String values that should return True (resource categories)
+            ("resource", True),
+            ("resources", True),
+            ("natural resource", True),
+            ("natural resources", True),
+            ("land use", True),
+            ("economic", True),
+            ("social", True),
+            ("raw materials", True),
+            ("raw", True),
+            # Case insensitivity
+            ("RESOURCE", True),
+            ("Natural Resource", True),
+            # Substring matches
+            ("water resource extraction", True),
+            ("natural resource extraction", True),
+            ("economic activity", True),
+            ("social aspect", True),
+            # Slash-separated strings with resource
+            ("resource/air", True),
+            # String values that should return False
+            ("emission", False),
+            ("air", False),
+            ("water", False),
+            ("", False),
+            ("emission/air", False),
+        ],
+    )
+    def test_is_resource_with_string(self, value, expected):
+        """Test is_resource with string values."""
+        c = ContextField(value)
+        assert (
+            c.is_resource() is expected
+        ), f"Expected is_resource() to be {expected} for {value!r}, but got {c.is_resource()}"
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            # List values that should return True
+            (["resource"], True),
+            (["resources"], True),
+            (["raw"], True),
+            (["land use"], True),
+            (["economic"], True),
+            (["social"], True),
+            (["raw materials"], True),
+            (["RESOURCE"], True),  # Case insensitive
+            (["emission", "resource", "air"], True),  # Multiple elements, one resource
+            # List values that should return False
+            (["emission", "air", "water"], False),
+            ([], False),
+        ],
+    )
+    def test_is_resource_with_list(self, value, expected):
+        """Test is_resource with list values."""
+        c = ContextField(value)
+        assert (
+            c.is_resource() is expected
+        ), f"Expected is_resource() to be {expected} for {value!r}, but got {c.is_resource()}"
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [
+            # Tuple values that should return True
+            (("resource",), True),
+            (("raw",), True),
+            (("emission", "resource", "air"), True),  # Multiple elements, one resource
+            # Tuple values that should return False
+            (("emission", "air"), False),
+            ((), False),
+        ],
+    )
+    def test_is_resource_with_tuple(self, value, expected):
+        """Test is_resource with tuple values."""
+        c = ContextField(value)
+        assert (
+            c.is_resource() is expected
+        ), f"Expected is_resource() to be {expected} for {value!r}, but got {c.is_resource()}"

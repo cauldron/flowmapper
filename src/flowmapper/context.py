@@ -8,6 +8,17 @@ MISSING_VALUES = {
     "unknown",
     "unspecified",
 }
+RESOURCE_CATEGORY = {
+    "natural resources",
+    "natural resource",
+    "resources",
+    "resource",
+    "land use",
+    "economic",
+    "social",
+    "raw materials",
+    "raw",
+}
 
 
 class ContextField:
@@ -33,6 +44,13 @@ class ContextField:
             intermediate = intermediate[:-1]
 
         return type(self)(value=tuple(intermediate))
+
+    def is_resource(self) -> bool:
+        if isinstance(self.value, str):
+            return any(cat in self.value.lower() for cat in RESOURCE_CATEGORY)
+        else:
+            lowered = [elem.lower() for elem in self.value]
+            return any(cat in lowered for cat in RESOURCE_CATEGORY)
 
     def as_tuple(self) -> tuple | str:
         if isinstance(self.value, str):
