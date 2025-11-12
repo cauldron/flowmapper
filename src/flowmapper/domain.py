@@ -158,6 +158,14 @@ class NormalizedFlow:
     def synonyms(self) -> list[str] | None:
         return self.current.synonyms
 
+    def reset_current(self) -> None:
+        self.current = copy(self.normalized)
+
+    def update_current(self, **kwargs) -> None:
+        data = self.normalized.to_dict()
+        data.update(kwargs)
+        self.current = Flow.from_dict(data)
+
     @staticmethod
     def from_dict(data: dict, transformations: list) -> "NormalizedFlow":
         original = Flow.from_dict(data)
