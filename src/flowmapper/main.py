@@ -111,18 +111,18 @@ def flowmapper(
             indent=True,
         )
 
-    # flowmap.to_randonneur(
-    #     source_id=source_id,
-    #     target_id=target_id,
-    #     contributors=contributors,
-    #     mapping_source=Flow.randonneur_mapping(),
-    #     mapping_target=Flow.randonneur_mapping(),
-    #     version=version,
-    #     licenses=licenses,
-    #     homepage=homepage,
-    #     name=name,
-    #     path=output_dir / f"{stem}.json",
-    # )
-    # flowmap.to_glad(output_dir / f"{stem}.xlsx", missing_source=True)
+    flowmap.to_randonneur(
+        source_id=source_id,
+        target_id=target_id,
+        contributors=contributors,
+        mapping_source=Flow.randonneur_mapping(),
+        mapping_target=Flow.randonneur_mapping(),
+        version=version,
+        licenses=licenses,
+        homepage=homepage,
+        name=name,
+        path=output_dir / f"{stem}.json",
+    )
+    flowmap.to_glad(output_dir / f"{stem}.xlsx", missing_source=True)
 
     return flowmap

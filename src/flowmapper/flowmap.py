@@ -282,14 +282,14 @@ Mappings cardinalities: {str(cardinalities)}"""
                     "SourceFlowName": str(match.source.name),
                     "SourceFlowUUID": match.source.identifier
                     or ("" if ensure_id else None),
-                    "SourceFlowContext": match.source.context.export_as_string(),
+                    "SourceFlowContext": match.source.context.export_as_string(join_character="/"),
                     "SourceUnit": str(match.source.unit),
-                    "MatchCondition": match.condition.to_glad(),
+                    "MatchCondition": match.condition.as_glad(),
                     "ConversionFactor": match.conversion_factor,
                     "TargetFlowName": str(match.target.name),
                     "TargetFlowUUID": match.target.identifier
                     or ("" if ensure_id else None),
-                    "TargetFlowContext": match.target.context.export_as_string(),
+                    "TargetFlowContext": match.target.context.export_as_string(join_character="/"),
                     "TargetUnit": str(match.target.unit),
                     "MemoMapper": match.comment,
                 }

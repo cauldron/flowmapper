@@ -4,6 +4,8 @@ from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import Any, Self
 
+from six.moves import UserString
+
 from flowmapper.cas import CASField
 from flowmapper.context import ContextField
 from flowmapper.location import split_location_suffix
@@ -228,12 +230,19 @@ class Match:
     def export(self, flowmapper_metadata: bool = False) -> dict:
         from flowmapper import __version__
 
+        def serializable(obj: Any) -> Any:
+            if isinstance(obj, UserString):
+                return str(obj)
+            elif isinstance(obj, ContextField):
+                return obj.value
+            return obj
+
         data = asdict(self)
         data["source"] = {
-            k: v for k, v in data["source"].items() if v and not k.startswith("_")
+            k: serializable(v) for k, v in data["source"].items() if v and not k.startswith("_")
         }
         data["target"] = {
-            k: v for k, v in data["target"].items() if v and not k.startswith("_")
+            k: serializable(v) for k, v in data["target"].items() if v and not k.startswith("_")
         }
         data["condition"] = str(data["condition"])
 
