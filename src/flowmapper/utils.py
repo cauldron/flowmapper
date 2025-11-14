@@ -5,7 +5,8 @@ import importlib.resources as resource
 import json
 import re
 import unicodedata
-from collections.abc import Collection, Mapping
+from collections.abc import Callable, Collection, Mapping
+from contextlib import AbstractContextManager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -164,3 +165,53 @@ def remove_unit_slash(obj: Flow) -> str:
                 f"Flow {obj} has unit '{obj.unit}' but name refers to incompatible unit '{obj_dict['unit']}'"
             )
     return name
+
+
+class FlowTransformationContext(AbstractContextManager):
+    """
+    Context manager that applies a function to NormalizedFlows on entry and resets them on exit.
+
+    This context manager is useful when you need to temporarily modify flows for matching
+    or processing, and want to ensure they are reset to their normalized state afterward.
+
+    Parameters
+    ----------
+    flows : list[NormalizedFlow]
+        List of NormalizedFlow objects to transform and reset.
+    functions : list[Callable[[list[NormalizedFlow]], None]]
+        Function to apply to the flows on context entry. The function should modify
+        the normalized flows in place (e.g., by calling update_current on them).
+
+    Examples
+    --------
+    >>> flows = [NormalizedFlow(...), NormalizedFlow(...)]
+    >>> def update_func_a(flows):
+    ...     for flow in flows:
+    ...         flow.update_current(name="Modified")
+    >>> def update_func_b(flows):
+    ...     for flow in flows:
+    ...         flow.update_current(unit="A lot")
+    >>> with FlowTransformationContext(flows, update_func_a, update_func_b):
+    ...     # flows are modified here
+    ...     pass
+    >>> # flows are automatically reset to normalized state
+    """
+
+    def __init__(
+        self,
+        flows: list[Any],  # list[NormalizedFlow] but avoiding circular import
+        *functions: Callable[[list[Any]], None],
+    ):
+        self.flows = flows
+        self.functions = functions
+
+    def __enter__(self) -> FlowTransformationContext:
+        """Apply the function to the flows on entry."""
+        for function in self.functions:
+            function(self.flows)
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        """Reset all flows to their normalized state on exit."""
+        for flow in self.flows:
+            flow.reset_current()

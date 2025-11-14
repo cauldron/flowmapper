@@ -169,7 +169,7 @@ class NormalizedFlow:
         self.current = Flow.from_dict(data)
 
     @staticmethod
-    def from_dict(data: dict, transformations: list) -> "NormalizedFlow":
+    def from_dict(data: dict) -> "NormalizedFlow":
         original = Flow.from_dict(data)
         # Do data preprocessing here
         normalized = original.normalize()
