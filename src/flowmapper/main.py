@@ -1,15 +1,14 @@
 import json
 import logging
 from copy import copy
-from functools import partial
 from pathlib import Path
 
-from randonneur import Datapackage, MigrationConfig, migrate_nodes
+from randonneur import Datapackage
 from randonneur_data import Registry
 
 from flowmapper.domain import Flow, NormalizedFlow
 from flowmapper.flowmap import Flowmap
-from flowmapper.utils import tupleize_context
+from flowmapper.utils import randonneur_as_function
 
 logger = logging.getLogger(__name__)
 
@@ -45,28 +44,13 @@ def flowmapper(
 
     if transformations is None:
         transformations = []
-    if registry is None:
-        registry = Registry()
 
     if unit_normalization:
         transformations.append("Flowmapper-standard-units-harmonization")
 
     for obj in transformations:
-        if isinstance(obj, Datapackage):
-            obj = obj.data
-        elif isinstance(obj, str):
-            obj = registry.get_file(obj)
-        elif "update" not in obj:
-            raise KeyError
         transformation_functions.append(
-            partial(
-                migrate_nodes,
-                migrations=tupleize_context(obj),
-                config=MigrationConfig(
-                    verbs=["update"],
-                    case_sensitive=not obj.get("case-insensitive"),
-                ),
-            )
+            randonneur_as_function(datapackage=obj, registry=registry)
         )
 
     original_source_flows = [Flow.from_dict(obj) for obj in json.load(open(source))]

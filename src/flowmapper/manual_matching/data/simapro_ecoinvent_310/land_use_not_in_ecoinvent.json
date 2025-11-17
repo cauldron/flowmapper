@@ -221,14 +221,6 @@
   },
   {
     "source": {
-      "name": "Transformation, to industrial area, built up"
-    },
-    "target": {
-      "name": "Transformation, to industrial area"
-    }
-  },
-  {
-    "source": {
       "name": "Transformation, to industrial area, vegetation"
     },
     "target": {

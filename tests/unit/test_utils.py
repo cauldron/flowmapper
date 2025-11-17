@@ -1,6 +1,8 @@
-"""Unit tests for utils module."""
+"""Unit tests for FlowTransformationContext."""
 
 from copy import copy
+
+import pytest
 
 from flowmapper.domain import Flow, NormalizedFlow
 from flowmapper.utils import FlowTransformationContext
@@ -9,358 +11,240 @@ from flowmapper.utils import FlowTransformationContext
 class TestFlowTransformationContext:
     """Test FlowTransformationContext context manager."""
 
-    def test_single_function_applied_and_reset(self):
-        """Test that a single function is applied on entry and flows are reset on exit."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
-        original = Flow.from_dict(data)
-        normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
-
-        def update_name(flows):
-            for flow in flows:
-                flow.update_current(name="Modified name")
-
-        # Before context
-        assert (
-            flows[0].name == normalized.name
-        ), "Expected current to match normalized before context"
-
-        # Inside context
-        with FlowTransformationContext(flows, update_name):
-            assert (
-                flows[0].name == "Modified name"
-            ), f"Expected name to be 'Modified name' inside context, but got {flows[0].name!r}"
-
-        # After context
-        assert (
-            flows[0].name == normalized.name
-        ), f"Expected current to be reset to normalized after context, but got {flows[0].name!r} != {normalized.name!r}"
-
-    def test_multiple_functions_applied_in_order(self):
-        """Test that multiple functions are applied in order."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
-        original = Flow.from_dict(data)
-        normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
-
-        call_order = []
-
-        def update_name(flows):
-            call_order.append("name")
-            for flow in flows:
-                # update_current always starts from normalized, so we need to update all fields together
-                flow.update_current(name="Modified name", unit=flow.unit, context=flow.context)
-
-        def update_unit(flows):
-            call_order.append("unit")
-            for flow in flows:
-                # Preserve name from previous update, but update_current resets to normalized
-                # So we need to get current values first
-                current_name = flow.name
-                current_context = flow.context
-                flow.update_current(name=current_name, unit="g", context=current_context)
-
-        def update_context(flows):
-            call_order.append("context")
-            for flow in flows:
-                # Preserve previous updates
-                current_name = flow.name
-                current_unit = flow.unit
-                flow.update_current(name=current_name, unit=current_unit, context="water")
-
-        with FlowTransformationContext(flows, update_name, update_unit, update_context):
-            assert (
-                flows[0].name == "Modified name"
-            ), "Expected name to be updated"
-            assert flows[0].unit == "g", "Expected unit to be updated"
-            assert (
-                flows[0].context == "water"
-            ), "Expected context to be updated"
-            assert call_order == [
-                "name",
-                "unit",
-                "context",
-            ], f"Expected functions to be called in order, but got {call_order}"
-
-        # After context, all should be reset
-        assert (
-            flows[0].name == normalized.name
-        ), "Expected name to be reset"
-        assert (
-            flows[0].unit == normalized.unit
-        ), "Expected unit to be reset"
-        assert (
-            flows[0].context == normalized.context
-        ), "Expected context to be reset"
-
-    def test_multiple_flows_all_reset(self):
-        """Test that all flows in the list are reset on exit."""
-        data1 = {"name": "Flow 1", "context": "air", "unit": "kg"}
-        data2 = {"name": "Flow 2", "context": "water", "unit": "kg"}
-        original1 = Flow.from_dict(data1)
-        original2 = Flow.from_dict(data2)
-        normalized1 = original1.normalize()
-        normalized2 = original2.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original1, normalized=normalized1, current=copy(normalized1)
-            ),
-            NormalizedFlow(
-                original=original2, normalized=normalized2, current=copy(normalized2)
-            ),
-        ]
-
-        def update_all(flows):
-            for flow in flows:
-                flow.update_current(name="Updated")
-
-        with FlowTransformationContext(flows, update_all):
-            assert flows[0].name == "Updated", "Expected flow 0 to be updated"
-            assert flows[1].name == "Updated", "Expected flow 1 to be updated"
-
-        # After context, both should be reset
-        assert (
-            flows[0].name == normalized1.name
-        ), f"Expected flow 0 to be reset, but got {flows[0].name!r}"
-        assert (
-            flows[1].name == normalized2.name
-        ), f"Expected flow 1 to be reset, but got {flows[1].name!r}"
-
-    def test_empty_flows_list(self):
-        """Test that context manager works with empty flows list."""
-        flows = []
-
-        def noop(flows):
-            pass
-
-        # Should not raise any errors
-        with FlowTransformationContext(flows, noop):
-            pass
-
-        assert flows == [], "Expected flows list to remain empty"
-
-    def test_no_functions_provided(self):
-        """Test that context manager works with no functions provided."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
-        original = Flow.from_dict(data)
-        normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
-
-        # Should not raise any errors
-        with FlowTransformationContext(flows):
-            assert (
-                flows[0].name == normalized.name
-            ), "Expected flow to remain unchanged when no functions provided"
-
-        # Should still be reset (though it's already in normalized state)
-        assert (
-            flows[0].name == normalized.name
-        ), "Expected flow to remain in normalized state"
-
-    def test_reset_on_exception(self):
-        """Test that flows are reset even if an exception occurs."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
-        original = Flow.from_dict(data)
-        normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
-
-        def update_name(flows):
-            for flow in flows:
-                flow.update_current(name="Modified name")
-
-        try:
-            with FlowTransformationContext(flows, update_name):
-                assert (
-                    flows[0].name == "Modified name"
-                ), "Expected name to be modified"
-                raise ValueError("Test exception")
-        except ValueError:
-            pass
-
-        # Flow should still be reset despite the exception
-        assert (
-            flows[0].name == normalized.name
-        ), f"Expected flow to be reset after exception, but got {flows[0].name!r}"
-
-    def test_context_manager_returns_self(self):
-        """Test that context manager returns itself on entry."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
-        original = Flow.from_dict(data)
-        normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
-
-        def noop(flows):
-            pass
-
-        with FlowTransformationContext(flows, noop) as ctx:
-            assert (
-                ctx is not None
-            ), "Expected context manager to return itself"
-            assert isinstance(
-                ctx, FlowTransformationContext
-            ), "Expected context manager to return FlowTransformationContext instance"
-
-    def test_multiple_functions_with_different_updates(self):
-        """Test multiple functions updating different fields."""
+    def test_single_function_applies_transformation(self):
+        """Test that a single function is applied on entry."""
         data = {
             "name": "Carbon dioxide",
             "context": "air",
             "unit": "kg",
-            "location": "US",
         }
         original = Flow.from_dict(data)
         normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
+        nf = NormalizedFlow(
+            original=original, normalized=normalized, current=copy(normalized)
+        )
+        flows = [nf]
 
-        def update_name(flows):
+        def transform_func(flows):
             for flow in flows:
-                # update_current resets to normalized, so preserve other fields
-                flow.update_current(
-                    name="CO2",
-                    unit=flow.unit,
-                    context=flow.context,
-                    location=flow.location,
-                )
+                flow.update_current(name="Modified name")
+            return flows
 
-        def update_location(flows):
-            for flow in flows:
-                # Preserve name from previous update
-                flow.update_current(
-                    name=flow.name,
-                    unit=flow.unit,
-                    context=flow.context,
-                    location="CA",
-                )
-
-        with FlowTransformationContext(flows, update_name, update_location):
-            assert flows[0].name == "CO2", "Expected name to be updated"
+        with FlowTransformationContext(flows, transform_func) as modified_flows:
             assert (
-                flows[0].location == "CA"
-            ), "Expected location to be updated"
-            # Unit should remain as normalized (not updated by any function)
+                modified_flows[0].current.name.data == "Modified name"
+            ), "Expected flow to be modified in context"
             assert (
-                flows[0].unit == normalized.unit
-            ), "Expected unit to remain unchanged"
+                flows[0].current.name.data == "Modified name"
+            ), "Expected original flows list to be modified"
 
-        # All should be reset
+        # After exit, flows should be reset
         assert (
-            flows[0].name == normalized.name
+            flows[0].current.name.data == normalized.name.data
+        ), "Expected flow to be reset after context exit"
+
+    def test_enter_returns_modified_flows(self):
+        """Test that __enter__ returns the modified flows list."""
+        data = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        original = Flow.from_dict(data)
+        normalized = original.normalize()
+        nf = NormalizedFlow(
+            original=original, normalized=normalized, current=copy(normalized)
+        )
+        flows = [nf]
+
+        def transform_func(flows):
+            for flow in flows:
+                flow.update_current(name="Modified")
+            return flows
+
+        context = FlowTransformationContext(flows, transform_func)
+        returned_flows = context.__enter__()
+
+        assert (
+            returned_flows is flows
+        ), "Expected __enter__ to return the same flows list object"
+        assert (
+            returned_flows[0].current.name.data == "Modified"
+        ), "Expected returned flows to be modified"
+
+        context.__exit__(None, None, None)
+
+    def test_reset_on_exit(self):
+        """Test that flows are reset to normalized state on exit."""
+        data = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        original = Flow.from_dict(data)
+        normalized = original.normalize()
+        nf = NormalizedFlow(
+            original=original, normalized=normalized, current=copy(normalized)
+        )
+        flows = [nf]
+
+        def transform_func(flows):
+            for flow in flows:
+                flow.update_current(name="Modified", unit="g", context="water")
+            return flows
+
+        with FlowTransformationContext(flows, transform_func):
+            # Verify modifications
+            assert flows[0].current.name.data == "Modified"
+            assert flows[0].current.unit.data == "g"
+            assert flows[0].current.context.value == "water"
+
+        # After exit, all should be reset
+        assert (
+            flows[0].current.name.data == normalized.name.data
         ), "Expected name to be reset"
         assert (
-            flows[0].location == normalized.location
-        ), "Expected location to be reset"
+            flows[0].current.unit.data == normalized.unit.data
+        ), "Expected unit to be reset"
+        assert (
+            flows[0].current.context.value == normalized.context.value
+        ), "Expected context to be reset"
 
-    def test_function_modifies_multiple_flows_differently(self):
-        """Test that a function can modify different flows differently."""
-        data1 = {"name": "Flow 1", "context": "air", "unit": "kg"}
-        data2 = {"name": "Flow 2", "context": "water", "unit": "kg"}
+    def test_reset_on_exception(self):
+        """Test that flows are reset even when an exception occurs."""
+        data = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        original = Flow.from_dict(data)
+        normalized = original.normalize()
+        nf = NormalizedFlow(
+            original=original, normalized=normalized, current=copy(normalized)
+        )
+        flows = [nf]
+
+        def transform_func(flows):
+            for flow in flows:
+                flow.update_current(name="Modified")
+            return flows
+
+        try:
+            with FlowTransformationContext(flows, transform_func):
+                assert flows[0].current.name.data == "Modified"
+                raise ValueError("Test exception")
+        except ValueError:
+            pass
+
+        # After exception, flows should still be reset
+        assert (
+            flows[0].current.name.data == normalized.name.data
+        ), "Expected flow to be reset even after exception"
+
+    def test_function_returns_modified_list(self):
+        """Test that functions can return a modified list."""
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        data2 = {
+            "name": "Water",
+            "context": "air",
+            "unit": "kg",
+        }
         original1 = Flow.from_dict(data1)
         original2 = Flow.from_dict(data2)
         normalized1 = original1.normalize()
         normalized2 = original2.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original1, normalized=normalized1, current=copy(normalized1)
-            ),
-            NormalizedFlow(
-                original=original2, normalized=normalized2, current=copy(normalized2)
-            ),
-        ]
+        nf1 = NormalizedFlow(
+            original=original1, normalized=normalized1, current=copy(normalized1)
+        )
+        nf2 = NormalizedFlow(
+            original=original2, normalized=normalized2, current=copy(normalized2)
+        )
+        flows = [nf1, nf2]
 
-        def update_selectively(flows):
-            # Only update the first flow
-            flows[0].update_current(name="Updated Flow 1")
+        def filter_func(flows):
+            # Return only flows with "carbon" in name
+            filtered = [f for f in flows if "carbon" in f.current.name.data.lower()]
+            for flow in filtered:
+                flow.update_current(name="Filtered")
+            return filtered
 
-        with FlowTransformationContext(flows, update_selectively):
+        with FlowTransformationContext(flows, filter_func) as modified_flows:
             assert (
-                flows[0].name == "Updated Flow 1"
-            ), "Expected flow 0 to be updated"
+                len(modified_flows) == 1
+            ), "Expected filtered list to have one element"
             assert (
-                flows[1].name == normalized2.name
-            ), "Expected flow 1 to remain unchanged"
+                modified_flows[0].current.name.data == "Filtered"
+            ), "Expected filtered flow to be modified"
+
+        # Original flows list should still have both flows
+        assert len(flows) == 2, "Expected original flows list to be unchanged"
+
+    def test_multiple_flows_all_reset(self):
+        """Test that all flows in the list are reset."""
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        data2 = {
+            "name": "Water",
+            "context": "air",
+            "unit": "kg",
+        }
+        original1 = Flow.from_dict(data1)
+        original2 = Flow.from_dict(data2)
+        normalized1 = original1.normalize()
+        normalized2 = original2.normalize()
+        nf1 = NormalizedFlow(
+            original=original1, normalized=normalized1, current=copy(normalized1)
+        )
+        nf2 = NormalizedFlow(
+            original=original2, normalized=normalized2, current=copy(normalized2)
+        )
+        flows = [nf1, nf2]
+
+        def transform_func(flows):
+            for i, flow in enumerate(flows):
+                flow.update_current(name=f"Modified {i}")
+            return flows
+
+        with FlowTransformationContext(flows, transform_func):
+            assert flows[0].current.name.data == "Modified 0"
+            assert flows[1].current.name.data == "Modified 1"
 
         # Both should be reset
         assert (
-            flows[0].name == normalized1.name
-        ), "Expected flow 0 to be reset"
+            flows[0].current.name.data == normalized1.name.data
+        ), "Expected first flow to be reset"
         assert (
-            flows[1].name == normalized2.name
-        ), "Expected flow 1 to be reset"
+            flows[1].current.name.data == normalized2.name.data
+        ), "Expected second flow to be reset"
 
-    def test_nested_context_managers(self):
-        """Test nested context managers."""
-        data = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
+    def test_no_functions(self):
+        """Test that context manager works with no functions."""
+        data = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
         original = Flow.from_dict(data)
         normalized = original.normalize()
-        flows = [
-            NormalizedFlow(
-                original=original, normalized=normalized, current=copy(normalized)
-            )
-        ]
+        nf = NormalizedFlow(
+            original=original, normalized=normalized, current=copy(normalized)
+        )
+        flows = [nf]
 
-        def update_name(flows):
-            for flow in flows:
-                flow.update_current(name="Name Updated")
-
-        def update_unit(flows):
-            for flow in flows:
-                # Preserve name from outer context
-                flow.update_current(
-                    name=flow.name,
-                    unit="g",
-                    context=flow.context,
-                )
-
-        with FlowTransformationContext(flows, update_name):
-            assert flows[0].name == "Name Updated", "Expected name updated"
+        with FlowTransformationContext(flows) as returned_flows:
+            assert returned_flows is flows, "Expected same flows list to be returned"
             assert (
-                flows[0].unit == normalized.unit
-            ), "Expected unit unchanged"
+                returned_flows[0].current.name.data == normalized.name.data
+            ), "Expected flows to be unchanged"
 
-            with FlowTransformationContext(flows, update_unit):
-                assert (
-                    flows[0].name == "Name Updated"
-                ), "Expected name still updated"
-                assert flows[0].unit == "g", "Expected unit updated"
-
-            # After inner context exits, it resets to normalized (original state)
-            # This means the outer context's changes are lost
-            assert (
-                flows[0].name == normalized.name
-            ), "Expected name reset to normalized after inner context exits"
-            assert (
-                flows[0].unit == normalized.unit
-            ), "Expected unit reset to normalized after inner context exits"
-
-        # After outer context, everything should still be reset (already reset by inner)
+        # Should still reset (though nothing changed)
         assert (
-            flows[0].name == normalized.name
-        ), "Expected name reset after outer context"
-        assert (
-            flows[0].unit == normalized.unit
-        ), "Expected unit reset after outer context"
-
+            flows[0].current.name.data == normalized.name.data
+        ), "Expected flow to remain normalized"

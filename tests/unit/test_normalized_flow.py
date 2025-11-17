@@ -1,7 +1,8 @@
 """Unit tests for NormalizedFlow class."""
 
-import pytest
 from copy import copy
+
+import pytest
 
 from flowmapper.domain import Flow, NormalizedFlow
 
@@ -199,9 +200,10 @@ class TestNormalizedFlowUpdateCurrent:
         )
 
         nf.update_current(context=["water", "unspecified"])
-        assert (
-            nf.current.context.value == ["water", "unspecified"]
-        ), f"Expected current.context to be ['water', 'unspecified'], but got {nf.current.context.value!r}"
+        assert nf.current.context.value == [
+            "water",
+            "unspecified",
+        ], f"Expected current.context to be ['water', 'unspecified'], but got {nf.current.context.value!r}"
 
     def test_update_current_with_multiple_fields(self):
         """Test update_current with multiple fields."""
@@ -217,15 +219,9 @@ class TestNormalizedFlowUpdateCurrent:
         )
 
         nf.update_current(name="Updated name", unit="g", context="water")
-        assert (
-            nf.current.name.data == "Updated name"
-        ), "Expected name to be updated"
-        assert (
-            nf.current.unit.data == "g"
-        ), "Expected unit to be updated"
-        assert (
-            nf.current.context.value == "water"
-        ), "Expected context to be updated"
+        assert nf.current.name.data == "Updated name", "Expected name to be updated"
+        assert nf.current.unit.data == "g", "Expected unit to be updated"
+        assert nf.current.context.value == "water", "Expected context to be updated"
 
     def test_update_current_with_location(self):
         """Test update_current with location parameter."""
@@ -300,9 +296,10 @@ class TestNormalizedFlowUpdateCurrent:
         )
 
         nf.update_current(synonyms=["CO2", "carbon dioxide"])
-        assert (
-            nf.current.synonyms == ["CO2", "carbon dioxide"]
-        ), f"Expected current.synonyms to be ['CO2', 'carbon dioxide'], but got {nf.current.synonyms!r}"
+        assert nf.current.synonyms == [
+            "CO2",
+            "carbon dioxide",
+        ], f"Expected current.synonyms to be ['CO2', 'carbon dioxide'], but got {nf.current.synonyms!r}"
 
     def test_update_current_creates_new_instance(self):
         """Test update_current creates a new Flow instance."""
@@ -360,18 +357,14 @@ class TestNormalizedFlowUpdateCurrent:
 
         # First update
         nf.update_current(name="First update")
-        assert (
-            nf.current.name.data == "First update"
-        ), "Expected first update to work"
+        assert nf.current.name.data == "First update", "Expected first update to work"
 
         # Second update - should be based on normalized, not "First update"
         nf.update_current(unit="g")
         assert (
             nf.current.name.data == normalized.name.data
         ), "Expected name to revert to normalized value when not specified in update"
-        assert (
-            nf.current.unit.data == "g"
-        ), "Expected unit to be updated"
+        assert nf.current.unit.data == "g", "Expected unit to be updated"
 
     def test_update_current_with_empty_synonyms(self):
         """Test update_current with empty synonyms list."""
@@ -432,4 +425,3 @@ class TestNormalizedFlowUpdateCurrent:
         assert (
             nf.current.oxidation_state.value == 3
         ), f"Expected current.oxidation_state to be 3, but got {nf.current.oxidation_state.value if nf.current.oxidation_state else None!r}"
-

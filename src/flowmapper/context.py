@@ -1,13 +1,8 @@
+from collections.abc import Iterable
 from typing import Any, Self
 
-MISSING_VALUES = {
-    "",
-    "(unknown)",
-    "(unspecified)",
-    "null",
-    "unknown",
-    "unspecified",
-}
+from flowmapper.utils import as_normalized_tuple
+
 RESOURCE_CATEGORY = {
     "natural resources",
     "natural resource",
@@ -26,24 +21,7 @@ class ContextField:
         self.value = value
 
     def normalize(self, obj: Any | None = None, mapping: dict | None = None) -> Self:
-        value = obj or self.value
-        if isinstance(value, (tuple, list)):
-            intermediate = list(value)
-        elif isinstance(value, str) and "/" in value:
-            intermediate = list(value.split("/"))
-        elif isinstance(value, str):
-            intermediate = [value]
-        else:
-            raise ValueError(f"Can't understand input context {self.value}")
-
-        intermediate = [elem.lower().strip() for elem in intermediate]
-
-        while intermediate and intermediate[-1] in MISSING_VALUES:
-            if len(intermediate) == 1:
-                break
-            intermediate = intermediate[:-1]
-
-        return type(self)(value=tuple(intermediate))
+        return type(self)(value=as_normalized_tuple(value=obj or self.value))
 
     def is_resource(self) -> bool:
         if isinstance(self.value, str):
@@ -62,7 +40,7 @@ class ContextField:
             return join_character.join(self.value)
         return self.value
 
-    def __iter__(self):
+    def __iter__(self) -> Iterable:
         return iter(self.value)
 
     def __eq__(self, other: Any) -> bool:
@@ -74,13 +52,13 @@ class ContextField:
             except ValueError:
                 return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(self.value)
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return bool(self.value)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.value)
 
     def __contains__(self, other: Any) -> bool:

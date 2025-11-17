@@ -41,9 +41,8 @@ class Flow:
                 "location": "$.location",
                 "cas_number": "$.cas_number",
                 "synonyms": "$.synonyms",
-            }
+            },
         }
-
 
     @classmethod
     def from_dict(cls, data: dict) -> Self:
@@ -58,7 +57,7 @@ class Flow:
                 if data.get("oxidation_state")
                 else None
             ),
-            cas_number=CASField.from_string(data.get("cas_number")),
+            cas_number=CASField.from_string(data.get("cas_number") or None),
             synonyms=data.get("synonyms") or [],
         )
 
@@ -150,7 +149,9 @@ class NormalizedFlow:
 
     @property
     def oxidation_state(self) -> int | None:
-        return self.current.oxidation_state.value if self.current.oxidation_state else None
+        return (
+            self.current.oxidation_state.value if self.current.oxidation_state else None
+        )
 
     @property
     def cas_number(self) -> str | None:
@@ -192,7 +193,11 @@ class NormalizedFlow:
             ("location", self.original.location),
             (
                 "cas_number",
-                self.normalized.cas_number.export() if self.normalized.cas_number else None,
+                (
+                    self.normalized.cas_number.export()
+                    if self.normalized.cas_number
+                    else None
+                ),
             ),
         ]
         return {k: v for k, v in data if v}
@@ -201,6 +206,7 @@ class NormalizedFlow:
 class MatchCondition(StrEnum):
     exact = "http://www.w3.org/2004/02/skos/core#exactMatch"
     close = "http://www.w3.org/2004/02/skos/core#closeMatch"
+    related = "http://www.w3.org/2004/02/skos/core#relatedMatch"
     # A triple <A> skos:broader <B> asserts that <B>, the object of the triple, is a broader concept
     # than <A>, the subject of the triple.
     narrow = "http://www.w3.org/2004/02/skos/core#narrowMatch"  # in SKOS the *target* is narrower than the *source*
@@ -210,6 +216,8 @@ class MatchCondition(StrEnum):
         if self.value == "http://www.w3.org/2004/02/skos/core#exactMatch":
             return "="
         elif self.value == "http://www.w3.org/2004/02/skos/core#closeMatch":
+            return "~"
+        elif self.value == "http://www.w3.org/2004/02/skos/core#relatedMatch":
             return "~"
         elif self.value == "http://www.w3.org/2004/02/skos/core#narrowMatch":
             return ">"
@@ -239,10 +247,14 @@ class Match:
 
         data = asdict(self)
         data["source"] = {
-            k: serializable(v) for k, v in data["source"].items() if v and not k.startswith("_")
+            k: serializable(v)
+            for k, v in data["source"].items()
+            if v and not k.startswith("_")
         }
         data["target"] = {
-            k: serializable(v) for k, v in data["target"].items() if v and not k.startswith("_")
+            k: serializable(v)
+            for k, v in data["target"].items()
+            if v and not k.startswith("_")
         }
         data["condition"] = str(data["condition"])
 

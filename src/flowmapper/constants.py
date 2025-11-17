@@ -3,4 +3,9 @@ RESOURCE_PARENT_CATEGORY = {
     "natural resource",
     "resources",
     "resource",
+    "land use",
+    "economic",
+    "social",
+    "raw materials",
+    "raw",
 }

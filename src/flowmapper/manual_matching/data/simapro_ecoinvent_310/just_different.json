@@ -177,14 +177,6 @@
   },
   {
     "source": {
-      "name": "2,4-D, dimethylamine salt"
-    },
-    "target": {
-      "name": "2,4-D dimethylamine salt"
-    }
-  },
-  {
-    "source": {
       "name": "Dioxin, 2,3,7,8 Tetrachlorodibenzo-p-"
     },
     "target": {
@@ -305,6 +297,14 @@
   },
   {
     "source": {
+      "name": "Cesium"
+    },
+    "target": {
+      "name": "Caesium"
+    }
+  },
+  {
+    "source": {
       "name": "Dimethyl formamide"
     },
     "target": {
@@ -396,11 +396,7 @@
       "name": "Roundup"
     },
     "target": {
-      "name": "Glyphosate",
-      "context": [
-        "air",
-        "non-urban air or from high stacks"
-      ]
+      "name": "Glyphosate"
     }
   }
 ]

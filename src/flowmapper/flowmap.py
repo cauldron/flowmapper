@@ -2,14 +2,17 @@ from collections import Counter
 from collections.abc import Callable
 from functools import cached_property
 from pathlib import Path
+from time import time
 
 import pandas as pd
 import randonneur
-from tqdm import tqdm
+from structlog import get_logger
 
 from flowmapper import __version__
 from flowmapper.domain import Match, NormalizedFlow
 from flowmapper.match import match_rules
+
+logger = get_logger("flowmapper")
 
 
 class Flowmap:
@@ -64,15 +67,17 @@ class Flowmap:
 
     def generate_matches(self) -> None:
         """Generate matches by applying match rules"""
-        for rule in tqdm(self.rules, disable=not self.show_progressbar):
-            self.matches.extend(
-                rule(
-                    source_flows=[
-                        flow for flow in self.source_flows if not flow.matched
-                    ],
-                    target_flows=self.target_flows,
-                )
+        for rule in self.rules:
+            start = time()
+            result = rule(
+                source_flows=[flow for flow in self.source_flows if not flow.matched],
+                target_flows=self.target_flows,
             )
+            elapsed = time() - start
+            logger.info(
+                f"Match function {rule.__name__} produced {len(result)} matches and took {elapsed:.3} seconds."
+            )
+            self.matches.extend(result)
 
     def matched_source(self):
         """
@@ -282,14 +287,18 @@ Mappings cardinalities: {str(cardinalities)}"""
                     "SourceFlowName": str(match.source.name),
                     "SourceFlowUUID": match.source.identifier
                     or ("" if ensure_id else None),
-                    "SourceFlowContext": match.source.context.export_as_string(join_character="/"),
+                    "SourceFlowContext": match.source.context.export_as_string(
+                        join_character="/"
+                    ),
                     "SourceUnit": str(match.source.unit),
                     "MatchCondition": match.condition.as_glad(),
                     "ConversionFactor": match.conversion_factor,
                     "TargetFlowName": str(match.target.name),
                     "TargetFlowUUID": match.target.identifier
                     or ("" if ensure_id else None),
-                    "TargetFlowContext": match.target.context.export_as_string(join_character="/"),
+                    "TargetFlowContext": match.target.context.export_as_string(
+                        join_character="/"
+                    ),
                     "TargetUnit": str(match.target.unit),
                     "MemoMapper": match.comment,
                 }
