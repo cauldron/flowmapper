@@ -25,6 +25,10 @@ from flowmapper.matching.context import (
 )
 from flowmapper.matching.core import get_matches, transform_and_then_match
 from flowmapper.matching.rules import match_rules
+from flowmapper.matching.simapro import (
+    manual_simapro_ecoinvent_mapping,
+    simapro_ecoinvent_glad_name_matching,
+)
 from flowmapper.matching.specialized import (
     add_missing_regionalized_flows,
     match_biogenic_to_non_fossil,
@@ -68,4 +72,7 @@ __all__ = [
     "match_emissions_with_suffix_ion",
     # Rules
     "match_rules",
+    # SimaPro
+    "manual_simapro_ecoinvent_mapping",
+    "simapro_ecoinvent_glad_name_matching",
 ]

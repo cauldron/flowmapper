@@ -89,6 +89,14 @@
   },
   {
     "source": {
+      "name": "AOX, Adsorbable Organic Halogen"
+    },
+    "target": {
+      "name": "AOX, Adsorbable Organic Halides"
+    }
+  },
+  {
+    "source": {
       "name": "AOX, Adsorbable Organic Halogen as Cl"
     },
     "target": {

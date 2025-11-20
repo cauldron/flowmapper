@@ -37,6 +37,7 @@ def flowmapper(
     homepage: str | None = None,
     name: str | None = None,
     registry: Registry | None = None,
+    no_matching: bool = False,
 ) -> Flowmap:
     """
     Generate mappings between elementary flows lists
@@ -70,6 +71,8 @@ def flowmapper(
         target_flows=target_flows,
         data_preparation_functions=transformation_functions,
     )
+    if no_matching:
+        return flowmap
     flowmap.generate_matches()
     flowmap.print_statistics()
 

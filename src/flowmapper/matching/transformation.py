@@ -7,6 +7,8 @@ before matching.
 from collections.abc import Callable
 from functools import partial
 
+from randonneur import Datapackage
+
 from flowmapper.domain import MatchCondition, NormalizedFlow
 from flowmapper.matching.core import get_matches
 from flowmapper.utils import FlowTransformationContext, apply_randonneur, toolz
@@ -85,8 +87,9 @@ def match_ecoinvent_transitive_matching(
 def match_with_transformation(
     source_flows: list[NormalizedFlow],
     target_flows: list[NormalizedFlow],
-    transformation: str,
+    transformation: str | Datapackage | dict,
     fields: list[str],
+    normalize: bool = True,
 ) -> list:
     """Match flows after applying a custom transformation.
 
@@ -135,6 +138,7 @@ def match_with_transformation(
         apply_randonneur,
         datapackage=transformation,
         fields=fields,
+        normalize=normalize,
     )
 
     with FlowTransformationContext(source_flows, func) as sf:

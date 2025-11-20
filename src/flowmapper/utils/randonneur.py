@@ -57,6 +57,7 @@ def apply_randonneur(
     datapackage: str | Datapackage | dict,
     fields: list[str] | None = None,
     registry: Registry | None = None,
+    normalize: bool = False,
 ) -> list[NormalizedFlow]:
     """Apply randonneur transformations to NormalizedFlow objects."""
     from flowmapper.domain import Flow
@@ -67,7 +68,10 @@ def apply_randonneur(
     transformed_data = func(graph=[nf.normalized.to_dict() for nf in flows])
 
     for flow, data_dict in zip(flows, transformed_data):
-        flow.current = Flow.from_dict(data_dict)
+        if normalize:
+            flow.current = Flow.from_dict(data_dict).normalize()
+        else:
+            flow.current = Flow.from_dict(data_dict)
 
     return flows
 
