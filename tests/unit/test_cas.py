@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowmapper.cas import CASField
+from flowmapper.fields import CASField
 
 
 class TestCASFieldInitialization:

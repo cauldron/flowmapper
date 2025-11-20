@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowmapper.oxidation_state import OxidationState
+from flowmapper.fields import OxidationState
 
 
 class TestOxidationStateInitialization:

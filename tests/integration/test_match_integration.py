@@ -3,7 +3,7 @@
 import pytest
 
 from flowmapper.domain import Flow
-from flowmapper.match import (
+from flowmapper.matching import (
     match_biogenic_to_non_fossil,
     match_custom_names_with_location_codes,
     match_emissions_with_suffix_ion,
@@ -446,7 +446,7 @@ class TestMatchRules:
 
     def test_match_rules_contains_expected_functions(self):
         """Test that match_rules contains expected matching functions."""
-        from flowmapper.match import (
+        from flowmapper.matching import (
             match_biogenic_to_non_fossil,
             match_custom_names_with_location_codes,
             match_emissions_with_suffix_ion,

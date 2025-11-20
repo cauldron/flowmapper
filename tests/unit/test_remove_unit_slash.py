@@ -100,7 +100,7 @@ class TestRemoveUnitSlash:
             result == "Caesium I"
         ), f"Expected result to be 'Caesium I' (no match), but got {result!r}"
 
-    @patch("flowmapper.utils.logger")
+    @patch("flowmapper.utils.flow_names.logger")
     def test_incompatible_unit_logs_warning(self, mock_logger):
         """Test that remove_unit_slash logs warning for incompatible units."""
         # Create flow with m3 in name but kg as unit (incompatible)
@@ -112,7 +112,7 @@ class TestRemoveUnitSlash:
         # Verify warning was called
         mock_logger.warning.assert_called_once()
 
-    @patch("flowmapper.utils.logger")
+    @patch("flowmapper.utils.flow_names.logger")
     def test_incompatible_unit_logs_warning_message(self, mock_logger):
         """Test that remove_unit_slash logs the correct warning message for incompatible units."""
         # Create flow with m3 in name but kg as unit (incompatible)
@@ -136,7 +136,7 @@ class TestRemoveUnitSlash:
             "m3" in warning_call
         ), f"Expected warning message to contain 'm3', but got {warning_call!r}"
 
-    @patch("flowmapper.utils.logger")
+    @patch("flowmapper.utils.flow_names.logger")
     def test_incompatible_unit_logs_warning_with_kg(self, mock_logger):
         """Test that remove_unit_slash logs warning message with kg unit."""
         # Create flow with kg in name but m3 as unit (incompatible)
@@ -154,7 +154,7 @@ class TestRemoveUnitSlash:
             "kg" in warning_call
         ), f"Expected warning message to contain 'kg', but got {warning_call!r}"
 
-    @patch("flowmapper.utils.logger")
+    @patch("flowmapper.utils.flow_names.logger")
     def test_compatible_unit_no_warning(self, mock_logger):
         """Test that remove_unit_slash doesn't log warning for compatible units."""
         # Create flow with m3 in name and m3 as unit (compatible)

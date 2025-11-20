@@ -6,7 +6,7 @@ import pytest
 
 from flowmapper import Flowmap
 from flowmapper.domain import Flow
-from flowmapper.match import match_emissions_with_suffix_ion, match_identical_names
+from flowmapper.matching import match_emissions_with_suffix_ion, match_identical_names
 
 DATA_DIR = Path(__file__).parent / "data"
 

@@ -1,5 +1,5 @@
 from flowmapper.domain import Flow
-from flowmapper.match import match_identical_names_except_missing_suffix
+from flowmapper.matching import match_identical_names_except_missing_suffix
 
 
 def test_match_identical_names_except_missing_suffix(transformations):

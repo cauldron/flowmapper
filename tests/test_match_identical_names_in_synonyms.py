@@ -1,5 +1,5 @@
 from flowmapper.domain import Flow
-from flowmapper.match import match_identical_names_in_synonyms
+from flowmapper.matching import match_identical_names_in_synonyms
 
 
 def test_match_identical_names_in_synonyms(transformations):

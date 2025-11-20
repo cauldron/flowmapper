@@ -2,7 +2,8 @@
 
 import pytest
 
-from flowmapper.context import MISSING_VALUES, ContextField
+from flowmapper.fields import ContextField
+from flowmapper.utils import MISSING_VALUES
 
 
 class TestContextFieldInitialization:

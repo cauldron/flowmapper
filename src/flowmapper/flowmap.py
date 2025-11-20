@@ -9,8 +9,9 @@ import randonneur
 from structlog import get_logger
 
 from flowmapper import __version__
-from flowmapper.domain import Match, NormalizedFlow
-from flowmapper.match import match_rules
+from flowmapper.domain import Flow, Match, NormalizedFlow
+from flowmapper.matching import match_rules
+from flowmapper.utils import apply_generic_transformations_to_flows
 
 logger = get_logger("flowmapper")
 
@@ -38,6 +39,7 @@ class Flowmap:
         self,
         source_flows: list[NormalizedFlow],
         target_flows: list[NormalizedFlow],
+        data_preparation_functions: list[Callable[..., list[NormalizedFlow]]],
         rules: list[Callable[..., list[Match]]] | None = None,
         show_progressbar: bool = True,
     ):
@@ -60,7 +62,7 @@ class Flowmap:
         """
         self.show_progressbar = show_progressbar
         self.rules = rules if rules else match_rules()
-
+        self.data_preparation_functions = data_preparation_functions
         self.source_flows = source_flows
         self.target_flows = target_flows
         self.matches = []
@@ -74,10 +76,25 @@ class Flowmap:
                 target_flows=self.target_flows,
             )
             elapsed = time() - start
-            logger.info(
-                f"Match function {rule.__name__} produced {len(result)} matches and took {elapsed:.3} seconds."
-            )
+
+            if new_target_flows := [
+                obj.target for obj in result if obj.new_target_flow
+            ]:
+                self.add_new_target_flows(new_target_flows)
+                logger.info(
+                    f"Match function {rule.__name__} produced {len(result)} matches and added {len(new_target_flows)} new target flows. It took {elapsed:.3} seconds."
+                )
+            else:
+                logger.info(
+                    f"Match function {rule.__name__} produced {len(result)} matches. It took {elapsed:.3} seconds."
+                )
             self.matches.extend(result)
+
+    def add_new_target_flows(self, flows: list[Flow]) -> None:
+        normalized_flows = apply_generic_transformations_to_flows(
+            functions=self.data_preparation_functions, flows=flows
+        )
+        self.target_flows.extend(normalized_flows)
 
     def matched_source(self):
         """

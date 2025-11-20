@@ -1,5 +1,5 @@
 from flowmapper.domain import Flow
-from flowmapper.match import match_biogenic_to_non_fossil
+from flowmapper.matching import match_biogenic_to_non_fossil
 
 
 def test_match_biogenic_to_non_fossil():

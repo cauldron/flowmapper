@@ -1,6 +1,6 @@
 """Unit tests for StringField class."""
 
-from flowmapper.string_field import StringField
+from flowmapper.fields import StringField
 
 
 class TestStringFieldInitialization:

@@ -1,14 +1,16 @@
 import json
 import logging
-from copy import copy
 from pathlib import Path
 
 from randonneur import Datapackage
 from randonneur_data import Registry
 
-from flowmapper.domain import Flow, NormalizedFlow
+from flowmapper.domain import Flow
 from flowmapper.flowmap import Flowmap
-from flowmapper.utils import randonneur_as_function
+from flowmapper.utils import (
+    apply_generic_transformations_to_flows,
+    randonneur_as_function,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,32 +56,20 @@ def flowmapper(
         )
 
     original_source_flows = [Flow.from_dict(obj) for obj in json.load(open(source))]
-    processed_source_flows = [obj.to_dict() for obj in original_source_flows]
+    source_flows = apply_generic_transformations_to_flows(
+        functions=transformation_functions, flows=original_source_flows
+    )
+
     original_target_flows = [Flow.from_dict(obj) for obj in json.load(open(target))]
-    processed_target_flows = [obj.to_dict() for obj in original_target_flows]
+    target_flows = apply_generic_transformations_to_flows(
+        functions=transformation_functions, flows=original_target_flows
+    )
 
-    for function in transformation_functions:
-        processed_source_flows = function(graph=processed_source_flows)
-    for function in transformation_functions:
-        processed_target_flows = function(graph=processed_target_flows)
-
-    normalized_source_flows = [
-        Flow.from_dict(obj).normalize() for obj in processed_source_flows
-    ]
-    normalized_target_flows = [
-        Flow.from_dict(obj).normalize() for obj in processed_target_flows
-    ]
-
-    source_flows = [
-        NormalizedFlow(original=o, normalized=n, current=copy(n))
-        for o, n in zip(original_source_flows, normalized_source_flows)
-    ]
-    target_flows = [
-        NormalizedFlow(original=o, normalized=n, current=copy(n))
-        for o, n in zip(original_target_flows, normalized_target_flows)
-    ]
-
-    flowmap = Flowmap(source_flows, target_flows)
+    flowmap = Flowmap(
+        source_flows=source_flows,
+        target_flows=target_flows,
+        data_preparation_functions=transformation_functions,
+    )
     flowmap.generate_matches()
     flowmap.print_statistics()
 

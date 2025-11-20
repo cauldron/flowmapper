@@ -1,4 +1,4 @@
-from flowmapper.string_field import StringField
+from flowmapper.fields import StringField
 
 
 def test_string_field_empty():

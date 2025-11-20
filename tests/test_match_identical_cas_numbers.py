@@ -1,5 +1,5 @@
 from flowmapper.domain import Flow
-from flowmapper.match import match_identical_cas_numbers
+from flowmapper.matching import match_identical_cas_numbers
 
 
 def test_match_identical_cas_numbers(transformations):

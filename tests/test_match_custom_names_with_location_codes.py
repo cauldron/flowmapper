@@ -1,5 +1,5 @@
 from flowmapper.domain import Flow
-from flowmapper.match import match_custom_names_with_location_codes
+from flowmapper.matching import match_custom_names_with_location_codes
 
 
 def test_match_custom_names_with_location_codes_extra():
