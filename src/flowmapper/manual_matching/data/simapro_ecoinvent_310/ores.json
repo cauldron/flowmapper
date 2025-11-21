@@ -1,0 +1,224 @@
+[
+  {
+    "source": {
+      "name": "Bauxite"
+    },
+    "target": {
+      "name": "Gangue"
+    }
+  },
+  {
+    "source": {
+      "name": "Copper ore"
+    },
+    "target": {
+      "name": "Copper"
+    }
+  },
+  {
+    "source": {
+      "name": "Copper, Cu 0.38%, Au 9.7E-4%, Ag 9.7E-4%, Zn 0.63%, Pb 0.014%, in ore"
+    },
+    "target": {
+      "name": "Copper"
+    }
+  },
+  {
+    "source": {
+      "name": "Copper, Cu 3.2E+0%, Pt 2.5E-4%, Pd 7.3E-4%, Rh 2.0E-5%, Ni 2.3E+0% in ore"
+    },
+    "target": {
+      "name": "Copper"
+    }
+  },
+  {
+    "source": {
+      "name": "Copper, Cu 5.2E-2%, Pt 4.8E-4%, Pd 2.0E-4%, Rh 2.4E-5%, Ni 3.7E-2% in ore"
+    },
+    "target": {
+      "name": "Copper"
+    }
+  },
+  {
+    "source": {
+      "name": "Coal, 18 MJ per kg"
+    },
+    "target": {
+      "name": "Coal, hard"
+    }
+  },
+  {
+    "source": {
+      "name": "Coal, brown, 10 MJ per kg"
+    },
+    "target": {
+      "name": "Coal, brown"
+    }
+  },
+  {
+    "source": {
+      "name": "Coal, brown, 8 MJ per kg"
+    },
+    "target": {
+      "name": "Coal, brown"
+    }
+  },
+  {
+    "source": {
+      "name": "Crude oil"
+    },
+    "target": {
+      "name": "Oil, crude"
+    }
+  },
+  {
+    "source": {
+      "name": "Energy, from biomass"
+    },
+    "target": {
+      "name": "Energy, gross calorific value, in biomass"
+    }
+  },
+  {
+    "source": {
+      "name": "Energy, from coal"
+    },
+    "target": {
+      "name": "Energy, gross calorific value, in biomass"
+    }
+  },
+  {
+    "source": {
+      "name": "Silver, Ag 9.7E-4%, Au 9.7E-4%, Zn 0.63%, Cu 0.38%, Pb 0.014%, in ore"
+    },
+    "target": {
+      "name": "Silver"
+    }
+  },
+  {
+    "source": {
+      "name": "Zinc, Zn 0.63%, Au 9.7E-4%, Ag 9.7E-4%, Cu 0.38%, Pb 0.014%, in ore"
+    },
+    "target": {
+      "name": "Zinc"
+    }
+  },
+  {
+    "source": {
+      "name": "Lead, Pb 0.014%, Au 9.7E-4%, Ag 9.7E-4%, Zn 0.63%, Cu 0.38%, in ore"
+    },
+    "target": {
+      "name": "Lead"
+    }
+  },
+  {
+    "source": {
+      "name": "Nickel, Ni 2.3E+0%, Pt 2.5E-4%, Pd 7.3E-4%, Rh 2.0E-5%, Cu 3.2E+0% in ore"
+    },
+    "target": {
+      "name": "Nickel"
+    }
+  },
+  {
+    "source": {
+      "name": "Nickel, Ni 3.7E-2%, Pt 4.8E-4%, Pd 2.0E-4%, Rh 2.4E-5%, Cu 5.2E-2% in ore"
+    },
+    "target": {
+      "name": "Nickel"
+    }
+  },
+  {
+    "source": {
+      "name": "Platinum, Pt 4.8E-4%, Pd 2.0E-4%, Rh 2.4E-5%, Ni 3.7E-2%, Cu 5.2E-2% in ore"
+    },
+    "target": {
+      "name": "Platinum"
+    }
+  },
+  {
+    "source": {
+      "name": "Gold, Au 9.7E-4%, Ag 9.7E-4%, Zn 0.63%, Cu 0.38%, Pb 0.014%, in ore"
+    },
+    "target": {
+      "name": "Gold"
+    }
+  },
+  {
+    "source": {
+      "name": "Platinum, Pt 2.5E-4%, Pd 7.3E-4%, Rh 2.0E-5%, Ni 2.3E+0%, Cu 3.2E+0% in ore"
+    },
+    "target": {
+      "name": "Platinum"
+    }
+  },
+  {
+    "source": {
+      "name": "Palladium, Pd 2.0E-4%, Pt 4.8E-4%, Rh 2.4E-5%, Ni 3.7E-2%, Cu 5.2E-2% in ore"
+    },
+    "target": {
+      "name": "Palladium"
+    }
+  },
+  {
+    "source": {
+      "name": "Palladium, Pd 7.3E-4%, Pt 2.5E-4%, Rh 2.0E-5%, Ni 2.3E+0%, Cu 3.2E+0% in ore"
+    },
+    "target": {
+      "name": "Palladium"
+    }
+  },
+  {
+    "source": {
+      "name": "Clay"
+    },
+    "target": {
+      "name": "Clay, bentonite"
+    }
+  },
+  {
+    "source": {
+      "name": "Rhodium, Rh 2.0E-5%, Pt 2.5E-4%, Pd 7.3E-4%, Ni 2.3E+0%, Cu 3.2E+0% in ore"
+    },
+    "target": {
+      "name": "Rhodium"
+    }
+  },
+  {
+    "source": {
+      "name": "Rhodium, Rh 2.4E-5%, Pt 4.8E-4%, Pd 2.0E-4%, Ni 3.7E-2%, Cu 5.2E-2% in ore"
+    },
+    "target": {
+      "name": "Rhodium"
+    }
+  },
+  {
+    "source": {
+      "name": "Gas, mine, off-gas, process, coal mining/m3",
+      "unit": "cubic_meter"
+    },
+    "target": {
+      "name": "Gas, mine, off-gas, process, coal mining",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
+  },
+  {
+    "source": {
+      "name": "Gas, natural/m3",
+      "unit": "cubic_meter"
+    },
+    "target": {
+      "name": "Gas, natural",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
+  },
+  {
+    "source": {
+      "name": "Energy, from hydro power"
+    },
+    "target": {
+      "name": "Energy, potential (in hydropower reservoir), converted"
+    }
+  }
+]

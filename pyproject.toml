@@ -20,23 +20,26 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering"
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "bw_simapro_csv",
     "pandas[excel]",
     "pint",
     "pydantic",
     "pyecospold",
-    "randonneur>=0.6",
-    "randonneur_data",
+    "randonneur>=0.7.1",
+    "randonneur_data>=0.7.2",
+    "RapidFuzz",
+    "roman",
+    "structlog",
     "tqdm",
     "typer",
     "xmltodict",
@@ -60,6 +63,7 @@ testing = [
 dev = [
     "build",
     "pre-commit",
+    "pyinstrument",
     "pylint",
     "pytest",
     "pytest-cov",
@@ -72,7 +76,9 @@ flowmapper = "flowmapper.cli:app"
 [tool.setuptools]
 license-files = ["LICENSE"]
 include-package-data = true
-packages = ["flowmapper", "flowmapper.extraction", "flowmapper.manual_matching"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools.dynamic]
 version = {attr = "flowmapper.__version__"}
@@ -87,7 +93,7 @@ norecursedirs = [
     "build",
     ".tox"
 ]
-testpaths = ["tests/*.py"]
+testpaths = ["tests/**/*.py"]
 
 [tool.flake8]
 # Some sane defaults for the code style checker flake8

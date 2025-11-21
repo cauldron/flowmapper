@@ -1,0 +1,478 @@
+[
+  {
+    "source": {
+      "name": "Transformation, from pasture and meadow, organic"
+    },
+    "target": {
+      "name": "Transformation, from pasture, man made, extensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to pasture and meadow, organic"
+    },
+    "target": {
+      "name": "Transformation, to pasture, man made, extensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from arable, organic"
+    },
+    "target": {
+      "name": "Transformation, from arable land, unspecified use"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to arable, organic"
+    },
+    "target": {
+      "name": "Transformation, to arable land, unspecified use"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to industrial area, built up"
+    },
+    "target": {
+      "name": "Transformation, to industrial area",
+      "context": [
+        "natural resource",
+        "land"
+      ]
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from agriculture"
+    },
+    "target": {
+      "name": "Transformation, from annual crop"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from annual crop, non-irrigated, fallow"
+    },
+    "target": {
+      "name": "Transformation, from pasture, man made"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from forest, intensive, clear-cutting"
+    },
+    "target": {
+      "name": "Transformation, from forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from forest, used"
+    },
+    "target": {
+      "name": "Transformation, from forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from grassland"
+    },
+    "target": {
+      "name": "Transformation, from grassland, natural (non-use)"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from grassland/pasture/meadow"
+    },
+    "target": {
+      "name": "Transformation, from pasture, man made"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from industrial area, benthos"
+    },
+    "target": {
+      "name": "Transformation, from seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from industrial area, built up"
+    },
+    "target": {
+      "name": "Transformation, from industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from industrial area, vegetation"
+    },
+    "target": {
+      "name": "Transformation, from industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from permanent crop, fruit"
+    },
+    "target": {
+      "name": "Transformation, from permanent crop, irrigated"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from tropical rain forest"
+    },
+    "target": {
+      "name": "Transformation, from forest, extensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from unspecified, used"
+    },
+    "target": {
+      "name": "Transformation, from unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to agriculture"
+    },
+    "target": {
+      "name": "Transformation, to annual crop"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to annual crop, fallow"
+    },
+    "target": {
+      "name": "Transformation, to arable land, unspecified use"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to annual crop, non-irrigated, fallow"
+    },
+    "target": {
+      "name": "Transformation, to annual crop, non-irrigated, extensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to dump site, benthos"
+    },
+    "target": {
+      "name": "Transformation, to seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to forest, intensive, clear-cutting"
+    },
+    "target": {
+      "name": "Transformation, to forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to forest, intensive, normal"
+    },
+    "target": {
+      "name": "Transformation, to forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to forest, intensive, short-cycle"
+    },
+    "target": {
+      "name": "Transformation, to forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to forest, used"
+    },
+    "target": {
+      "name": "Transformation, to forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to grassland/pasture/meadow"
+    },
+    "target": {
+      "name": "Transformation, to pasture, man made"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to industrial area, benthos"
+    },
+    "target": {
+      "name": "Transformation, to seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to industrial area, vegetation"
+    },
+    "target": {
+      "name": "Transformation, to industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to permanent crop, fruit, intensive"
+    },
+    "target": {
+      "name": "Transformation, to permanent crop, irrigated"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to sea and ocean"
+    },
+    "target": {
+      "name": "Transformation, to seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to traffic area, road embankment"
+    },
+    "target": {
+      "name": "Transformation, to traffic area, road network"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to unspecified, used"
+    },
+    "target": {
+      "name": "Transformation, to unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to urban/industrial fallow"
+    },
+    "target": {
+      "name": "Transformation, to industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to water bodies, artificial"
+    },
+    "target": {
+      "name": "Transformation, to river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, from urban, green areas"
+    },
+    "target": {
+      "name": "Transformation, from urban, green area"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to water courses, artificial"
+    },
+    "target": {
+      "name": "Transformation, to river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to lakes, artificial"
+    },
+    "target": {
+      "name": "Transformation, to lake, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Transformation, to rivers, artificial"
+    },
+    "target": {
+      "name": "Transformation, to river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, lakes, artificial"
+    },
+    "target": {
+      "name": "Occupation, lake, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, rivers, artificial"
+    },
+    "target": {
+      "name": "Occupation, river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, water bodies, artificial"
+    },
+    "target": {
+      "name": "Occupation, river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, agriculture"
+    },
+    "target": {
+      "name": "Occupation, annual crop"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, dump site, benthos"
+    },
+    "target": {
+      "name": "Occupation, seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, forest, intensive, normal"
+    },
+    "target": {
+      "name": "Occupation, forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, forest, intensive, short-cycle"
+    },
+    "target": {
+      "name": "Occupation, forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, forest, used"
+    },
+    "target": {
+      "name": "Occupation, forest, intensive"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, grassland/pasture/meadow"
+    },
+    "target": {
+      "name": "Occupation, pasture, man made"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, industrial area, benthos"
+    },
+    "target": {
+      "name": "Occupation, seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, industrial area, built up"
+    },
+    "target": {
+      "name": "Occupation, industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, industrial area, vegetation"
+    },
+    "target": {
+      "name": "Occupation, industrial area"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, permanent crop, fruit, intensive"
+    },
+    "target": {
+      "name": "Occupation, permanent crop, irrigated"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, sea and ocean"
+    },
+    "target": {
+      "name": "Occupation, seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, sea and ocean"
+    },
+    "target": {
+      "name": "Occupation, seabed, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, traffic area"
+    },
+    "target": {
+      "name": "Occupation, traffic area, road network"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, traffic area, road embankment"
+    },
+    "target": {
+      "name": "Occupation, traffic area, road network"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, unspecified, used"
+    },
+    "target": {
+      "name": "Occupation, unspecified"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, water bodies, artificial"
+    },
+    "target": {
+      "name": "Occupation, river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, water courses, artificial"
+    },
+    "target": {
+      "name": "Occupation, river, artificial"
+    }
+  },
+  {
+    "source": {
+      "name": "Occupation, wetland"
+    },
+    "target": {
+      "name": "Occupation, inland waterbody, unspecified"
+    }
+  }
+]

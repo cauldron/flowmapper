@@ -11,4 +11,6 @@ def test_normalize_str():
         " \u00dcber",
         None,
     ]
-    assert {normalize_str(name) for name in names} == {"über", "Über", ""}
+    actual = {normalize_str(name) for name in names}
+    expected = {"über", "Über", ""}
+    assert actual == expected, f"Expected actual to equal {expected}, but got {actual}"

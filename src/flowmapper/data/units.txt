@@ -1,0 +1,43 @@
+# Random
+# Pint has the abbreviation Bq capitalized
+@alias becquerel = bq
+
+# Land use
+square_meter = meter ** 2 = m2
+cubic_meter = meter ** 3 = m3
+square_meter_year = m2 * year = m2y = m2a
+cubic_meter_year = m3 * year = m3y = m3a
+
+# Gas volume at given conditions
+# https://en.wikipedia.org/wiki/Standard_temperature_and_pressure
+# 273.15 K (0 °C) and an absolute pressure of exactly 1 bar (100 kPa)
+standard_cubic_meter = 44.095 * mole = sm3
+# https://www.sciencedirect.com/topics/engineering/cubic-metre
+# There are multiple definitions for this but as we only care about natural gas, using the
+# Gas Industry Standards Board seems reasonable.
+# 288.15 K (15 °C) and an absolute pressure of exactly 1 atm (101.325 kPa)
+# See also https://github.com/qudt/qudt-public-repo/issues/1227
+normal_cubic_meter = 41.739 * mole = nm3
+
+# Livestock
+livestock_unit = [livestock] = LU
+
+# Separative work: https://en.wikipedia.org/wiki/Separative_work_units
+separative_work = [enrichment] = SW
+separative_work_unit = kilogram * SW = SWU
+
+# Freight
+[freight] = [mass] * [length]
+ton_kilometer = metric_ton * kilometer = tkm
+
+# Vehicular travel
+vehicle = [vehicular_travel]
+vehicle_kilometer = vehicle * kilometer = vkm
+
+# Personal travel
+person = [personal_travel]
+person_kilometer = person * kilometer = pkm
+
+# Currency
+eur = [currency]
+eur_2005 = 1 * eur
