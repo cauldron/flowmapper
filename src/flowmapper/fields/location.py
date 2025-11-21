@@ -18,6 +18,8 @@ from pathlib import Path
 
 import structlog
 
+from flowmapper.errors import MissingLocation
+
 logger = structlog.get_logger("flowmapper")
 
 RESULTS_DIR = Path(__file__).parent.parent / "manual_matching" / "results"
@@ -128,7 +130,7 @@ def replace_location_suffix(string: str, new_location: str) -> str:
 
     Raises
     ------
-    ValueError
+    MissingLocation
         If no location suffix is found in the input string.
 
     Examples
@@ -140,7 +142,7 @@ def replace_location_suffix(string: str, new_location: str) -> str:
     >>> replace_location_suffix("Ammonia", "DE")
     Traceback (most recent call last):
         ...
-    ValueError: No location suffix found in string 'Ammonia'
+    MissingLocation: No location suffix found in string 'Ammonia'
     """
     if match := ends_with_location.search(string):
         return (
@@ -148,4 +150,4 @@ def replace_location_suffix(string: str, new_location: str) -> str:
             + new_location
             + string[match.end("location") :]
         )
-    raise ValueError(f"No location suffix found in string {string!r}")
+    raise MissingLocation(f"No location suffix found in string {string!r}")

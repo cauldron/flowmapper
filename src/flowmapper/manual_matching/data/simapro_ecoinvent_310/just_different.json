@@ -161,6 +161,14 @@
   },
   {
     "source": {
+      "name": "Sand, quartz"
+    },
+    "target": {
+      "name": "Sand, unspecified"
+    }
+  },
+  {
+    "source": {
       "name": "Potassium chloride"
     },
     "target": {
@@ -249,19 +257,25 @@
   },
   {
     "source": {
-      "name": "Gas, natural, 36 MJ per m3"
+      "name": "Gas, natural, 36 MJ per m3",
+      "unit": "cubic_meter"
     },
     "target": {
-      "name": "Gas, natural, in ground"
-    }
+      "name": "Gas, natural",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
   },
   {
     "source": {
-      "name": "Gas, mine, off-gas, process, coal mining, 36 MJ per m3"
+      "name": "Gas, mine, off-gas, process, coal mining, 36 MJ per m3",
+      "unit": "cubic_meter"
     },
     "target": {
-      "name": "Gas, mine, off-gas, process, coal mining"
-    }
+      "name": "Gas, mine, off-gas, process, coal mining",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
   },
   {
     "source": {

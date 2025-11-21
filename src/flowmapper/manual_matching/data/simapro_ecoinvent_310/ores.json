@@ -89,15 +89,6 @@
   },
   {
     "source": {
-      "name": "Gas, mine, off-gas, process, coal mining/m3"
-    },
-    "target": {
-      "name": "Gas, mine, off-gas, process, coal mining",
-      "unit": "Sm3"
-    }
-  },
-  {
-    "source": {
       "name": "Silver, Ag 9.7E-4%, Au 9.7E-4%, Zn 0.63%, Cu 0.38%, Pb 0.014%, in ore"
     },
     "target": {
@@ -198,6 +189,36 @@
     },
     "target": {
       "name": "Rhodium"
+    }
+  },
+  {
+    "source": {
+      "name": "Gas, mine, off-gas, process, coal mining/m3",
+      "unit": "cubic_meter"
+    },
+    "target": {
+      "name": "Gas, mine, off-gas, process, coal mining",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
+  },
+  {
+    "source": {
+      "name": "Gas, natural/m3",
+      "unit": "cubic_meter"
+    },
+    "target": {
+      "name": "Gas, natural",
+      "unit": "standard_cubic_meter"
+    },
+    "conversion_factor": 1.0
+  },
+  {
+    "source": {
+      "name": "Energy, from hydro power"
+    },
+    "target": {
+      "name": "Energy, potential (in hydropower reservoir), converted"
     }
   }
 ]

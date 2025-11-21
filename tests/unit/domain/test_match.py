@@ -4,7 +4,9 @@ from copy import copy
 
 import pytest
 
-from flowmapper.domain import Flow, Match, MatchCondition
+from flowmapper.domain.flow import Flow
+from flowmapper.domain.match import Match
+from flowmapper.domain.match_condition import MatchCondition
 
 
 class TestMatchInitialization:

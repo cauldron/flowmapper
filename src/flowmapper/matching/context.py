@@ -4,13 +4,18 @@ This module contains matching functions that match flows based on context
 relationships.
 """
 
-from flowmapper.domain import MatchCondition, NormalizedFlow
+from flowmapper.domain.match_condition import MatchCondition
+from flowmapper.domain.normalized_flow import NormalizedFlow
 from flowmapper.matching.core import get_matches
 from flowmapper.utils import toolz
 
 
 def match_resources_with_wrong_subcontext(
-    source_flows: list[NormalizedFlow], target_flows: list[NormalizedFlow]
+    source_flows: list[NormalizedFlow],
+    target_flows: list[NormalizedFlow],
+    function_name: str | None = None,
+    comment: str | None = None,
+    match_condition: MatchCondition | None = None,
 ) -> list:
     """Match resource flows ignoring subcontext differences.
 
@@ -60,9 +65,10 @@ def match_resources_with_wrong_subcontext(
                     and flow.oxidation_state == oxidation_state
                     and flow.location == location
                 ],
-                comment=f"Shared normalized name and resource-type context, with identical oxidation state and location: {name}",
-                match_condition=MatchCondition.close,
-                function_name="match_resources_with_wrong_subcontext",
+                comment=comment
+                or f"Shared normalized name and resource-type context, with identical oxidation state and location: {name}",
+                match_condition=match_condition or MatchCondition.close,
+                function_name=function_name or "match_resources_with_wrong_subcontext",
             )
         )
 

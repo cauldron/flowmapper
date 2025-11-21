@@ -39,7 +39,9 @@ class Match:
 
     Examples
     --------
-    >>> from flowmapper.domain import Flow, Match, MatchCondition
+    >>> from flowmapper.domain.flow import Flow
+    >>> from flowmapper.domain.match import Match
+    >>> from flowmapper.domain.match_condition import MatchCondition
     >>> source = Flow.from_dict({
     ...     "name": "Carbon dioxide",
     ...     "context": "air",
@@ -127,7 +129,7 @@ class Match:
 
         return data
 
-    def __lt__(self, other: "Match") -> bool:
+    def __lt__(self, other: Match) -> bool:
         """
         Compare matches for sorting.
 

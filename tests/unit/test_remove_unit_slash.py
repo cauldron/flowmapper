@@ -2,7 +2,7 @@
 
 from unittest.mock import patch
 
-from flowmapper.domain import Flow
+from flowmapper.domain.flow import Flow
 from flowmapper.utils import remove_unit_slash
 
 

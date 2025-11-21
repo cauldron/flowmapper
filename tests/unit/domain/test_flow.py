@@ -1,6 +1,6 @@
 import pytest
 
-from flowmapper.domain import Flow
+from flowmapper.domain.flow import Flow
 
 
 class TestFlowRepr:
@@ -85,6 +85,7 @@ class TestFlowRepr:
                 "location": "US",
                 "cas_number": "000124-38-9",
                 "synonyms": ["CO2"],
+                "conversion_factor": 2.5,
             }
         )
         result = repr(flow)
@@ -95,6 +96,7 @@ class TestFlowRepr:
         assert "location=" in result, "Expected 'location=' in repr"
         assert "cas_number=" in result, "Expected 'cas_number=' in repr"
         assert "synonyms=" in result, "Expected 'synonyms=' in repr"
+        assert "conversion_factor=" in result, "Expected 'conversion_factor=' in repr"
 
     def test_repr_without_optional_fields(self):
         """Test Flow __repr__ without optional fields (should not include them)."""
@@ -110,6 +112,9 @@ class TestFlowRepr:
             "cas_number=" not in result
         ), "Expected 'cas_number=' not in repr when None"
         assert "synonyms=" not in result, "Expected 'synonyms=' not in repr when empty"
+        assert (
+            "conversion_factor=" not in result
+        ), "Expected 'conversion_factor=' not in repr when None"
 
     def test_repr_with_empty_synonyms(self):
         """Test Flow __repr__ with empty synonyms list (should not include)."""
@@ -155,7 +160,7 @@ class TestFlowCopyWithNewLocation:
         assert new_flow._id != flow._id, "Expected new Flow instance with different _id"
 
     def test_copy_with_new_location_preserves_attributes(self):
-        """Test copy_with_new_location preserves all other attributes."""
+        """Test copy_with_new_location preserves all other attributes except identifier."""
         flow = Flow.from_dict(
             {
                 "name": "Ammonia, NL",
@@ -170,8 +175,9 @@ class TestFlowCopyWithNewLocation:
         new_flow = flow.copy_with_new_location("DE")
 
         assert (
-            new_flow.identifier == flow.identifier
-        ), "Expected identifier to be preserved"
+            new_flow.identifier != flow.identifier
+        ), "Expected identifier to be a new UUID, not preserved"
+        assert new_flow.identifier is not None, "Expected identifier to be set"
         assert (
             new_flow.cas_number == flow.cas_number
         ), "Expected cas_number to be preserved"
@@ -210,28 +216,35 @@ class TestFlowCopyWithNewLocation:
             new_flow.name.data == "Ammonia, RER w/o DE+NL+NO"
         ), "Expected simple location to be replaced with complex one"
 
-    def test_copy_with_new_location_raises_value_error_no_location(self):
-        """Test copy_with_new_location raises ValueError when no location suffix exists."""
+    def test_copy_with_new_location_appends_when_no_location_suffix(self):
+        """Test copy_with_new_location appends location when no location suffix exists."""
         flow = Flow.from_dict({"name": "Ammonia", "context": "air", "unit": "kg"})
+        new_flow = flow.copy_with_new_location("DE")
 
-        with pytest.raises(ValueError, match="No location suffix found"):
-            flow.copy_with_new_location("DE")
+        assert new_flow.name.data == "Ammonia, DE", "Expected location to be appended"
+        assert new_flow.identifier != flow.identifier, "Expected new identifier"
 
-    def test_copy_with_new_location_raises_value_error_dash_location(self):
-        """Test copy_with_new_location raises ValueError with dash-separated location."""
+    def test_copy_with_new_location_appends_with_dash_location(self):
+        """Test copy_with_new_location appends location when dash-separated location exists."""
         flow = Flow.from_dict({"name": "Ammonia-NL", "context": "air", "unit": "kg"})
+        new_flow = flow.copy_with_new_location("DE")
 
-        with pytest.raises(ValueError, match="No location suffix found"):
-            flow.copy_with_new_location("DE")
+        assert (
+            new_flow.name.data == "Ammonia-NL, DE"
+        ), "Expected location to be appended"
+        assert new_flow.identifier != flow.identifier, "Expected new identifier"
 
-    def test_copy_with_new_location_raises_value_error_location_in_middle(self):
-        """Test copy_with_new_location raises ValueError when location not at end."""
+    def test_copy_with_new_location_appends_when_location_in_middle(self):
+        """Test copy_with_new_location appends location when location not at end."""
         flow = Flow.from_dict(
             {"name": "Ammonia, NL, pure", "context": "air", "unit": "kg"}
         )
+        new_flow = flow.copy_with_new_location("DE")
 
-        with pytest.raises(ValueError, match="No location suffix found"):
-            flow.copy_with_new_location("DE")
+        assert (
+            new_flow.name.data == "Ammonia, NL, pure, DE"
+        ), "Expected location to be appended"
+        assert new_flow.identifier != flow.identifier, "Expected new identifier"
 
     def test_copy_with_new_location_various_locations(self):
         """Test copy_with_new_location with various location codes."""
@@ -305,12 +318,73 @@ class TestFlowCopyWithNewLocation:
         assert (
             new_flow.name.data == "Carbon dioxide, DE"
         ), "Expected name to have new location"
-        # Check all other fields are preserved
-        assert new_flow.identifier == flow.identifier, "Expected identifier preserved"
+        # Check all other fields are preserved except identifier
+        assert (
+            new_flow.identifier != flow.identifier
+        ), "Expected identifier to be a new UUID, not preserved"
+        assert new_flow.identifier is not None, "Expected identifier to be set"
         assert new_flow.context == flow.context, "Expected context preserved"
         assert new_flow.unit == flow.unit, "Expected unit preserved"
         assert new_flow.cas_number == flow.cas_number, "Expected cas_number preserved"
         assert new_flow.synonyms == flow.synonyms, "Expected synonyms preserved"
+
+    def test_copy_with_new_location_raises_value_error_empty_location(self):
+        """Test copy_with_new_location raises ValueError when location parameter is empty."""
+        flow = Flow.from_dict({"name": "Ammonia, NL", "context": "air", "unit": "kg"})
+
+        with pytest.raises(ValueError, match="No location parameter given"):
+            flow.copy_with_new_location("")
+
+        with pytest.raises(ValueError, match="No location parameter given"):
+            flow.copy_with_new_location(None)
+
+    def test_copy_with_new_location_sets_new_identifier(self):
+        """Test copy_with_new_location sets a new UUID identifier."""
+        import uuid
+
+        flow = Flow.from_dict(
+            {
+                "name": "Ammonia, NL",
+                "context": "air",
+                "unit": "kg",
+                "identifier": "test-id-123",
+            }
+        )
+        new_flow = flow.copy_with_new_location("DE")
+
+        # Verify identifier is different
+        assert (
+            new_flow.identifier != flow.identifier
+        ), "Expected identifier to be different from original"
+        assert new_flow.identifier is not None, "Expected identifier to be set"
+        # Verify it's a valid UUID format
+        try:
+            uuid.UUID(new_flow.identifier)
+        except ValueError:
+            pytest.fail(
+                f"Expected identifier to be a valid UUID, but got {new_flow.identifier!r}"
+            )
+
+    def test_copy_with_new_location_identifier_when_none(self):
+        """Test copy_with_new_location sets identifier even when original is None."""
+        import uuid
+
+        flow = Flow.from_dict({"name": "Ammonia, NL", "context": "air", "unit": "kg"})
+        assert flow.identifier is None, "Expected original identifier to be None"
+
+        new_flow = flow.copy_with_new_location("DE")
+
+        # Verify identifier is set even when original was None
+        assert (
+            new_flow.identifier is not None
+        ), "Expected identifier to be set even when original was None"
+        # Verify it's a valid UUID format
+        try:
+            uuid.UUID(new_flow.identifier)
+        except ValueError:
+            pytest.fail(
+                f"Expected identifier to be a valid UUID, but got {new_flow.identifier!r}"
+            )
 
 
 class TestFlowToDict:
@@ -327,6 +401,7 @@ class TestFlowToDict:
                 "location": "NL",
                 "cas_number": "000124-38-9",
                 "synonyms": ["CO2", "Carbon dioxide"],
+                "conversion_factor": 2.5,
             }
         )
         result = flow.to_dict()
@@ -342,6 +417,7 @@ class TestFlowToDict:
             "CO2",
             "Carbon dioxide",
         ], "Expected synonyms in dict"
+        assert result["conversion_factor"] == 2.5, "Expected conversion_factor in dict"
 
     def test_to_dict_with_only_required_fields(self):
         """Test to_dict with only required fields."""
@@ -358,6 +434,9 @@ class TestFlowToDict:
         assert "location" not in result, "Expected location not in dict when None"
         assert "cas_number" not in result, "Expected cas_number not in dict when None"
         assert "synonyms" not in result, "Expected synonyms not in dict when empty"
+        assert (
+            "conversion_factor" not in result
+        ), "Expected conversion_factor not in dict when None"
 
     def test_to_dict_excludes_none_optional_fields(self):
         """Test to_dict excludes None optional fields."""
@@ -377,6 +456,9 @@ class TestFlowToDict:
         ), "Expected oxidation_state not in dict when None"
         assert "cas_number" not in result, "Expected cas_number not in dict when None"
         assert "synonyms" not in result, "Expected synonyms not in dict when empty"
+        assert (
+            "conversion_factor" not in result
+        ), "Expected conversion_factor not in dict when None"
 
     def test_to_dict_excludes_empty_synonyms(self):
         """Test to_dict excludes empty synonyms list."""
@@ -455,6 +537,10 @@ class TestFlowRandonneurMapping:
         assert labels["location"] == "$.location", "Expected location JSONPath"
         assert labels["cas_number"] == "$.cas_number", "Expected cas_number JSONPath"
         assert labels["synonyms"] == "$.synonyms", "Expected synonyms JSONPath"
+        assert "conversion_factor" in labels, "Expected conversion_factor mapping"
+        assert (
+            labels["conversion_factor"] == "$.conversion_factor"
+        ), "Expected conversion_factor JSONPath"
 
 
 class TestFlowEquality:
@@ -555,3 +641,93 @@ class TestFlowComparison:
         # __lt__ should return False for non-Flow objects
         result = flow < "not a flow"
         assert result is False, "Expected __lt__ to return False for non-Flow objects"
+
+
+class TestFlowConversionFactor:
+    """Test Flow conversion_factor attribute."""
+
+    def test_conversion_factor_from_dict(self):
+        """Test conversion_factor can be set via from_dict."""
+        flow = Flow.from_dict(
+            {
+                "name": "Carbon dioxide",
+                "context": "air",
+                "unit": "kg",
+                "conversion_factor": 2.5,
+            }
+        )
+        assert flow.conversion_factor == 2.5, "Expected conversion_factor to be set"
+
+    def test_conversion_factor_none_by_default(self):
+        """Test conversion_factor is None by default."""
+        flow = Flow.from_dict(
+            {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
+        )
+        assert (
+            flow.conversion_factor is None
+        ), "Expected conversion_factor to be None by default"
+
+    def test_conversion_factor_preserved_in_normalize(self):
+        """Test conversion_factor is preserved during normalization."""
+        flow = Flow.from_dict(
+            {
+                "name": "Carbon dioxide, NL",
+                "context": "air",
+                "unit": "kg",
+                "conversion_factor": 3.0,
+            }
+        )
+        normalized = flow.normalize()
+        assert (
+            normalized.conversion_factor == 3.0
+        ), "Expected conversion_factor to be preserved in normalize"
+
+    def test_conversion_factor_in_to_dict_when_present(self):
+        """Test conversion_factor included in to_dict when present."""
+        flow = Flow.from_dict(
+            {
+                "name": "Carbon dioxide",
+                "context": "air",
+                "unit": "kg",
+                "conversion_factor": 1.5,
+            }
+        )
+        result = flow.to_dict()
+        assert "conversion_factor" in result, "Expected conversion_factor in dict"
+        assert (
+            result["conversion_factor"] == 1.5
+        ), "Expected conversion_factor value in dict"
+
+    def test_conversion_factor_not_in_to_dict_when_none(self):
+        """Test conversion_factor excluded from to_dict when None."""
+        flow = Flow.from_dict(
+            {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
+        )
+        result = flow.to_dict()
+        assert (
+            "conversion_factor" not in result
+        ), "Expected conversion_factor not in dict when None"
+
+    def test_conversion_factor_in_repr_when_present(self):
+        """Test conversion_factor included in __repr__ when present."""
+        flow = Flow.from_dict(
+            {
+                "name": "Carbon dioxide",
+                "context": "air",
+                "unit": "kg",
+                "conversion_factor": 2.0,
+            }
+        )
+        result = repr(flow)
+        assert "conversion_factor=" in result, "Expected conversion_factor in repr"
+        assert "2.0" in result, "Expected conversion_factor value in repr"
+
+    def test_conversion_factor_not_in_repr_when_none(self):
+        """Test conversion_factor excluded from __repr__ when None."""
+        flow = Flow.from_dict(
+            {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
+        )
+        result = repr(flow)
+        assert (
+            "conversion_factor=" not in result
+        ), "Expected conversion_factor not in repr when None"

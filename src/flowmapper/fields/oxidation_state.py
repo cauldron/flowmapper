@@ -25,6 +25,9 @@ class OxidationState:
     def __hash__(self) -> int:
         return hash(self.value)
 
+    def __repr__(self) -> str:
+        return str(self.value)
+
     @staticmethod
     def has_oxidation_state(obj: str) -> bool:
         return roman_numberals_optional_parentheses.search(

@@ -7,16 +7,17 @@ transformation and filtering support.
 import itertools
 from collections.abc import Callable
 
-from flowmapper.domain import Match, NormalizedFlow
-from flowmapper.utils import FlowTransformationContext, apply_randonneur, toolz
+from flowmapper.domain.match import Match
+from flowmapper.domain.match_condition import MatchCondition
+from flowmapper.domain.normalized_flow import NormalizedFlow
 
 
 def transform_and_then_match(
     source_flows: list[NormalizedFlow],
     target_flows: list[NormalizedFlow],
     match_function: Callable,
-    transform_source_flows: Callable | None = None,
-    transform_target_flows: Callable | None = None,
+    transform_source_flows: list[Callable] | None = None,
+    transform_target_flows: list[Callable] | None = None,
     filter_source_flows: Callable | None = None,
     filter_target_flows: Callable | None = None,
 ) -> list[Match]:
@@ -27,9 +28,9 @@ def transform_and_then_match(
     reset to their normalized state after matching completes.
 
     The function applies transformations and filters in the following order:
-    1. Transform source flows (if provided)
+    1. Transform source flows (if provided) - applies all transformations in sequence
     2. Filter source flows (if provided)
-    3. Transform target flows (if provided)
+    3. Transform target flows (if provided) - applies all transformations in sequence
     4. Filter target flows (if provided)
     5. Call match function with filtered flows
     6. Reset all flows to normalized state
@@ -44,14 +45,16 @@ def transform_and_then_match(
         Function that performs the actual matching. Must accept keyword arguments
         `source_flows` and `target_flows` (both lists of NormalizedFlow) and return
         a list of Match objects.
-    transform_source_flows : Callable[[list[NormalizedFlow]], list[NormalizedFlow]] | None
-        Optional function to transform source flows. Takes a list of NormalizedFlow
-        objects and returns a modified list. The function should modify flows in place
-        (e.g., using update_current) and return the same list.
-    transform_target_flows : Callable[[list[NormalizedFlow]], list[NormalizedFlow]] | None
-        Optional function to transform target flows. Takes a list of NormalizedFlow
-        objects and returns a modified list. The function should modify flows in place
-        (e.g., using update_current) and return the same list.
+    transform_source_flows : list[Callable[[list[NormalizedFlow]], list[NormalizedFlow]]] | None
+        Optional list of functions to transform source flows. Functions are applied
+        in sequence. Each function takes a list of NormalizedFlow objects and returns
+        a modified list. Functions should modify flows in place (e.g., using
+        update_current) and return the same list.
+    transform_target_flows : list[Callable[[list[NormalizedFlow]], list[NormalizedFlow]]] | None
+        Optional list of functions to transform target flows. Functions are applied
+        in sequence. Each function takes a list of NormalizedFlow objects and returns
+        a modified list. Functions should modify flows in place (e.g., using
+        update_current) and return the same list.
     filter_source_flows : Callable[[list[NormalizedFlow]], list[NormalizedFlow]] | None
         Optional function to filter source flows. Takes a list of NormalizedFlow objects
         and returns a filtered list (may be shorter than input).
@@ -70,7 +73,7 @@ def transform_and_then_match(
     >>> from flowmapper.utils import apply_randonneur
     >>> from functools import partial
     >>>
-    >>> # Transform flows before matching
+    >>> # Transform flows with a single function (wrap in list)
     >>> transform_func = partial(
     ...     apply_randonneur,
     ...     datapackage="some-transformation",
@@ -81,8 +84,20 @@ def transform_and_then_match(
     ...     source_flows=source_flows,
     ...     target_flows=target_flows,
     ...     match_function=match_identical_names,
-    ...     transform_source_flows=transform_func,
-    ...     transform_target_flows=transform_func
+    ...     transform_source_flows=[transform_func],
+    ...     transform_target_flows=[transform_func]
+    ... )
+    >>>
+    >>> # Transform flows with multiple functions in sequence
+    >>> transform1 = partial(apply_randonneur, datapackage="transformation-1", fields=["name"])
+    >>> transform2 = partial(apply_randonneur, datapackage="transformation-2", fields=["context"])
+    >>>
+    >>> matches = transform_and_then_match(
+    ...     source_flows=source_flows,
+    ...     target_flows=target_flows,
+    ...     match_function=match_identical_names,
+    ...     transform_source_flows=[transform1, transform2],
+    ...     transform_target_flows=[transform1, transform2]
     ... )
     >>>
     >>> # Filter flows before matching
@@ -99,22 +114,39 @@ def transform_and_then_match(
 
     Notes
     -----
-    All flows (both source and target) are automatically reset to their normalized
-    state after matching completes successfully. If the match function raises an
-    exception, flows will not be reset.
+    - All flows (both source and target) are automatically reset to their normalized
+      state after matching completes successfully. If the match function raises an
+      exception, flows will not be reset.
+    - When multiple transformations are provided in a list, they are applied in
+      sequence. The output of each transformation becomes the input to the next.
+    - To apply a single transformation, wrap it in a list: `[transform_func]`
     """
-    transformed_source_flows = (
-        transform_source_flows(source_flows) if transform_source_flows else source_flows
-    )
+    # Apply source flow transformations
+    if transform_source_flows is None:
+        transformed_source_flows = source_flows
+    else:
+        # Apply multiple transformations in sequence
+        transformed_source_flows = source_flows
+        for transform_func in transform_source_flows:
+            transformed_source_flows = transform_func(transformed_source_flows)
+
+    # Apply source flow filters
     filtered_source_flows = (
         filter_source_flows(transformed_source_flows)
         if filter_source_flows
         else transformed_source_flows
     )
 
-    transformed_target_flows = (
-        transform_target_flows(target_flows) if transform_target_flows else target_flows
-    )
+    # Apply target flow transformations
+    if transform_target_flows is None:
+        transformed_target_flows = target_flows
+    else:
+        # Apply multiple transformations in sequence
+        transformed_target_flows = target_flows
+        for transform_func in transform_target_flows:
+            transformed_target_flows = transform_func(transformed_target_flows)
+
+    # Apply target flow filters
     filtered_target_flows = (
         filter_target_flows(transformed_target_flows)
         if filter_target_flows
@@ -136,8 +168,7 @@ def get_matches(
     target_flows: list[NormalizedFlow],
     comment: str,
     function_name: str,
-    match_condition: "MatchCondition",
-    conversion_factors: list[float] | None = None,
+    match_condition: MatchCondition,
 ) -> list[Match]:
     """Create Match objects from source and target flows.
 
@@ -164,22 +195,12 @@ def get_matches(
         "match_identical_names").
     match_condition : MatchCondition
         The match quality condition (exact, close, related, etc.).
-    conversion_factors : list[float] | None, optional
-        Optional list of conversion factors, one per source flow. If None,
-        conversion factors are calculated automatically. If provided, must
-        have the same length as source_flows.
 
     Returns
     -------
     list[Match]
         List of Match objects. Each Match represents a successful match
         between a source flow and a target flow.
-
-    Raises
-    ------
-    ValueError
-        If conversion_factors is provided and its length doesn't match
-        the length of source_flows.
 
     Notes
     -----
@@ -188,7 +209,9 @@ def get_matches(
       find the most appropriate match by matching normalized contexts
     - If exactly one target flow matches after context filtering, a Match
       is created and the source flow is marked as matched
-    - Conversion factors are calculated automatically if not provided
+    - Conversion factors are calculated automatically using
+      `source.conversion_factor(target)` which accounts for both unit
+      conversion and any transformation factors
     - The function only creates matches when there is exactly one target
       flow remaining after filtering
 
@@ -202,25 +225,12 @@ def get_matches(
     ...     match_condition=MatchCondition.exact
     ... )
     """
-    from flowmapper.domain import MatchCondition  # noqa: F401
-
     if not target_flows:
         return []
 
     matches = []
 
-    # Providing conversion_factors only makes sense if there is a single target flow
-    # Otherwise you have M-to-N problem
-    if conversion_factors is None:
-        cfs = itertools.repeat(None)
-    else:
-        if not len(conversion_factors) == len(source_flows):
-            raise ValueError(
-                f"`conversion_factors` (length {len(conversion_factors)}) must have same length as `source_flows` (length {len(source_flows)})"
-            )
-        cfs = conversion_factors
-
-    for conversion_factor, source in zip(cfs, source_flows):
+    for source in source_flows:
         targets = [flow for flow in target_flows if source.unit_compatible(flow)]
         if len(targets) > 1:
             # Try find most-appropriate match if more than one is present. Added because ecoinvent
@@ -234,8 +244,6 @@ def get_matches(
         if len(targets) == 1:
             target = target_flows[0]
             source.matched = True
-            if conversion_factor is None:
-                conversion_factor = source.conversion_factor(target)
             matches.append(
                 Match(
                     source=source.original,
@@ -243,7 +251,7 @@ def get_matches(
                     function_name=function_name,
                     comment=comment or "",
                     condition=match_condition,
-                    conversion_factor=conversion_factor,
+                    conversion_factor=source.conversion_factor(target),
                 )
             )
 

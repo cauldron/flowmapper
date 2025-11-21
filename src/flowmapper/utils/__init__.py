@@ -24,9 +24,8 @@ from flowmapper.utils.context import (
 from flowmapper.utils.files import load_standard_transformations, read_migration_files
 from flowmapper.utils.flow_names import remove_unit_slash, unit_slash
 from flowmapper.utils.randonneur import (
-    FlowTransformationContext,
-    apply_generic_transformations_to_flows,
     apply_randonneur,
+    apply_transformation_and_convert_flows_to_normalized_flows,
     randonneur_as_function,
 )
 from flowmapper.utils.strings import normalize_str, rowercase
@@ -49,8 +48,7 @@ __all__ = [
     "remove_unit_slash",
     "unit_slash",
     # Randonneur
-    "FlowTransformationContext",
-    "apply_generic_transformations_to_flows",
+    "apply_transformation_and_convert_flows_to_normalized_flows",
     "apply_randonneur",
     "randonneur_as_function",
     # Files

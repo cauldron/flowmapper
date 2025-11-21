@@ -2,7 +2,7 @@
 
 import pytest
 
-from flowmapper.domain import MatchCondition
+from flowmapper.domain.match_condition import MatchCondition
 
 
 class TestMatchConditionAsGlad:

@@ -2,6 +2,7 @@
 
 import pytest
 
+from flowmapper.errors import MissingLocation
 from flowmapper.fields import replace_location_suffix, split_location_suffix
 
 
@@ -151,19 +152,19 @@ class TestReplaceLocationSuffix:
         result = replace_location_suffix("Ammonia, RER w/o DE+NL+NO", "GLO")
         assert result == "Ammonia, GLO", f"Expected 'Ammonia, GLO', but got {result!r}"
 
-    def test_no_location_code_raises_value_error(self):
-        """Test replace_location_suffix with no location code (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_no_location_code_raises_missing_location(self):
+        """Test replace_location_suffix with no location code (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia", "DE")
 
-    def test_location_code_with_dash_raises_value_error(self):
-        """Test replace_location_suffix with location code using dash (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_location_code_with_dash_raises_missing_location(self):
+        """Test replace_location_suffix with location code using dash (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia-NL", "DE")
 
-    def test_location_code_case_insensitive_raises_value_error(self):
-        """Test replace_location_suffix with lowercase location (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_location_code_case_insensitive_raises_missing_location(self):
+        """Test replace_location_suffix with lowercase location (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia, nl", "DE")
 
     def test_multiple_commas_replacement(self):
@@ -174,14 +175,14 @@ class TestReplaceLocationSuffix:
             result == "Ammonia, pure, FR"
         ), f"Expected 'Ammonia, pure, FR', but got {result!r}"
 
-    def test_location_code_in_middle_raises_value_error(self):
-        """Test replace_location_suffix with location code not at end (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_location_code_in_middle_raises_missing_location(self):
+        """Test replace_location_suffix with location code not at end (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia, NL, pure", "DE")
 
-    def test_empty_string_raises_value_error(self):
-        """Test replace_location_suffix with empty string (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_empty_string_raises_missing_location(self):
+        """Test replace_location_suffix with empty string (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("", "DE")
 
     def test_only_location_code_replacement(self):
@@ -189,14 +190,14 @@ class TestReplaceLocationSuffix:
         result = replace_location_suffix(", NL", "DE")
         assert result == ", DE", f"Expected ', DE', but got {result!r}"
 
-    def test_whitespace_before_comma_raises_value_error(self):
-        """Test replace_location_suffix with whitespace before comma (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_whitespace_before_comma_raises_missing_location(self):
+        """Test replace_location_suffix with whitespace before comma (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia , NL", "DE")
 
-    def test_no_whitespace_after_comma_raises_value_error(self):
-        """Test replace_location_suffix with no whitespace after comma (should raise ValueError)."""
-        with pytest.raises(ValueError, match="No location suffix found"):
+    def test_no_whitespace_after_comma_raises_missing_location(self):
+        """Test replace_location_suffix with no whitespace after comma (should raise MissingLocation)."""
+        with pytest.raises(MissingLocation, match="No location suffix found"):
             replace_location_suffix("Ammonia,NL", "DE")
 
     def test_various_location_codes_replacement(self):

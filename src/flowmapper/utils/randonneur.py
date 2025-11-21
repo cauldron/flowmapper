@@ -4,9 +4,8 @@ from __future__ import annotations
 
 import copy
 from collections.abc import Callable
-from contextlib import AbstractContextManager
 from functools import partial
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from randonneur import Datapackage, MigrationConfig, migrate_nodes
 from randonneur_data import Registry
@@ -15,7 +14,8 @@ from flowmapper.utils.constants import default_registry
 from flowmapper.utils.context import tupleize_context
 
 if TYPE_CHECKING:
-    from flowmapper.domain import Flow, NormalizedFlow
+    from flowmapper.domain.flow import Flow
+    from flowmapper.domain.normalized_flow import NormalizedFlow
 
 
 def randonneur_as_function(
@@ -48,6 +48,7 @@ def randonneur_as_function(
                 else not datapackage.get("case-insensitive")
             ),
             fields=fields,
+            add_conversion_factor_to_nodes=True,
         ),
     )
 
@@ -60,7 +61,7 @@ def apply_randonneur(
     normalize: bool = False,
 ) -> list[NormalizedFlow]:
     """Apply randonneur transformations to NormalizedFlow objects."""
-    from flowmapper.domain import Flow
+    from flowmapper.domain.flow import Flow
 
     func = randonneur_as_function(
         datapackage=datapackage, fields=fields, registry=registry
@@ -76,7 +77,7 @@ def apply_randonneur(
     return flows
 
 
-def apply_generic_transformations_to_flows(
+def apply_transformation_and_convert_flows_to_normalized_flows(
     functions: list[Callable[..., list[NormalizedFlow]]], flows: list[Flow]
 ) -> list[NormalizedFlow]:
     """
@@ -111,8 +112,8 @@ def apply_generic_transformations_to_flows(
 
     Examples
     --------
-    >>> from flowmapper.domain import Flow
-    >>> from flowmapper.utils import apply_generic_transformations_to_flows, randonneur_as_function
+    >>> from flowmapper.domain.flow import Flow
+    >>> from flowmapper.utils import apply_transformation_and_convert_flows_to_normalized_flows, randonneur_as_function
     >>>
     >>> # Create a transformation function
     >>> transform_func = randonneur_as_function(datapackage="some-transformation")
@@ -123,7 +124,7 @@ def apply_generic_transformations_to_flows(
     ... ]
     >>>
     >>> # Apply transformations
-    >>> normalized_flows = apply_generic_transformations_to_flows(
+    >>> normalized_flows = apply_transformation_and_convert_flows_to_normalized_flows(
     ...     functions=[transform_func],
     ...     flows=flows
     ... )
@@ -131,7 +132,8 @@ def apply_generic_transformations_to_flows(
     >>> # Access transformed data
     >>> print(normalized_flows[0].normalized.name.data)
     """
-    from flowmapper.domain import Flow, NormalizedFlow
+    from flowmapper.domain.flow import Flow
+    from flowmapper.domain.normalized_flow import NormalizedFlow
 
     flow_dicts = [obj.to_dict() for obj in flows]
 
@@ -144,52 +146,3 @@ def apply_generic_transformations_to_flows(
         NormalizedFlow(original=o, normalized=n, current=copy.copy(n))
         for o, n in zip(flows, normalized_flows)
     ]
-
-
-class FlowTransformationContext(AbstractContextManager):
-    """
-    Context manager that applies a function to NormalizedFlows on entry and resets them on exit.
-
-    This context manager is useful when you need to temporarily modify flows for matching
-    or processing, and want to ensure they are reset to their normalized state afterward.
-
-    Parameters
-    ----------
-    flows : list[NormalizedFlow]
-        List of NormalizedFlow objects to transform and reset.
-    function : Callable[[list[NormalizedFlow]], list[NormalizedFlow]] | None
-        Function to apply to the flows on context entry. The function should take
-        a list of NormalizedFlow objects and return the modified list. If None,
-        no transformation is applied.
-
-    Examples
-    --------
-    >>> flows = [NormalizedFlow(...), NormalizedFlow(...)]
-    >>> def update_func(flows):
-    ...     for flow in flows:
-    ...         flow.update_current(name="Modified")
-    ...     return flows
-    >>> with FlowTransformationContext(flows, update_func) as modified_flows:
-    ...     # modified_flows contains the transformed flows
-    ...     do_something_with(modified_flows)
-    >>> # flows are automatically reset to normalized state
-    """
-
-    def __init__(
-        self,
-        flows: list[NormalizedFlow],
-        function: Callable[[list[NormalizedFlow]], list[NormalizedFlow]] | None = None,
-    ):
-        self.flows = flows
-        self.function = function
-
-    def __enter__(self) -> list[NormalizedFlow]:
-        """Apply the function to the flows on entry."""
-        if self.function is not None:
-            self.flows = self.function(self.flows)
-        return self.flows
-
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
-        """Reset all flows to their normalized state on exit."""
-        for flow in self.flows:
-            flow.reset_current()

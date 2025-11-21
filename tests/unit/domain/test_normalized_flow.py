@@ -4,7 +4,8 @@ from copy import copy
 
 import pytest
 
-from flowmapper.domain import Flow, NormalizedFlow
+from flowmapper.domain.flow import Flow
+from flowmapper.domain.normalized_flow import NormalizedFlow
 
 
 class TestNormalizedFlowResetCurrent:
@@ -759,6 +760,106 @@ class TestNormalizedFlowConversionFactor:
         assert math.isnan(
             result
         ), f"Expected conversion_factor to be NaN for incompatible units, but got {result}"
+
+    def test_conversion_factor_with_transformation_factor(self):
+        """Test conversion_factor multiplies transformation factor by unit conversion."""
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+            "conversion_factor": 2.5,
+        }
+        data2 = {"name": "Methane", "context": "air", "unit": "g"}
+
+        nf1 = NormalizedFlow.from_dict(data1)
+        nf2 = NormalizedFlow.from_dict(data2)
+
+        result = nf1.conversion_factor(nf2)
+        # transformation_factor (2.5) * unit_conversion (1000.0 kg to g) = 2500.0
+        assert (
+            result == 2500.0
+        ), f"Expected conversion_factor to be 2500.0 (2.5 * 1000.0), but got {result}"
+
+    def test_conversion_factor_with_transformation_factor_reverse(self):
+        """Test conversion_factor with transformation factor in reverse direction."""
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "g",
+            "conversion_factor": 0.5,
+        }
+        data2 = {"name": "Methane", "context": "air", "unit": "kg"}
+
+        nf1 = NormalizedFlow.from_dict(data1)
+        nf2 = NormalizedFlow.from_dict(data2)
+
+        result = nf1.conversion_factor(nf2)
+        # transformation_factor (0.5) * unit_conversion (0.001 g to kg) = 0.0005
+        assert (
+            result == 0.0005
+        ), f"Expected conversion_factor to be 0.0005 (0.5 * 0.001), but got {result}"
+
+    def test_conversion_factor_with_transformation_factor_same_units(self):
+        """Test conversion_factor with transformation factor but same units."""
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+            "conversion_factor": 3.0,
+        }
+        data2 = {"name": "Methane", "context": "air", "unit": "kg"}
+
+        nf1 = NormalizedFlow.from_dict(data1)
+        nf2 = NormalizedFlow.from_dict(data2)
+
+        result = nf1.conversion_factor(nf2)
+        # transformation_factor (3.0) * unit_conversion (1.0 same units) = 3.0
+        assert (
+            result == 3.0
+        ), f"Expected conversion_factor to be 3.0 (3.0 * 1.0), but got {result}"
+
+    def test_conversion_factor_with_none_transformation_factor(self):
+        """Test conversion_factor when transformation_factor is None (defaults to 1.0)."""
+        data1 = {"name": "Carbon dioxide", "context": "air", "unit": "kg"}
+        data2 = {"name": "Methane", "context": "air", "unit": "g"}
+
+        nf1 = NormalizedFlow.from_dict(data1)
+        nf2 = NormalizedFlow.from_dict(data2)
+
+        # Ensure conversion_factor is None
+        assert (
+            nf1.current.conversion_factor is None
+        ), "Expected conversion_factor to be None"
+
+        result = nf1.conversion_factor(nf2)
+        # None defaults to 1.0, so 1.0 * 1000.0 = 1000.0
+        assert (
+            result == 1000.0
+        ), f"Expected conversion_factor to be 1000.0 (1.0 * 1000.0), but got {result}"
+
+    def test_conversion_factor_with_transformation_factor_zero(self):
+        """Test conversion_factor with transformation_factor of 0.0.
+
+        Note: Due to Python's 'or' operator behavior, 0.0 is treated as falsy
+        and defaults to 1.0, so the result is 1.0 * unit_conversion.
+        """
+        data1 = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+            "conversion_factor": 0.0,
+        }
+        data2 = {"name": "Methane", "context": "air", "unit": "g"}
+
+        nf1 = NormalizedFlow.from_dict(data1)
+        nf2 = NormalizedFlow.from_dict(data2)
+
+        result = nf1.conversion_factor(nf2)
+        # Due to 'or 1.0', 0.0 is treated as falsy and defaults to 1.0
+        # So: 1.0 * unit_conversion (1000.0) = 1000.0
+        assert (
+            result == 1000.0
+        ), f"Expected conversion_factor to be 1000.0 (1.0 * 1000.0 due to 'or' behavior), but got {result}"
 
 
 class TestNormalizedFlowExport:

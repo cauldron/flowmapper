@@ -7,17 +7,24 @@ from flowmapper.matching.basic import (
     match_identical_cas_numbers,
     match_identical_identifier,
     match_identical_names,
+    match_identical_names_target_uuid_identifier,
     match_identical_names_without_commas,
 )
 from flowmapper.matching.context import (
     match_name_and_parent_context,
     match_resources_with_wrong_subcontext,
 )
+from flowmapper.matching.ecoinvent import match_ecoinvent_transitive_matching
 from flowmapper.matching.simapro import (
     manual_simapro_ecoinvent_mapping,
+    manual_simapro_ecoinvent_mapping_add_regionalized_flows,
+    manual_simapro_ecoinvent_mapping_resource_wrong_subcontext,
     simapro_ecoinvent_glad_name_matching,
 )
-from flowmapper.matching.transformation import match_ecoinvent_transitive_matching
+from flowmapper.matching.specialized import (
+    add_missing_regionalized_flows,
+    match_names_with_suffix_removal,
+)
 
 
 def match_rules():
@@ -52,26 +59,28 @@ def match_rules():
     return [
         match_identical_identifier,
         match_identical_names,
-        # match_identical_names_lowercase,
         match_identical_names_without_commas,
-        match_ecoinvent_transitive_matching,
-        # match_resources_with_suffix_in_ground,
-        # match_resources_with_suffix_in_water,
-        # match_resources_with_suffix_in_air,
-        # match_flows_with_suffix_unspecified_origin,
         match_resources_with_wrong_subcontext,
         match_name_and_parent_context,
-        # match_close_names,
-        manual_simapro_ecoinvent_mapping,
-        # match_emissions_with_suffix_ion,
-        # match_names_with_roman_numerals_in_parentheses,
-        # match_names_with_location_codes,
-        # match_resource_names_with_location_codes_and_parent_context,
-        # match_custom_names_with_location_codes,
-        simapro_ecoinvent_glad_name_matching,
         match_identical_cas_numbers,
-        # match_non_ionic_state,
-        # match_biogenic_to_non_fossil,
-        # match_identical_names_in_preferred_synonyms,
-        # match_identical_names_in_synonyms,
+        match_names_with_suffix_removal,
+    ]
+
+
+def match_rules_simapro_ecoinvent():
+    return [
+        match_identical_identifier,
+        match_identical_names,
+        match_identical_names_without_commas,
+        match_ecoinvent_transitive_matching,
+        match_resources_with_wrong_subcontext,
+        match_name_and_parent_context,
+        manual_simapro_ecoinvent_mapping,
+        simapro_ecoinvent_glad_name_matching,
+        manual_simapro_ecoinvent_mapping_add_regionalized_flows,
+        manual_simapro_ecoinvent_mapping_resource_wrong_subcontext,
+        add_missing_regionalized_flows,
+        match_identical_cas_numbers,
+        match_identical_names_target_uuid_identifier,
+        match_names_with_suffix_removal,
     ]

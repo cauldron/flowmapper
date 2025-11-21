@@ -4,9 +4,12 @@ This module contains basic matching functions that match flows based on
 identical or similar attributes without transformations.
 """
 
+import re
+
 from rapidfuzz.distance.DamerauLevenshtein import distance
 
-from flowmapper.domain import MatchCondition, NormalizedFlow
+from flowmapper.domain.match_condition import MatchCondition
+from flowmapper.domain.normalized_flow import NormalizedFlow
 from flowmapper.matching.core import get_matches
 from flowmapper.utils import toolz
 
@@ -118,7 +121,11 @@ def match_identical_cas_numbers(
 
 
 def match_identical_names(
-    source_flows: list[NormalizedFlow], target_flows: list[NormalizedFlow]
+    source_flows: list[NormalizedFlow],
+    target_flows: list[NormalizedFlow],
+    function_name: str | None = None,
+    comment: str | None = None,
+    match_condition: MatchCondition | None = None,
 ) -> list:
     """Match flows with identical normalized names, context, oxidation state, and location.
 
@@ -162,9 +169,10 @@ def match_identical_names(
                     and target.oxidation_state == oxidation_state
                     and target.location == location
                 ],
-                comment=f"Shared normalized name with identical context, oxidation state, and location: {name}",
-                function_name="match_identical_names",
-                match_condition=MatchCondition.exact,
+                comment=comment
+                or f"Shared normalized name with identical context, oxidation state, and location: {name}",
+                function_name=function_name or "match_identical_names",
+                match_condition=match_condition or MatchCondition.exact,
             )
         )
 
@@ -231,7 +239,11 @@ def match_close_names(
 
 
 def match_identical_names_lowercase(
-    source_flows: list[NormalizedFlow], target_flows: list[NormalizedFlow]
+    source_flows: list[NormalizedFlow],
+    target_flows: list[NormalizedFlow],
+    function_name: str | None = None,
+    comment: str | None = None,
+    match_condition: MatchCondition | None = None,
 ) -> list:
     """Match flows with identical names when compared in lowercase.
 
@@ -278,9 +290,10 @@ def match_identical_names_lowercase(
                     and flow.oxidation_state == oxidation_state
                     and flow.location == location
                 ],
-                comment=f"Shared normalized lowercase name with identical context, oxidation state, and location: {name}",
-                function_name="match_identical_names_lowercase",
-                match_condition=MatchCondition.close,
+                comment=comment
+                or f"Shared normalized lowercase name with identical context, oxidation state, and location: {name}",
+                function_name=function_name or "match_identical_names_lowercase",
+                match_condition=match_condition or MatchCondition.close,
             )
         )
 
@@ -337,6 +350,123 @@ def match_identical_names_without_commas(
                 comment=f"Shared normalized name with commas removed and identical context, oxidation state, and location: {name}",
                 match_condition=MatchCondition.close,
                 function_name="match_identical_names_without_commas",
+            )
+        )
+
+    return matches
+
+
+is_uuid = re.compile(
+    r"^[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}$"
+)
+
+
+def match_identical_names_target_uuid_identifier(
+    source_flows: list[NormalizedFlow],
+    target_flows: list[NormalizedFlow],
+    function_name: str | None = None,
+    comment: str | None = None,
+    match_condition: MatchCondition | None = None,
+) -> list:
+    """Match flows with identical normalized names, context, oxidation state, and location.
+
+    This function is similar to `match_identical_names`, but with an additional
+    requirement that target flows must have a UUID identifier. This is used in cases
+    where the target flow list has two identical flows that we want to match to - normally we
+    reject a match with multiple options. Instead of fixing these manually, we prefer a target
+    flows with a UUID identifier. This is a hack, so only use this function as a last resort.
+
+    Parameters
+    ----------
+    source_flows : list[NormalizedFlow]
+        List of source flows to match.
+    target_flows : list[NormalizedFlow]
+        List of target flows to match against. Only flows with UUID identifiers
+        will be considered.
+    function_name : str | None, optional
+        Name of the matching function. Defaults to
+        "match_identical_names_target_uuid_identifier".
+    comment : str | None, optional
+        Comment to include in Match objects. Defaults to a description of the
+        shared attributes.
+    match_condition : MatchCondition | None, optional
+        Match condition to use. Defaults to MatchCondition.exact.
+
+    Returns
+    -------
+    list[Match]
+        List of Match objects with MatchCondition.exact (or specified condition)
+        for flows with identical normalized names, context, oxidation state,
+        and location, where the target flow has a UUID identifier.
+
+    Notes
+    -----
+    - All four attributes (name, context, oxidation_state, location) must match exactly
+    - Target flows must have a non-None identifier that matches the UUID format
+    - UUID format is validated using regex: 8-4-4-4-12 hexadecimal digits
+    - Names are compared after normalization
+    - Match condition defaults to MatchCondition.exact
+    - Only unit-compatible flows are matched (enforced by `get_matches`)
+
+    Examples
+    --------
+    >>> from flowmapper.domain.flow import Flow
+    >>> from flowmapper.domain.normalized_flow import NormalizedFlow
+    >>> from copy import copy
+    >>>
+    >>> source = Flow.from_dict({
+    ...     "name": "Carbon dioxide",
+    ...     "context": "air",
+    ...     "unit": "kg"
+    ... })
+    >>> source_nf = NormalizedFlow(
+    ...     original=source,
+    ...     normalized=source.normalize(),
+    ...     current=copy(source.normalize())
+    ... )
+    >>>
+    >>> target = Flow.from_dict({
+    ...     "name": "Carbon dioxide",
+    ...     "context": "air",
+    ...     "unit": "kg",
+    ...     "identifier": "550e8400-e29b-41d4-a716-446655440000"  # Valid UUID
+    ... })
+    >>> target_nf = NormalizedFlow(
+    ...     original=target,
+    ...     normalized=target.normalize(),
+    ...     current=copy(target.normalize())
+    ... )
+    >>>
+    >>> matches = match_identical_names_target_uuid_identifier(
+    ...     source_flows=[source_nf],
+    ...     target_flows=[target_nf]
+    ... )
+    >>> len(matches)
+    1
+    """
+    matches = []
+
+    for (name, context, oxidation_state, location), sources in toolz.itertoolz.groupby(
+        lambda x: (x.name, x.context, x.oxidation_state, x.location), source_flows
+    ).items():
+        matches.extend(
+            get_matches(
+                source_flows=sources,
+                target_flows=[
+                    target
+                    for target in target_flows
+                    if target.name == name
+                    and target.context == context
+                    and target.oxidation_state == oxidation_state
+                    and target.location == location
+                    and target.identifier is not None
+                    and is_uuid.match(target.identifier)
+                ],
+                comment=comment
+                or f"Shared normalized name with identical context, oxidation state, and location: {name}",
+                function_name=function_name
+                or "match_identical_names_target_uuid_identifier",
+                match_condition=match_condition or MatchCondition.exact,
             )
         )
 

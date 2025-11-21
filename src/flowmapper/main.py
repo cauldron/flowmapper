@@ -1,14 +1,16 @@
 import json
 import logging
+from collections.abc import Callable
 from pathlib import Path
 
 from randonneur import Datapackage
 from randonneur_data import Registry
 
-from flowmapper.domain import Flow
+from flowmapper.domain.flow import Flow
+from flowmapper.domain.match import Match
 from flowmapper.flowmap import Flowmap
 from flowmapper.utils import (
-    apply_generic_transformations_to_flows,
+    apply_transformation_and_convert_flows_to_normalized_flows,
     randonneur_as_function,
 )
 
@@ -31,7 +33,8 @@ def flowmapper(
     contributors: list,
     output_dir: Path,
     version: str = "1.0.0",
-    transformations: list[Datapackage | str] | None = None,
+    transformations: list[Datapackage | str | dict | Callable] | None = None,
+    rules: list[Callable[..., list[Match]]] | None = None,
     unit_normalization: bool = True,
     licenses: list | None = None,
     homepage: str | None = None,
@@ -52,17 +55,22 @@ def flowmapper(
         transformations.append("Flowmapper-standard-units-harmonization")
 
     for obj in transformations:
-        transformation_functions.append(
-            randonneur_as_function(datapackage=obj, registry=registry)
-        )
+        if isinstance(obj, (str, dict, Datapackage)):
+            transformation_functions.append(
+                randonneur_as_function(datapackage=obj, registry=registry)
+            )
+        elif isinstance(obj, Callable):
+            transformation_functions.append(obj)
+        else:
+            raise ValueError(f"Can't understand transformation {obj}")
 
     original_source_flows = [Flow.from_dict(obj) for obj in json.load(open(source))]
-    source_flows = apply_generic_transformations_to_flows(
+    source_flows = apply_transformation_and_convert_flows_to_normalized_flows(
         functions=transformation_functions, flows=original_source_flows
     )
 
     original_target_flows = [Flow.from_dict(obj) for obj in json.load(open(target))]
-    target_flows = apply_generic_transformations_to_flows(
+    target_flows = apply_transformation_and_convert_flows_to_normalized_flows(
         functions=transformation_functions, flows=original_target_flows
     )
 
@@ -70,6 +78,7 @@ def flowmapper(
         source_flows=source_flows,
         target_flows=target_flows,
         data_preparation_functions=transformation_functions,
+        rules=rules,
     )
     if no_matching:
         return flowmap

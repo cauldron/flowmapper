@@ -36,7 +36,8 @@ class NormalizedFlow:
 
     Examples
     --------
-    >>> from flowmapper.domain import Flow, NormalizedFlow
+    >>> from flowmapper.domain.flow import Flow
+    >>> from flowmapper.domain.normalized_flow import NormalizedFlow
     >>> flow = Flow.from_dict({
     ...     "name": "Carbon dioxide",
     ...     "context": "air",
@@ -99,6 +100,11 @@ class NormalizedFlow:
         """Return the current flow's synonyms."""
         return self.current.synonyms
 
+    @property
+    def id(self) -> int:
+        """Return the original flow's internal ID."""
+        return self.original._id
+
     def reset_current(self) -> None:
         """
         Reset the current flow to the normalized state.
@@ -133,7 +139,7 @@ class NormalizedFlow:
         self.current = Flow.from_dict(data)
 
     @staticmethod
-    def from_dict(data: dict) -> "NormalizedFlow":
+    def from_dict(data: dict) -> NormalizedFlow:
         """
         Create a NormalizedFlow from a dictionary.
 
@@ -190,7 +196,10 @@ class NormalizedFlow:
             The conversion factor to multiply this flow's value by to get the
             equivalent value in the other flow's unit.
         """
-        return self.current.unit.conversion_factor(other.current.unit)
+        from_transformation = self.current.conversion_factor or 1.0
+        return from_transformation * self.current.unit.conversion_factor(
+            other.current.unit
+        )
 
     def export(self) -> dict:
         """

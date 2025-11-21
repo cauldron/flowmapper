@@ -1,9 +1,11 @@
 """Flow class representing an elementary flow with all its attributes."""
 
 import itertools
+import uuid
 from dataclasses import dataclass, field
 from typing import Any, Self
 
+from flowmapper.errors import MissingLocation
 from flowmapper.fields import (
     CASField,
     ContextField,
@@ -69,6 +71,7 @@ class Flow:
     oxidation_state: OxidationState | None = None
     cas_number: CASField | None = None
     synonyms: list[str] = field(default_factory=lambda: [])
+    conversion_factor: float | None = None
     _id: int = field(default_factory=lambda: next(global_counter))
 
     @staticmethod
@@ -92,6 +95,7 @@ class Flow:
                 "location": "$.location",
                 "cas_number": "$.cas_number",
                 "synonyms": "$.synonyms",
+                "conversion_factor": "$.conversion_factor",
             },
         }
 
@@ -133,6 +137,7 @@ class Flow:
             ),
             cas_number=CASField.from_string(data.get("cas_number") or None),
             synonyms=data.get("synonyms") or [],
+            conversion_factor=data.get("conversion_factor"),
         )
 
     def to_dict(self) -> dict:
@@ -157,7 +162,13 @@ class Flow:
             "context": self.context.as_tuple(),
             "identifier": self.identifier,
         }
-        for key in ("location", "oxidation_state", "cas_number", "synonyms"):
+        for key in (
+            "location",
+            "oxidation_state",
+            "cas_number",
+            "synonyms",
+            "conversion_factor",
+        ):
             if getattr(self, key):
                 data[key] = getattr(self, key)
         return data
@@ -205,6 +216,7 @@ class Flow:
             context=self.context.normalize(),
             cas_number=self.cas_number,
             synonyms=self.synonyms,
+            conversion_factor=self.conversion_factor,
         )
 
     def copy_with_new_location(self, location: str) -> Self:
@@ -212,7 +224,11 @@ class Flow:
         Create a copy of the flow with a new location in the name.
 
         This method replaces the location suffix in the flow's name with a new
-        location value. The original flow is not modified.
+        location value. If no location suffix is found, it appends the location
+        to the name. The original flow is not modified.
+
+        The new flow will have a new UUID identifier, regardless of whether
+        the original flow had an identifier.
 
         Parameters
         ----------
@@ -222,12 +238,16 @@ class Flow:
         Returns
         -------
         Flow
-            A new Flow instance with the updated location in the name.
+            A new Flow instance with the updated location in the name and a new
+            UUID identifier.
 
-        Raises
-        ------
-        ValueError
-            If the flow's name does not contain a location suffix that can be replaced.
+        Notes
+        -----
+        - If the flow's name contains a location suffix (matched by the
+          ends_with_location regex), it is replaced with the new location.
+        - If no location suffix is found, the location is appended to the name
+          in the format ", <location>".
+        - The new flow always gets a new UUID identifier via `uuid.uuid4()`.
 
         Examples
         --------
@@ -239,11 +259,33 @@ class Flow:
         >>> new_flow = flow.copy_with_new_location("DE")
         >>> new_flow.name.data
         'Carbon dioxide, DE'
+        >>> new_flow.identifier != flow.identifier
+        True
+        >>> # If no location suffix exists, location is appended
+        >>> flow2 = Flow.from_dict({
+        ...     "name": "Carbon dioxide",
+        ...     "context": "air",
+        ...     "unit": "kg"
+        ... })
+        >>> new_flow2 = flow2.copy_with_new_location("DE")
+        >>> new_flow2.name.data
+        'Carbon dioxide, DE'
         """
+        if not location:
+            raise ValueError("No location parameter given")
+
         data = self.to_dict()
-        data["name"] = replace_location_suffix(
-            string=data["name"], new_location=location
-        )
+        try:
+            data["name"] = replace_location_suffix(
+                string=data["name"], new_location=location
+            )
+        except MissingLocation:
+            data["name"] = (
+                data["name"].strip()
+                + (", " if not data["name"].endswith(",") else " ")
+                + location
+            )
+        data["identifier"] = str(uuid.uuid4())
         return type(self).from_dict(data)
 
     def __repr__(self) -> str:
@@ -263,6 +305,8 @@ class Flow:
             parts.append(f"cas_number={self.cas_number!r}")
         if self.synonyms:
             parts.append(f"synonyms={self.synonyms!r}")
+        if self.conversion_factor:
+            parts.append(f"conversion_factor={self.conversion_factor!r}")
         return f"Flow({', '.join(parts)})"
 
     def __eq__(self, other: Any) -> bool:

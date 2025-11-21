@@ -2,7 +2,9 @@
 
 from copy import copy
 
-from flowmapper.domain import Flow, MatchCondition, NormalizedFlow
+from flowmapper.domain.flow import Flow
+from flowmapper.domain.match_condition import MatchCondition
+from flowmapper.domain.normalized_flow import NormalizedFlow
 from flowmapper.matching import add_missing_regionalized_flows
 
 
@@ -28,7 +30,7 @@ class TestAddMissingRegionalizedFlows:
         assert source_nf.location == "NL"
         assert source_nf.name == "carbon dioxide"
 
-        # Target flows with different locations (enough to meet cutoff)
+        # Target flows with different locations (other_regions)
         target_flows = []
         for location in ["DE", "FR", "US", "CA"]:
             target_data = {
@@ -47,7 +49,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         assert len(matches) == 1, "Expected one match"
@@ -59,12 +61,12 @@ class TestAddMissingRegionalizedFlows:
             matches[0].condition == MatchCondition.related
         ), "Expected condition to be related"
         assert matches[0].source == source_flow, "Expected source to match"
-        # Target should have the source's location
-        assert matches[0].target.location is None
+        # Target should have the source's location in the name
         assert matches[0].target.name == "Carbon dioxide, NL"
+        # Note: location attribute is not set by copy_with_new_location, only name is updated
 
-    def test_cutoff_filtering_not_enough_regions(self):
-        """Test that flows are filtered out when not enough regions exist."""
+    def test_with_other_regions_exists(self):
+        """Test that matches are created when other regionalized flows exist."""
         source_data = {
             "name": "Carbon dioxide, NL",
             "context": "air",
@@ -78,7 +80,7 @@ class TestAddMissingRegionalizedFlows:
             current=copy(source_normalized),
         )
 
-        # Only 2 target flows (below cutoff of 3)
+        # 2 target flows with different locations (other_regions)
         target_flows = []
         for location in ["DE", "FR"]:
             target_data = {
@@ -96,13 +98,16 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
-        assert len(matches) == 0, "Expected no matches when below cutoff"
+        assert len(matches) == 1, "Expected one match when other_regions exist"
+        assert (
+            matches[0].target.name == "Carbon dioxide, NL"
+        ), "Expected target name to have source location"
 
-    def test_cutoff_custom_value(self):
-        """Test with custom cutoff value."""
+    def test_with_single_other_region(self):
+        """Test with single other regionalized flow."""
         source_data = {
             "name": "Carbon dioxide, NL",
             "context": "air",
@@ -116,28 +121,28 @@ class TestAddMissingRegionalizedFlows:
             current=copy(source_normalized),
         )
 
-        # 2 target flows - should work with cutoff=2
-        target_flows = []
-        for location in ["DE", "FR"]:
-            target_data = {
-                "name": f"Carbon dioxide, {location}",
-                "context": "air",
-                "unit": "kg",
-            }
-            target_flow = Flow.from_dict(target_data)
-            target_normalized = target_flow.normalize()
-            target_nf = NormalizedFlow(
-                original=target_flow,
-                normalized=target_normalized,
-                current=copy(target_normalized),
-            )
-            target_flows.append(target_nf)
-
-        matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=2
+        # 1 target flow with different location
+        target_data = {
+            "name": "Carbon dioxide, DE",
+            "context": "air",
+            "unit": "kg",
+        }
+        target_flow = Flow.from_dict(target_data)
+        target_normalized = target_flow.normalize()
+        target_nf = NormalizedFlow(
+            original=target_flow,
+            normalized=target_normalized,
+            current=copy(target_normalized),
         )
 
-        assert len(matches) == 1, "Expected one match with cutoff=2"
+        matches = add_missing_regionalized_flows(
+            source_flows=[source_nf], target_flows=[target_nf]
+        )
+
+        assert len(matches) == 1, "Expected one match with single other region"
+        assert (
+            matches[0].target.name == "Carbon dioxide, NL"
+        ), "Expected target name to have source location"
 
     def test_unit_compatibility_filtering(self):
         """Test that only unit-compatible flows are matched."""
@@ -172,7 +177,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         # Should have no matches if units are incompatible
@@ -215,7 +220,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=source_flows, target_flows=target_flows, cutoff=3
+            source_flows=source_flows, target_flows=target_flows
         )
 
         # Should create a match for each source flow
@@ -259,7 +264,6 @@ class TestAddMissingRegionalizedFlows:
         matches = add_missing_regionalized_flows(
             source_flows=[source_nf_with, source_nf_without],
             target_flows=target_flows,
-            cutoff=3,
         )
 
         # Should only match the flow with location
@@ -302,7 +306,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         # Should not match if oxidation states differ
@@ -341,7 +345,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         assert len(matches) == 0, "Expected no matches with different contexts"
@@ -379,7 +383,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         assert len(matches) == 0, "Expected no matches with different names"
@@ -399,7 +403,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[], target_flows=target_flows, cutoff=3
+            source_flows=[], target_flows=target_flows
         )
 
         assert len(matches) == 0, "Expected no matches with empty source flows"
@@ -420,7 +424,7 @@ class TestAddMissingRegionalizedFlows:
         )
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=[], cutoff=3
+            source_flows=[source_nf], target_flows=[]
         )
 
         assert len(matches) == 0, "Expected no matches with empty target flows"
@@ -458,7 +462,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         if len(matches) > 0:
@@ -494,7 +498,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
         if len(matches) > 0:
@@ -558,7 +562,7 @@ class TestAddMissingRegionalizedFlows:
             target_flows.append(target_nf)
 
         matches = add_missing_regionalized_flows(
-            source_flows=source_flows, target_flows=target_flows, cutoff=3
+            source_flows=source_flows, target_flows=target_flows
         )
 
         # Should create matches for both groups
@@ -603,10 +607,92 @@ class TestAddMissingRegionalizedFlows:
         target_flows.append(target_nf2)
 
         matches = add_missing_regionalized_flows(
-            source_flows=[source_nf], target_flows=target_flows, cutoff=3
+            source_flows=[source_nf], target_flows=target_flows
         )
 
-        # Should have no matches because only 1 other region (below cutoff of 3)
+        # Should have matches because other_regions exists (even if only 1)
+        assert (
+            len(matches) == 1
+        ), "Expected one match when other_regions exists (even if only 1)"
+
+    def test_with_non_regionalized_target(self):
+        """Test that uses non-regionalized target when exactly one exists and no other_regions."""
+        source_data = {
+            "name": "Carbon dioxide, NL",
+            "context": "air",
+            "unit": "kg",
+        }
+        source_flow = Flow.from_dict(source_data)
+        source_normalized = source_flow.normalize()
+        source_nf = NormalizedFlow(
+            original=source_flow,
+            normalized=source_normalized,
+            current=copy(source_normalized),
+        )
+
+        # One non-regionalized target (no location)
+        target_data = {
+            "name": "Carbon dioxide",
+            "context": "air",
+            "unit": "kg",
+        }
+        target_flow = Flow.from_dict(target_data)
+        target_normalized = target_flow.normalize()
+        target_nf = NormalizedFlow(
+            original=target_flow,
+            normalized=target_normalized,
+            current=copy(target_normalized),
+        )
+
+        matches = add_missing_regionalized_flows(
+            source_flows=[source_nf], target_flows=[target_nf]
+        )
+
+        # Should match because exactly one non_regionalized exists
+        assert (
+            len(matches) == 1
+        ), "Expected one match when exactly one non_regionalized exists"
+        assert (
+            matches[0].target.name == "Carbon dioxide, NL"
+        ), "Expected target name to have source location"
+
+    def test_with_multiple_non_regionalized_targets(self):
+        """Test that no match when multiple non-regionalized targets exist."""
+        source_data = {
+            "name": "Carbon dioxide, NL",
+            "context": "air",
+            "unit": "kg",
+        }
+        source_flow = Flow.from_dict(source_data)
+        source_normalized = source_flow.normalize()
+        source_nf = NormalizedFlow(
+            original=source_flow,
+            normalized=source_normalized,
+            current=copy(source_normalized),
+        )
+
+        # Two non-regionalized targets (should not match)
+        target_flows = []
+        for i in range(2):
+            target_data = {
+                "name": "Carbon dioxide",
+                "context": "air",
+                "unit": "kg",
+            }
+            target_flow = Flow.from_dict(target_data)
+            target_normalized = target_flow.normalize()
+            target_nf = NormalizedFlow(
+                original=target_flow,
+                normalized=target_normalized,
+                current=copy(target_normalized),
+            )
+            target_flows.append(target_nf)
+
+        matches = add_missing_regionalized_flows(
+            source_flows=[source_nf], target_flows=target_flows
+        )
+
+        # Should not match because more than one non_regionalized exists
         assert (
             len(matches) == 0
-        ), "Expected no matches when not enough regions with location"
+        ), "Expected no match when multiple non_regionalized exist"

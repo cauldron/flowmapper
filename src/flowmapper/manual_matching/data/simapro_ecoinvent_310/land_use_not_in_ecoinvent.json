@@ -277,6 +277,14 @@
   },
   {
     "source": {
+      "name": "Transformation, from urban, green areas"
+    },
+    "target": {
+      "name": "Transformation, from urban, green area"
+    }
+  },
+  {
+    "source": {
       "name": "Transformation, to water courses, artificial"
     },
     "target": {

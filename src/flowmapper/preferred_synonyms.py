@@ -1,6 +1,6 @@
 import re
 
-from flowmapper.domain import Flow
+from flowmapper.domain.flow import Flow
 
 ROMAN_NUMERAL_PATTERN = re.compile(r"\b\(?[ivx]+[\+-]?\)?\s*$", flags=re.IGNORECASE)
 PARENTHESES_PATTERN = re.compile(r"\([1-9]+[\+-]?\)\s*$")

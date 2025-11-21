@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 import structlog
 
 if TYPE_CHECKING:
-    from flowmapper.domain import Flow
+    from flowmapper.domain.flow import Flow
 
 logger = structlog.get_logger("flowmapper")
 
