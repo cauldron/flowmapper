@@ -43,6 +43,7 @@ dependencies = [
     "tqdm",
     "typer",
     "xmltodict",
+    "toolz",
 ]
 
 [project.urls]
