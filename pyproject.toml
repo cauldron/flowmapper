@@ -8,6 +8,7 @@ authors = [
   { name="Francisco Alves de Oliveira Júnior", email="fjunior.alves.oliveira@gmail.com" },
   { name="Chris Mute", email="cmutel@gmail.com" }
 ]
+license-files = ["LICENSE"]
 maintainers = [
   { name="Chris Mute", email="cmutel@gmail.com" }
 ]
@@ -75,7 +76,6 @@ dev = [
 flowmapper = "flowmapper.cli:app"
 
 [tool.setuptools]
-license-files = ["LICENSE"]
 include-package-data = true
 
 [tool.setuptools.packages.find]
