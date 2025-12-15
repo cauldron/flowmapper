@@ -21,7 +21,7 @@ def test_energy():
         u2
     ), f"Expected u1 to be compatible with u2, but they are not (u1={u1!r}, u2={u2!r})"
     assert (
-        u1.conversion_factor(u2) == 3.6
+        u1.conversion_factor(u2) == pytest.approx(3.6)
     ), f"Expected u1.conversion_factor(u2) to be 3.6, but got {u1.conversion_factor(u2)}"
 
 
